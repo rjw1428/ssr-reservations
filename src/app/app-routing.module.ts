@@ -1,11 +1,31 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
 
 
-const routes: Routes = [];
-
+export const routes: Routes = [{
+  path: '',
+  component: HomeComponent,
+  pathMatch: 'full',
+},
+{
+  path: 'admin',
+  loadChildren: () => import('./admin/admin.module').then((m) => m.AdminModule),
+},
+{
+  path: 'user',
+  loadChildren: () => import('./user/user.module').then((m) => m.UserModule),
+},
+{
+  path: 'shop',
+  loadChildren: () => import('./shopping/shopping.module').then((m) => m.ShoppingModule),
+}
+];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
+
+

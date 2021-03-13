@@ -1,0 +1,47 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Add Space Type</mat-card-title>
+    <mat-card-subtitle>
+      Define the type of rental space that you are providing to clients,
+      the number of available
+      spaces, and how much they will cost.
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="productForm" style="display: flex; flex-direction: column;">
+      <mat-form-field appearance="outline">
+        <mat-label>Space Type</mat-label>
+        <input name="spacetype" matInput formControlName="name">
+        <mat-error *ngIf="productForm.invalid">Must include a name of this space type</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea formControlName="description" matInput></textarea>
+        <mat-error *ngIf="productForm.invalid">Must include a description of this type of space</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Number of Spaces</mat-label>
+        <input autocomplete="off" matInput type="number" formControlName="count">
+        <mat-error *ngIf="productForm.invalid">Must input a number greater than 0</mat-error>
+      </mat-form-field>
+
+      <section *ngFor="let timeframe of availableTimeframes; let i=index">
+        <div style="display: flex; align-items: center;">
+          <p style="width: 150px;">{{timeframe.label}}:</p>
+          <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input autocomplete="off" matInput type="number" [formControlName]="timeframe.value">
+            <mat-error *ngIf=" productForm.invalid">Must have at least one cost value assigned</mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+    <button mat-flat-button color="primary" [disabled]="productForm.invalid" (click)="onSave()">Save</button>
+  </mat-card-actions>
+</mat-card>

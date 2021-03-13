@@ -1,0 +1,34 @@
+<mat-toolbar color="primary" class="title-bar">
+  <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+    *ngIf="isHandset$ | async">
+    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+  </button>
+  <span>Title</span>
+  <span>Login</span>
+</mat-toolbar>
+
+<div class="content-container">
+  <mat-sidenav-container class="sidenav-container">
+
+    <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+      <mat-toolbar>Menu</mat-toolbar>
+      <mat-nav-list>
+        <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Home</a>
+        <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Find A Space</a>
+        <a mat-list-item routerLink="admin"  [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Admin Summary</a>
+        <a mat-list-item [routerLink]="['admin','add-product']" routerLinkActive="router-link-active">Add Product Type</a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+      <h1 style="position: absolute; top: 0; right: 100px; color: red;" *ngIf="isLoading$ | async">LOADING...</h1>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+</div>
+
+<mat-toolbar color="primary" class="footer">
+  <span>Footer</span>
+</mat-toolbar>
