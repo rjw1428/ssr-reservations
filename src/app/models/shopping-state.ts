@@ -1,6 +1,7 @@
 import { Product } from "./product";
 
-export interface AdminState {
+export interface ShoppingState {
     products: { [id: string]: Product }
+    reservationSubmissionMode: string
     isSaving: boolean
 }

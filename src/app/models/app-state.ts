@@ -3,5 +3,7 @@ import { AdminState } from "./admin-state";
 
 export interface AppState {
     // router: RouterReducerState;
-    isLoading: boolean
+    isLoading: boolean,
+    isLoggingIn: boolean,
+    uid: string
 }

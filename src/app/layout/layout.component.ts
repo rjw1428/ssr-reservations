@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from '../models/app-state';
-import { loadingSelector } from '../app.selectors';
+import { loadingSelector, userSelector } from '../app.selectors';
+import { LoginComponent } from '../login/login.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-layout',
@@ -20,9 +22,18 @@ export class LayoutComponent {
     );
 
   isLoading$: Observable<boolean> = this.store.select(loadingSelector)
+
+  isLoggedIn$ = this.store.select(userSelector)
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    public dialog: MatDialog
   ) { }
 
+  onLogIn() {
+    this.dialog.open(LoginComponent, {
+      // maxWidth: '300px',
+      width: '300px'
+    })
+  }
 }

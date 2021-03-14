@@ -18,6 +18,10 @@ import { appReducer } from './app.reducer';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireModule } from '@angular/fire';
+import { CalendarHeaderComponent } from './components/calendar-header/calendar-header.component';
+import { AppEffects } from './app.effects';
+import { NewUserComponent } from './login/new-user/new-user.component';
+import { RedirectComponent } from './login/redirect/redirect.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +29,10 @@ import { AngularFireModule } from '@angular/fire';
     LayoutComponent,
     LoginComponent,
     AddProductTypeComponent,
-    HomeComponent
+    HomeComponent,
+    CalendarHeaderComponent,
+    NewUserComponent,
+    RedirectComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,7 +49,7 @@ import { AngularFireModule } from '@angular/fire';
         strictActionSerializability: true
       }
     }),
-    EffectsModule.forRoot([]),
+    EffectsModule.forRoot([AppEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ],
   providers: [],

@@ -1,0 +1,107 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <h1>Reserve a Space</h1>
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content *ngIf="submissionMode$ | async as mode" style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;" >
+    <div style="display: flex;">
+      <div style="flex-basis: 50%; display: flex; justify-content: center; align-items: center;" class="test">
+        IMG
+      </div>
+      <div style="flex-basis: 50%; display: flex; flex-direction: column; align-items: center; padding: 2em">
+        <h1>{{inputProduct.name}}</h1>
+        <p>{{inputProduct.description}}</p>
+      </div>
+    </div>
+
+    <mat-horizontal-stepper style="width: 75%" (selectionChange)="onModeSelected($event)" [selectedIndex]="mode == 'single' ? 0 : 1">
+      <!-- Icon overrides. -->
+      <ng-template matStepperIcon="single">
+        <mat-icon>bookmark</mat-icon>
+      </ng-template>
+      <ng-template matStepperIcon="multi">
+        <mat-icon>bookmarks</mat-icon>
+      </ng-template>
+
+
+      <mat-step label="Single Day" state="single">
+        <form [formGroup]="singleDayForm" style="display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: center;">
+            <mat-form-field appearance="outline">
+              <mat-label>Select Your Reservation Day</mat-label>
+              <input name="startDay" matInput [matDatepicker]="picker" formControlName="day">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker [calendarHeaderComponent]="datePickerHeader"></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div style="display: flex; justify-content: space-around;">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Time</mat-label>
+              <mat-select formControlName="startHour" (selectionChange)="setEndTimes($event)">
+                <mat-option *ngFor="let time of startTimes" [value]="time.value">{{time.label}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>End Time</mat-label>
+              <mat-select formControlName="endHour">
+                <mat-option *ngFor="let time of endTimes" [value]="time.value">{{time.label}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step label="Multi Day" state="multi">
+        <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
+          <mat-form-field appearance="outline">
+            <mat-label>Select Your Reservation Dates</mat-label>
+            <mat-date-range-input [formGroup]="multiDayForm" [rangePicker]="startPicker">
+              <input matStartDate formControlName="startDay" placeholder="Start date">
+              <input matEndDate formControlName="endDay" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #startPicker [calendarHeaderComponent]="datePickerHeader"></mat-date-range-picker>
+
+            <mat-error *ngIf="multiDayForm.controls.startDay.hasError('matStartDateInvalid')">Invalid start date
+            </mat-error>
+            <mat-error *ngIf="multiDayForm.controls.endDay.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+          </mat-form-field>
+        </form>
+      </mat-step>
+    </mat-horizontal-stepper>
+
+
+    <mat-accordion style="width: 100%;">
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header style="display: flex; justify-content: space-between; align-items: center;">
+          <mat-panel-title>
+            Cost Summary
+          </mat-panel-title>
+          <h1>
+            Total: {{ total$ | async | currency }}
+          </h1>
+        </mat-expansion-panel-header>
+        <div>
+          <p>{{ time$ | async}} {{mode=='single' ? 'hours' : 'days'}} at
+            {{(mode=='single' ? inputProduct.hour : inputProduct.day) | currency}}/{{mode == 'single' ? 'hours' : 'days'}}...
+            {{subtotal$ | async | currency}}</p>
+          <p>{{ feePercent * 100}}% Service Fee... {{ fees$ | async | currency}}</p>
+          <p>Taxes... {{ taxes$ | async | currency}}</p>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-card-content>
+
+
+
+  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+    <div>
+      <button mat-flat-button color="primary" (click)="onContinue()">Continue</button>
+      <!-- <button mat-flat-button color="warn" (click)="onCancel()">Cancel</button> -->
+    </div>
+  </mat-card-actions>
+</mat-card>

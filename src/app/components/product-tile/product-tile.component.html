@@ -1,0 +1,41 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>{{product.name}}</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content style="display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between;">
+      <div class="test"
+        style="min-width: 100px; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center;">
+        IMG
+      </div>
+
+      <div style="padding: 1em">
+        <p>{{product.description}}</p>
+      </div>
+
+      <div *ngIf="editable">
+        <button mat-flat-button color="warn" (click)="onEdit()">Edit</button>
+        <button mat-flat-button color="accent" (click)="onRemove()">Remove</button>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between;">
+      <ul>
+        <li *ngFor="let tf of timeframes">{{tf.label}}: {{product[tf.value]}}</li>
+      </ul>
+
+      <div *ngIf="!editable">
+        <button mat-flat-button color="primary" (click)="onReserve()">
+          <mat-icon>book_online</mat-icon>
+          Reserve
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-footer *ngIf="editable">
+    Date Created: {{product.dateCreated | date : 'short'}}
+  </mat-card-footer>
+</mat-card>

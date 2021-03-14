@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ShopProductComponent } from './shop-product/shop-product.component';
-import { ProductTileComponent } from './shop-product/product-tile/product-tile.component';
 import { RouterModule, Routes } from '@angular/router';
+import { SharedModule } from '../shared/shared.module';
+import { ShoppingEffects } from './shopping.effects';
+import { shoppingReducer } from './shopping.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { AddReservationComponent } from './add-reservation/add-reservation.component';
 
 const routes: Routes = [
   {
@@ -12,10 +17,13 @@ const routes: Routes = [
 ]
 
 @NgModule({
-  declarations: [ShopProductComponent, ProductTileComponent],
+  declarations: [ShopProductComponent, AddReservationComponent],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes)
+    SharedModule,
+    RouterModule.forChild(routes),
+    StoreModule.forFeature('shopping', shoppingReducer),
+    EffectsModule.forFeature([ShoppingEffects])
   ]
 })
 export class ShoppingModule { }

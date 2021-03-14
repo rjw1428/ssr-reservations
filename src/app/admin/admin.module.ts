@@ -8,6 +8,7 @@ import { StoreModule } from '@ngrx/store';
 import { adminReducer } from './admin.reducer';
 import { AdminEffects } from './admin.effects';
 import { ProductTypeListComponent } from './product-type-list/product-type-list.component';
+import { SharedModule } from '../shared/shared.module';
 
 const routes: Routes = [
   {
@@ -16,8 +17,8 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'add-product',
-    component: AddProductTypeComponent,
+    path: 'product-list',
+    component: ProductTypeListComponent,
   },
 ]
 
@@ -25,6 +26,7 @@ const routes: Routes = [
   declarations: [SummaryComponent, ProductTypeListComponent],
   imports: [
     CommonModule,
+    SharedModule,
     RouterModule.forChild(routes),
     StoreModule.forFeature('admin', adminReducer),
     EffectsModule.forFeature([AdminEffects])

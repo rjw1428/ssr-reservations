@@ -25,12 +25,12 @@ export class AppComponent implements OnInit {
     //   .catch(err => {
     //     console.log(err.message)
     //   })
-    const signIn = this.firebaseAuth.signInWithEmailAndPassword(environment.email, environment.password)
-    signIn
-      .then(resp => {
-        // console.log(resp)
-        this.router.navigate(['/'])
-      })
-      .catch(err => console.log(err.message))
+    // const signIn = this.firebaseAuth.signInWithEmailAndPassword(environment.email, environment.password)
+    // signIn
+    //   .then(resp => {
+    //     console.log(resp)
+    //     // this.router.navigate(['/'])
+    //   })
+    //   .catch(err => console.log(err.message))
   }
 }

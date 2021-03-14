@@ -28,6 +28,7 @@
         <mat-error *ngIf="productForm.invalid">Must input a number greater than 0</mat-error>
       </mat-form-field>
 
+      <mat-card-title>Cost Breakdown</mat-card-title>
       <section *ngFor="let timeframe of availableTimeframes; let i=index">
         <div style="display: flex; align-items: center;">
           <p style="width: 150px;">{{timeframe.label}}:</p>
@@ -41,7 +42,8 @@
     </form>
   </mat-card-content>
 
-  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+  <mat-card-actions style="display: flex;justify-content: center;">
     <button mat-flat-button color="primary" [disabled]="productForm.invalid" (click)="onSave()">Save</button>
+    <button mat-flat-button color="warn" (click)="onCancel()">Cancel</button>
   </mat-card-actions>
 </mat-card>

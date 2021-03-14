@@ -1,1 +1,14 @@
-<p>product-type-list works!</p>
+<mat-card>
+  <mat-card-header style="display: flex; justify-content: space-between;">
+    <mat-card-title>Product List</mat-card-title>
+    <div>
+      <button mat-flat-button color="primary" (click)="onAdd()">Add</button>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div style="margin-bottom: 1em;" *ngFor="let productType of productTypes$ | async">
+      <app-product-tile [product]="productType" [editable]="true">
+      </app-product-tile>
+    </div>
+  </mat-card-content>
+</mat-card>

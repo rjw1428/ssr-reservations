@@ -1,5 +1,5 @@
 export interface Reservation {
-    id: string;
+    id?: string;
     userId: string;
     spaceId: string;
     startTime: number;          //epoch

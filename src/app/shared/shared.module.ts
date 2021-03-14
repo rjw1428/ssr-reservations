@@ -10,9 +10,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { AngularFirestoreModule } from '@angular/fire/firestore'
+import { ProductTileComponent } from '../components/product-tile/product-tile.component';
+import { MatDialogModule } from '@angular/material/dialog';
+// import { MatRadioModule } from '@angular/material/radio';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 @NgModule({
-  declarations: [],
+
+  declarations: [ProductTileComponent],
   imports: [
     CommonModule,
     MatCardModule,
@@ -24,6 +31,12 @@ import { AngularFirestoreModule } from '@angular/fire/firestore'
     MatListModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
+    // MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatStepperModule,
+    MatExpansionModule,
     ReactiveFormsModule,
   ],
   exports: [
@@ -36,7 +49,18 @@ import { AngularFirestoreModule } from '@angular/fire/firestore'
     MatListModule,
     MatInputModule,
     MatSelectModule,
+    MatDialogModule,
+    // MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatStepperModule,
+    MatExpansionModule,
     ReactiveFormsModule,
+
+    ProductTileComponent
+  ],
+  providers: [
+    MatDatepickerModule
   ]
 })
 export class SharedModule { }

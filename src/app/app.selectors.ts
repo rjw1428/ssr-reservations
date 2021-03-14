@@ -7,3 +7,13 @@ export const loadingSelector = createSelector(
     selectAppState,
     app => app.isLoading
 )
+
+export const logginInSelector = createSelector(
+    selectAppState,
+    app => app.isLoggingIn
+)
+
+export const userSelector = createSelector(
+    selectAppState,
+    app => app.uid
+)
