@@ -21,8 +21,8 @@ import { AngularFireModule } from '@angular/fire';
 import { CalendarHeaderComponent } from './components/calendar-header/calendar-header.component';
 import { AppEffects } from './app.effects';
 import { NewUserComponent } from './login/new-user/new-user.component';
-import { RedirectComponent } from './login/redirect/redirect.component';
-
+import { GenericPopupComponent } from './components/generic-popup/generic-popup.component';
+import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,7 +32,8 @@ import { RedirectComponent } from './login/redirect/redirect.component';
     HomeComponent,
     CalendarHeaderComponent,
     NewUserComponent,
-    RedirectComponent,
+    GenericPopupComponent,
+    ForgotPasswordComponent,
   ],
   imports: [
     BrowserModule,

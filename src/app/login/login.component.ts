@@ -4,8 +4,9 @@ import { Store } from '@ngrx/store';
 import { AppActions } from '../app.action-types';
 import { logginInSelector } from '../app.selectors';
 import { AppState } from '../models/app-state';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { skip, first, filter } from 'rxjs/operators';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -16,7 +17,8 @@ export class LoginComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<LoginComponent>,
     private store: Store<AppState>,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -41,6 +43,11 @@ export class LoginComponent implements OnInit {
       if (!isStillSaving)
         this.dialogRef.close()
     })
+  }
+
+  onForgotPassword(event) {
+    this.dialog.open(ForgotPasswordComponent, {width: '300px', data: this.login.get('username').value})
+    this.dialogRef.close()
   }
 
 }

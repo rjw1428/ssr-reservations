@@ -1,10 +1,14 @@
 <mat-toolbar color="primary" class="title-bar">
-  <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+  <button type=" button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
     *ngIf="isHandset$ | async">
     <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
   </button>
   <span>Title</span>
-  <span (click)="onLogIn()">Login</span>
+  <span *ngIf="!(user$ | async)" (click)="onLogIn()">Login</span>
+  <span *ngIf="(user$ | async) as user" mat-button [matMenuTriggerFor]="menu" >{{user.firstName}} {{user.lastName}}</span>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onLogOut()">Log Out</button>
+  </mat-menu>
 </mat-toolbar>
 
 <div class="content-container">
@@ -14,12 +18,15 @@
       [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
       <mat-toolbar>User</mat-toolbar>
       <mat-nav-list>
-        <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Home</a>
+        <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"routerLinkActive="router-link-active">Home</a>
         <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Find A Space</a>
+        <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/current" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Current Reservations</a>
+        <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/historic" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Historic Reservations</a>
       </mat-nav-list>
       <mat-toolbar>Admin</mat-toolbar>
       <mat-nav-list>
-        <a mat-list-item routerLink="admin"  [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Admin Summary</a>
+        <a mat-list-item routerLink="admin" [routerLinkActiveOptions]="{ exact: true }"
+          routerLinkActive="router-link-active">Admin Summary</a>
         <a mat-list-item [routerLink]="['admin','product-list']" routerLinkActive="router-link-active">Product List</a>
       </mat-nav-list>
     </mat-sidenav>

@@ -1,6 +1,7 @@
 export interface User {
     id?: string;             //uid from firebase
-    name: string;
+    firstName: string;
+    lastName: string;
     email: string;
     role: 'admin' | 'users'
     dateCreated: number;     //epoch

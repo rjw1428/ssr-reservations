@@ -6,6 +6,7 @@ import { MatStep } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { combineLatest, iif, Observable, of, Subscription, zip } from 'rxjs';
 import { filter, first, map, mergeMap, shareReplay, skip, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { userSelector } from 'src/app/app.selectors';
 import { CalendarHeaderComponent } from 'src/app/components/calendar-header/calendar-header.component';
 import { AdminState } from 'src/app/models/admin-state';
 import { Product } from 'src/app/models/product';
@@ -151,17 +152,22 @@ export class AddReservationComponent implements OnInit, OnDestroy {
           return { startTime: startDay.getTime(), endTime: endDay.getTime(), cost }
         }
       }),
-      map(({ startTime, endTime, cost }) => {
-        const reservation: Reservation = {
-          userId: 'test123',
-          spaceId: this.inputProduct.id,
-          startTime,
-          endTime,
-          createdTime: new Date().getTime(),
-          lastModifiedTime: new Date().getTime(),
-          cost
-        }
-        return reservation
+      switchMap(({ startTime, endTime, cost }) => {
+        return this.store.select(userSelector).pipe(
+          first(),
+          map(user => {
+            const reservation: Reservation = {
+              userId: user.id,
+              spaceId: this.inputProduct.id,
+              startTime,
+              endTime,
+              createdTime: new Date().getTime(),
+              lastModifiedTime: new Date().getTime(),
+              cost
+            }
+            return reservation
+          })
+        )
       })
     ).subscribe(
       reservation => this.store.dispatch(ShoppingActions.saveReservation({ reservation })),

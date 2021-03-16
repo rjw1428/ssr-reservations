@@ -15,5 +15,5 @@ export const logginInSelector = createSelector(
 
 export const userSelector = createSelector(
     selectAppState,
-    app => app.uid
+    app => app.user
 )

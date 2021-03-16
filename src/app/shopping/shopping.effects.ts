@@ -31,7 +31,7 @@ export class ShoppingEffects {
     saveProducts$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.saveReservation),
-            switchMap(({ reservation }) => this.db.database.ref(`users/${reservation.userId}/reservations`).push(reservation)),
+            switchMap(({ reservation }) => this.db.database.ref(`reservations/${reservation.userId}`).push(reservation)),
             flatMap((resp) => {
                 console.log(resp)
                 return resp

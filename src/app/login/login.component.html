@@ -22,7 +22,7 @@
 
   <mat-card-actions style="display: flex; flex-direction: column; padding: 0">
     <div style="display: flex; justify-content: space-around; margin-bottom: 1em;">
-      <span><a>Forgot Password</a></span>
+      <span><a [routerLink]="" (click)="onForgotPassword($event)">Forgot Password</a></span>
       <span><a routerLink="newuser" mat-dialog-close>New User</a></span>
     </div>
     <div style="display: flex; justify-content: center;">

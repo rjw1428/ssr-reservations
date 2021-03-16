@@ -5,7 +5,7 @@ import { AppState } from "./models/app-state";
 export const initialAppState: AppState = {
     isLoading: false,
     isLoggingIn: false,
-    uid: null
+    user: null
 }
 
 const _appReducer = createReducer(
@@ -13,7 +13,8 @@ const _appReducer = createReducer(
     on(AppActions.startLoading, (state) => ({ ...state, isLoading: true })),
     on(AppActions.stopLoading, (state) => ({ ...state, isLoading: false })),
     on(AppActions.login, (state) => ({ ...state, isLoggingIn: true })),
-    on(AppActions.loginSuccess, (state, action) => ({ ...state, isLoggingIn: false, uid: action.uid })),
+    on(AppActions.loginSuccess, (state, action) => ({ ...state, isLoggingIn: false, user: action.user })),
+    on(AppActions.logOut, (state)=>({...state, user: initialAppState.user}))
 )
 
 export function appReducer(state, action) {

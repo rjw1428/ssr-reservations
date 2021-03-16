@@ -1,1 +1,38 @@
-<p>reservation works!</p>
+<!-- <div>{{reservation | json}}</div> -->
+
+<mat-expansion-panel (afterExpand)="onExpand()">
+  <mat-expansion-panel-header
+    style=" display: flex; justify-content: space-between; align-items: center; padding: .5em 2em;">
+    <mat-panel-title style="display: flex; align-items: center; justify-content: space-around;">
+      <h4 style="margin: 0">Start: {{reservation.startTime | date : 'short'}}</h4>
+      <h4 style="margin: 0">End: {{reservation.endTime | date : 'short'}}</h4>
+    </mat-panel-title>
+    <mat-panel-description style="display: flex; justify-content: space-between;">
+      <div style="display: flex; align-items: center;">
+        Reservation ID: {{reservation.id}}
+      </div>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <ng-container *ngIf="product$ | async as product"
+    style="display: flex; flex-direction: column; justify-content: center;">
+    <div>
+      <h2 style="margin: 0">
+        Start: {{reservation.startTime | date : 'short'}}
+        - End: {{reservation.endTime | date : 'short'}}
+      </h2>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+      <app-product-tile style="flex-basis: 75%;" [product]="product" [infoOnly]="true"></app-product-tile>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <h3 style="flex-basis: 25%;">Cost: {{ reservation.cost| currency }}</h3>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+      <p>Date Created: {{ reservation.createdTime | date : 'MM/dd/yy' }}</p>
+      <div *ngIf="!isHistoric">
+        <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
+        <button mat-flat-button color="accent" (click)="onRemove()">Cancel</button>
+      </div>
+    </div>
+  </ng-container>
+</mat-expansion-panel>

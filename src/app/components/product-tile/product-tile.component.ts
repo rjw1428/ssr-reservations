@@ -16,6 +16,7 @@ import { TIMEFRAMES } from 'src/app/utility/constants';
 export class ProductTileComponent implements OnInit {
   @Input() product: Product
   @Input() editable: boolean = false
+  @Input() infoOnly: boolean = false
   timeframes: { value: string, label: string }[] = TIMEFRAMES
   constructor(
     private store: Store<AppState>,

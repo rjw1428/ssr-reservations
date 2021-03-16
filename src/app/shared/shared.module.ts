@@ -17,10 +17,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
 @NgModule({
 
   declarations: [ProductTileComponent],
   imports: [
+    MatMenuModule,
     CommonModule,
     MatCardModule,
     LayoutModule,
@@ -40,6 +42,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     ReactiveFormsModule,
   ],
   exports: [
+    MatMenuModule,
     MatCardModule,
     LayoutModule,
     MatToolbarModule,

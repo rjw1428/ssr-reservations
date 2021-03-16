@@ -13,9 +13,22 @@ export const login = createAction(
     props<{ username: string, password: string }>()
 )
 
+export const checkUserPersistance = createAction(
+    '[App Component] Check for persistant sser', 
+)
+
+export const getUserAccount = createAction(
+    '[App Effect] Get User Account Info',
+    props<{ uid: string }>()
+)
+
 export const loginSuccess = createAction(
     '[App Effect] Login response success',
-    props<{ uid: string }>()
+    props<{ user: User }>()
+)
+
+export const logOut = createAction(
+    '[Layout Component] Logout'
 )
 
 export const createUser = createAction(
@@ -25,4 +38,12 @@ export const createUser = createAction(
 
 export const newUserCreated = createAction(
     '[App Effect] User Created & Stored'
+)
+export const resetPassword = createAction(
+    '[Forgot Password Component] User Requests Password Reset',
+    props<{ email: string }>()
+)
+
+export const noAction = createAction(
+    '[App Effect] SKIP ACTION'
 )

@@ -21,12 +21,12 @@
       </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between;" *ngIf="!infoOnly">
       <ul>
         <li *ngFor="let tf of timeframes">{{tf.label}}: {{product[tf.value]}}</li>
       </ul>
 
-      <div *ngIf="!editable">
+      <div *ngIf="!editable && !infoOnly">
         <button mat-flat-button color="primary" (click)="onReserve()">
           <mat-icon>book_online</mat-icon>
           Reserve
