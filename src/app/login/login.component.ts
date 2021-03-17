@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppActions } from '../app.action-types';
@@ -20,6 +20,12 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     public dialog: MatDialog
   ) { }
+
+  @HostListener('document:keypress', ['$event'])
+  onKeypressHandler(event: KeyboardEvent) {
+    if (event.code == 'Enter')
+      this.onSubmit()
+  }
 
   ngOnInit(): void {
     this.login = this.formBuilder.group({
@@ -46,7 +52,7 @@ export class LoginComponent implements OnInit {
   }
 
   onForgotPassword(event) {
-    this.dialog.open(ForgotPasswordComponent, {width: '300px', data: this.login.get('username').value})
+    this.dialog.open(ForgotPasswordComponent, { width: '300px', data: this.login.get('username').value })
     this.dialogRef.close()
   }
 

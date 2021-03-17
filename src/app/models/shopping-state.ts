@@ -1,7 +1,8 @@
 import { Product } from "./product";
+import { Space } from "./space";
 
 export interface ShoppingState {
-    products: { [id: string]: Product }
     reservationSubmissionMode: string
-    isSaving: boolean
+    isSaving: boolean,
+    availableSpaces: Space[]
 }

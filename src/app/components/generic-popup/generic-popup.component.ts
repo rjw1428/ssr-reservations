@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-redirect',
@@ -9,7 +9,8 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class GenericPopupComponent implements OnInit, AfterViewInit {
   @ViewChild('content') contentRef: ElementRef
   constructor(
-    @Inject(MAT_DIALOG_DATA) public input: { title: string, content: string },
+    private dialogRef: MatDialogRef<GenericPopupComponent>,
+    @Inject(MAT_DIALOG_DATA) public input: { title: string, content: string, action?: () => any },
   ) { }
 
   ngOnInit(): void {
@@ -20,4 +21,7 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
     this.contentRef.nativeElement.innerHTML = this.input.content
   }
 
+  triggerAction() {
+    this.dialogRef.close(this.input.action())
+  }
 }

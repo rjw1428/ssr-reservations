@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { noop, Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
+import { cachedProductListSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { ShoppingActions } from '../shopping.action-types';
-import { productTypesSelector } from '../shopping.selectors';
 
 @Component({
   selector: 'app-shop-product',
@@ -21,7 +22,7 @@ export class ShopProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(ShoppingActions.getPoductList())
-    this.productTypes$ = this.store.select(productTypesSelector)
+    this.productTypes$ = this.store.select(cachedProductListSelector)
   }
 
 }

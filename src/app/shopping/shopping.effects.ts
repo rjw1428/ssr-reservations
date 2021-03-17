@@ -3,43 +3,74 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { from, of } from "rxjs";
-import { flatMap, map, mergeMap, switchMap } from "rxjs/operators";
+import { first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
 import { Product } from "../models/product";
 import { ShoppingActions } from "./shopping.action-types";
 import { AngularFireDatabase } from '@angular/fire/database'
-
+import { UserAccountActions } from "../user/user.action-types";
+import { Space } from "../models/space";
+import { getUsedTimes, MINIMUM_TIME_SLOT } from "../utility/constants";
+import * as firebase from 'firebase/app';
 @Injectable()
 export class ShoppingEffects {
 
     getProducts$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.getPoductList),
-            switchMap(() => this.afs.collection('products').snapshotChanges()),
-            map((docs: DocumentChangeAction<Product>[]) => {
-                return docs
-                    .reduce((obj, doc) => {
-                        const id = doc.payload.doc.id
-                        const data = { id, ...doc.payload.doc.data() }
-                        return { ...obj, [id]: data }
-                    }, {})
-            }),
-            map(products => ShoppingActions.storePoductList({ products }))
+            switchMap(() => this.afs.collection('products').valueChanges()),
+            map((products: Product[]) =>
+                products.reduce((obj, product) => ({ ...obj, [product.id]: product }), {})
+            ),
+            map((products: { [productId: string]: Product }) =>
+                AppActions.storeProductsList({ products })
+            )
         )
     )
 
-    saveProducts$ = createEffect(() =>
+    saveReservation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.saveReservation),
-            switchMap(({ reservation }) => this.db.database.ref(`reservations/${reservation.userId}`).push(reservation)),
-            flatMap((resp) => {
-                console.log(resp)
-                return resp
-                    ? [
-                        AppActions.stopLoading(),
-                        ShoppingActions.saveReservationComplete()
-                    ]
-                    : [AppActions.stopLoading()]
+            switchMap(async ({ reservation, productId }) => {
+                const usedTimes = getUsedTimes(reservation.startTime, reservation.endTime)
+                const resp = await this.db.database.ref(`reservations/${reservation.userId}`).push(reservation)
+                const payload = usedTimes
+                    .map(time => ({
+                        [time]: {
+                            user: reservation.userId,
+                            reservation: resp.key
+                        }
+                    }))
+                    .reduce((acc, cur) => ({ ...acc, ...cur }))
+                return this.db.database.ref(`spaces/${productId}/${reservation.spaceId}/reserved`).update(payload)
+            }),
+            map((resp) => ShoppingActions.saveReservationComplete()),
+            tap(() => AppActions.stopLoading())
+        )
+    )
+
+    queryAvailability$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ShoppingActions.queryAvailability),
+            switchMap(({ startTime, endTime, productId }) => this.db.list(`spaces/${productId}`).snapshotChanges().pipe(
+                first(),
+                map(resp => {
+                    const spaces = resp.map(space => {
+                        const data = space.payload.val() as Space
+                        return { id: space.key, ...data }
+                    })
+                    return ({ spaces, startTime, endTime })
+                })
+            )),
+            map((resp: { spaces: Space[], startTime: number, endTime: number }) => {
+                const filteredSpaces = resp.spaces.filter(space => {
+                    if (!space.reserved) return true
+                    const requestedTimes = getUsedTimes(resp.startTime, resp.endTime)
+                    const bookedTimes = Object.keys(space.reserved).map(time => +time)
+                    const overlap = requestedTimes.reduce((overlap, time) => overlap + +bookedTimes.includes(time), 0)
+                    return overlap < 1
+                })
+                return ShoppingActions.saveAvailableSpaces({ spaces: filteredSpaces })
             })
         )
     )

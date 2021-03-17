@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { AdminSummary } from "../models/admin-summary";
 import { Product } from "../models/product";
 
 
@@ -30,3 +31,11 @@ export const saveProductComplete = createAction(
     "[Add Product Type Component] Save confirmed",
 )
 
+export const getAdminSummary = createAction(
+    '[Summary Component] Fetch admin summary'
+)
+
+export const storeAdminSummary = createAction(
+    '[Summary Component] Store admin summary',
+    props<{ summary: AdminSummary }>()
+)

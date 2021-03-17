@@ -5,7 +5,8 @@
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content *ngIf="submissionMode$ | async as mode" style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;" >
+  <mat-card-content *ngIf="submissionMode$ | async as mode"
+    style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;">
     <div style="display: flex;">
       <div style="flex-basis: 50%; display: flex; justify-content: center; align-items: center;" class="test">
         IMG
@@ -16,17 +17,27 @@
       </div>
     </div>
 
-    <mat-horizontal-stepper style="width: 75%" (selectionChange)="onModeSelected($event)" [selectedIndex]="mode == 'single' ? 0 : 1">
+    <div style="align-self: flex-start; padding: 1em 0;">
+      <!-- <h1 style="margin: 0 16px;">Select Your Plan:</h1> -->
+      <mat-form-field appearance="outline">
+        <mat-label>Select Your Plan</mat-label>
+        <mat-select [value]="'single'">
+          <mat-option [value]="'single'">Single Day</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <mat-horizontal-stepper style="width: 75%" linear>
       <!-- Icon overrides. -->
-      <ng-template matStepperIcon="single">
+      <!-- <ng-template matStepperIcon="single">
         <mat-icon>bookmark</mat-icon>
       </ng-template>
       <ng-template matStepperIcon="multi">
         <mat-icon>bookmarks</mat-icon>
-      </ng-template>
+      </ng-template> -->
 
 
-      <mat-step label="Single Day" state="single">
+      <mat-step label="Select Timeframe" state="single">
         <form [formGroup]="singleDayForm" style="display: flex; flex-direction: column;">
           <div style="display: flex; justify-content: center;">
             <mat-form-field appearance="outline">
@@ -53,10 +64,28 @@
             </mat-form-field>
           </div>
         </form>
+        <div style="display: flex; justify-content: center;">
+          <button mat-button matStepperNext [disabled]="singleDayForm.invalid"
+            (click)="queryAvailability()">Next</button>
+        </div>
       </mat-step>
 
-      <mat-step label="Multi Day" state="multi">
-        <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
+      <mat-step label="Availability" state="availability">
+        <form [formGroup]="selectSpaceForm">
+          <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide">
+            <mat-label>Select an available {{inputProduct.name | lowercase}}</mat-label>
+            <mat-select formControlName="space" style="min-width: 100%">
+              <mat-option *ngFor="let space of availableSpaces$ | async" [value]="space.id">{{space.id}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div style="display: flex; justify-content: center;">
+            <button mat-button matStepperPrevious>Previous</button>
+            <button mat-button matStepperNext [disabled]="selectSpaceForm.invalid"
+              (click)="createTempReservation()">Next</button>
+          </div>
+        </form>
+
+        <!-- <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
           <mat-form-field appearance="outline">
             <mat-label>Select Your Reservation Dates</mat-label>
             <mat-date-range-input [formGroup]="multiDayForm" [rangePicker]="startPicker">
@@ -70,7 +99,36 @@
             </mat-error>
             <mat-error *ngIf="multiDayForm.controls.endDay.hasError('matEndDateInvalid')">Invalid end date</mat-error>
           </mat-form-field>
-        </form>
+        </form> -->
+      </mat-step>
+
+      <mat-step label="Payment" state="confirm">
+        <div *ngIf="reservation$ | async as reservation">
+          <h1>Reservation Summary</h1>
+          <p>{{reservation.startTime | date : 'short'}}</p>
+          <p>{{reservation.endTime | date : 'short'}}</p>
+          <p>By clicking 'Complete Reservation' you will be charged this amount and your reservation will be booked.</p>
+          <div style="display: flex; justify-content: center;">
+            <button mat-button matStepperPrevious>Previous</button>
+            <button mat-button matStepperNext (click)="processPayment(reservation)">Complete Reservation</button>
+          </div>
+        </div>
+
+        <!-- <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
+          <mat-form-field appearance="outline">
+            <mat-label>Select Your Reservation Dates</mat-label>
+            <mat-date-range-input [formGroup]="multiDayForm" [rangePicker]="startPicker">
+              <input matStartDate formControlName="startDay" placeholder="Start date">
+              <input matEndDate formControlName="endDay" placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #startPicker [calendarHeaderComponent]="datePickerHeader"></mat-date-range-picker>
+
+            <mat-error *ngIf="multiDayForm.controls.startDay.hasError('matStartDateInvalid')">Invalid start date
+            </mat-error>
+            <mat-error *ngIf="multiDayForm.controls.endDay.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+          </mat-form-field>
+        </form> -->
       </mat-step>
     </mat-horizontal-stepper>
 
@@ -98,10 +156,10 @@
 
 
 
-  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+  <!-- <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
     <div>
+      <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
       <button mat-flat-button color="primary" (click)="onContinue()">Continue</button>
-      <!-- <button mat-flat-button color="warn" (click)="onCancel()">Cancel</button> -->
     </div>
-  </mat-card-actions>
+  </mat-card-actions> -->
 </mat-card>

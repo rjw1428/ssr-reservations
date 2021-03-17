@@ -14,3 +14,8 @@ export const productTypeSubmissionSuccessSelector = createSelector(
     selectAdminState,
     admin => admin.isSaving
 )
+
+export const adminSummarySelector = createSelector(
+    selectAdminState,
+    admin => admin.summary
+)

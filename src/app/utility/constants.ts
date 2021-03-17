@@ -1,3 +1,23 @@
+export const MINIMUM_TIME_SLOT = 1000 * 60 * 60
+
+
+export function getUsedTimes(startTime: number, endTime: number): number[] {
+    let usedTimes = []
+    let x = startTime
+    do {
+        usedTimes.push(x)
+        x += MINIMUM_TIME_SLOT
+    }
+    while (x < endTime)
+    return usedTimes
+}
+
+export function padLeadingZeros(number: number, size: number): string {
+    let s = number.toString()
+    while (s.length < size) s = "0" + s
+    return s
+}
+
 export const TIMEFRAMES = [{
     value: 'hour',
     label: 'By The Hour'

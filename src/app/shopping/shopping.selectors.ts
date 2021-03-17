@@ -3,12 +3,12 @@ import { ShoppingState } from "../models/shopping-state";
 
 export const selectShoppingState = createFeatureSelector<ShoppingState>("shopping")
 
-export const productTypesSelector = createSelector(
-    selectShoppingState,
-    shopping => shopping.products
-        ? Object.values(shopping.products)
-        : []
-)
+// export const productTypesSelector = createSelector(
+//     selectShoppingState,
+//     shopping => shopping.products
+//         ? Object.values(shopping.products)
+//         : []
+// )
 
 export const reservationModeSelector = createSelector(
     selectShoppingState,
@@ -18,4 +18,9 @@ export const reservationModeSelector = createSelector(
 export const reservationSubmissionSuccessSelector = createSelector(
     selectShoppingState,
     shopping => shopping.isSaving
+)
+
+export const availableSpacesSelector = createSelector(
+    selectShoppingState,
+    shopping => shopping.availableSpaces
 )

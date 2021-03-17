@@ -5,7 +5,8 @@ import { AppState } from "./models/app-state";
 export const initialAppState: AppState = {
     isLoading: false,
     isLoggingIn: false,
-    user: null
+    user: null,
+    storedProducts: null
 }
 
 const _appReducer = createReducer(
@@ -14,7 +15,21 @@ const _appReducer = createReducer(
     on(AppActions.stopLoading, (state) => ({ ...state, isLoading: false })),
     on(AppActions.login, (state) => ({ ...state, isLoggingIn: true })),
     on(AppActions.loginSuccess, (state, action) => ({ ...state, isLoggingIn: false, user: action.user })),
-    on(AppActions.logOut, (state)=>({...state, user: initialAppState.user}))
+    on(AppActions.logOut, (state) => ({ ...state, user: initialAppState.user })),
+    on(AppActions.storeProducts, (state, action) => {
+        return {
+            ...state,
+            storedProducts: state.storedProducts
+                ? { ...state.storedProducts, [action.product.id]: action.product }
+                : { [action.product.id]: action.product }
+        }
+    }),
+    on(AppActions.storeProductsList, (state, action) => {
+        return {
+            ...state,
+            storedProducts: action.products
+        }
+    })
 )
 
 export function appReducer(state, action) {

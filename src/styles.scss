@@ -13,3 +13,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-expansion-panel-header {
     height: auto !important;
 }
+
+// USED IN RESERVATION AVAILABILITY MAT-SELECT ELEMET
+.extra-wide .mat-form-field-wrapper {
+    width: 100%;
+}

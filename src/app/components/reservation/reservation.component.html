@@ -31,7 +31,7 @@
       <p>Date Created: {{ reservation.createdTime | date : 'MM/dd/yy' }}</p>
       <div *ngIf="!isHistoric">
         <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
-        <button mat-flat-button color="accent" (click)="onRemove()">Cancel</button>
+        <button mat-flat-button color="accent" (click)="onRemove(reservation)">Cancel</button>
       </div>
     </div>
   </ng-container>

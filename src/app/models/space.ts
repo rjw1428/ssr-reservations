@@ -1,6 +1,8 @@
 export interface Space {
-    id: string;
+    id?: string;
+    name: string;
     productId: string;
-    reservedHours: [];
-    reservedDays: [];
+    reserved: number[]
+    reservedHours?: [];
+    reservedDays?: [];
 }

@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { Product } from "./models/product";
 import { User } from "./models/user";
 
 export const startLoading = createAction(
@@ -14,7 +15,7 @@ export const login = createAction(
 )
 
 export const checkUserPersistance = createAction(
-    '[App Component] Check for persistant sser', 
+    '[App Component] Check for persistant sser',
 )
 
 export const getUserAccount = createAction(
@@ -46,4 +47,14 @@ export const resetPassword = createAction(
 
 export const noAction = createAction(
     '[App Effect] SKIP ACTION'
+)
+
+export const storeProducts = createAction(
+    "[User Effect] Store Product Info",
+    props<{ product: Product }>()
+)
+
+export const storeProductsList = createAction(
+    "[Shopping | Admin Effect] Store All Products",
+    props<{ products: { [productId: string]: Product } }>()
 )

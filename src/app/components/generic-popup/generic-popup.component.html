@@ -8,7 +8,8 @@
 
   <mat-card-actions>
     <div style="display: flex; justify-content: center;">
-      <button mat-raised-button color="primary" mat-dialog-close>Close</button>
+      <button mat-raised-button color="warn" mat-dialog-close>Back</button>
+      <button *ngIf="input.action" mat-raised-button color="primary" (click)="triggerAction()">Confirm</button>
     </div>
   </mat-card-actions>
 </mat-card>

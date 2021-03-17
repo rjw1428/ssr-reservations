@@ -18,6 +18,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTableModule } from '@angular/material/table';
 @NgModule({
 
   declarations: [ProductTileComponent],
@@ -39,6 +40,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatNativeDateModule,
     MatStepperModule,
     MatExpansionModule,
+    MatTableModule,
     ReactiveFormsModule,
   ],
   exports: [
@@ -58,6 +60,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatNativeDateModule,
     MatStepperModule,
     MatExpansionModule,
+    MatTableModule,
     ReactiveFormsModule,
 
     ProductTileComponent

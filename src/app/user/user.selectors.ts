@@ -27,12 +27,3 @@ export const userHistoricReservationsSelector = createSelector(
             : []
     }
 )
-
-export const expandedProductSelector = createSelector(
-    selectUserAccountState,
-    (userAccount, id) => {
-        return userAccount.expandedReservationSpaceDetails
-            ? userAccount.expandedReservationSpaceDetails[id]
-            : null
-    }
-)

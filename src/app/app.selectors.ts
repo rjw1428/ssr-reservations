@@ -17,3 +17,21 @@ export const userSelector = createSelector(
     selectAppState,
     app => app.user
 )
+
+export const cachedProductSelector = createSelector(
+    selectAppState,
+    (app, id) => {
+        return app.storedProducts
+            ? app.storedProducts[id]
+            : null
+    }
+)
+
+export const cachedProductListSelector = createSelector(
+    selectAppState,
+    app => {
+        return app.storedProducts
+            ? Object.values(app.storedProducts)
+            : []
+    }
+)

@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { from, of } from "rxjs";
-import { flatMap, map, mergeMap, switchMap } from "rxjs/operators";
+import { first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
 import { Product } from "../models/product";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
@@ -12,6 +12,7 @@ import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
 import { userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
+import { getUsedTimes } from "../utility/constants";
 
 @Injectable()
 export class UserAccountEffects {
@@ -25,6 +26,7 @@ export class UserAccountEffects {
                 return this.db.list(`reservations/${user.id}`).snapshotChanges()
             }),
             map((resp: SnapshotAction<Reservation>[]) => {
+                console.log(resp)
                 if (!resp.length) return UserAccountActions.storeReservations({ reservations: null })
                 const reservations = resp.map(res => ({ ...res.payload.val(), id: res.payload.key }))
                 return UserAccountActions.storeReservations({ reservations })
@@ -35,16 +37,28 @@ export class UserAccountEffects {
     getProductDetails$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.fetchReservationSpaceDetails),
-            switchMap(({ spaceId }) => this.afs.collection('products').doc(spaceId).snapshotChanges().pipe(
-                map(resp => {
-                    const data = resp.payload.data() as Product
-                    return { ...data, id: spaceId }
+            switchMap(({ spaceId }) => this.afs.collection('products').doc(spaceId).valueChanges().pipe(
+                map((resp: Product) => {
+                    return { ...resp, id: spaceId }
                 })
             )),
-            map((product) => UserAccountActions.storeSpaceDetails({ product }))
+            map((product) => AppActions.storeProducts({ product }))
         )
     )
 
+    deleteReservation$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.deleteReservation),
+            switchMap(({ reservation }) => this.store.select(userSelector).pipe(
+                first(),
+                map(user => {
+                    this.db.list(`reservations/${user.id}/${reservation.id}`).remove()
+                    const datesToRemove = getUsedTimes(reservation.startTime, reservation.endTime)
+                    datesToRemove.forEach(time=>this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
+                })
+            ))
+        ), { dispatch: false }
+    )
 
 
     constructor(

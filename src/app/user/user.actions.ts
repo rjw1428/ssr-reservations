@@ -18,9 +18,8 @@ export const fetchReservationSpaceDetails = createAction(
     props<{ spaceId: string }>()
 )
 
-export const storeSpaceDetails = createAction(
-    "[User Effect] Space Details Returned",
-    props<{ product: Product }>()
+export const deleteReservation = createAction(
+    "[Reservation Component] Delete Reservation",
+    props<{ reservation: Reservation }>()
 )
-
 
