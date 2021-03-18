@@ -9,7 +9,8 @@
   <mat-card-actions>
     <div style="display: flex; justify-content: center;">
       <button mat-raised-button color="warn" mat-dialog-close>Back</button>
-      <button *ngIf="input.action" mat-raised-button color="primary" (click)="triggerAction()">Confirm</button>
+      <button *ngIf="input.actionLabel" mat-raised-button color="primary"
+        (click)="triggerAction()">{{input.actionLabel}}</button>
     </div>
   </mat-card-actions>
 </mat-card>

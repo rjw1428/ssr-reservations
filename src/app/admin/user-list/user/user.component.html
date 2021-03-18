@@ -1,0 +1,52 @@
+<mat-expansion-panel (afterExpand)="onExpand(user)">
+  <mat-expansion-panel-header style=" display: flex; align-items: center; padding: .5em 2em;">
+    <mat-panel-title style="display: flex; align-items: center; flex-basis: 40%;">
+      <h4 style="margin: 0">{{ user.firstName }} {{ user.lastName}}</h4>
+    </mat-panel-title>
+    <mat-panel-description style="display: flex; justify-content: space-between; flex-basis: 60%;">
+      <!-- <div style="display: flex; align-items: center;"> -->
+      <p style="margin: 0">{{user.email}}</p>
+      <p style="margin: 0; font-style: italic;">{{user.role | titlecase}}</p>
+      <!-- </div> -->
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <ng-container style="display: flex; flex-direction: column; justify-content: center;">
+    <div style="display: flex; justify-content: space-between;">
+      <div style="display: flex; flex-direction: column;">
+        <h3>Member Since: {{ user.dateCreated | date : 'MM/dd/yy'}}</h3>
+        <h3>Last Log In: {{ user.lastLogIn | date : 'MM/dd/yy - hh:mm a'}}</h3>
+      </div>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <h3>Total Revenu: $0.00</h3>
+      </div>
+    </div>
+    <div>
+      <div style="display: flex; justify-content: space-between;">
+        <h2>Last Reservations:</h2>
+      </div>
+      <div *ngIf="getPreviousReservation(user) | async as reservation">
+        <div style="display: flex; justify-content: space-between;">
+          <p style="margin: 0">{{ reservation.startTime | date : 'short'}} - {{ reservation.endTime | date : 'short'}}
+          </p>
+          <p>Reservation ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
+          <p style="font-style: italic;">Created: {{ reservation.createdTime | date : 'short'}}</p>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <h2>Current Reservations:</h2>
+      </div>
+      <div *ngFor="let reservation of getNextReservations(user) | async">
+        <div style="display: flex; justify-content: space-between;">
+          <p style="margin: 0">{{ reservation.startTime | date : 'short'}} - {{ reservation.endTime | date : 'short'}}
+          </p>
+          <p>Reservation ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
+          <p style="font-style: italic;">Created: {{ reservation.createdTime | date : 'short'}}</p>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: flex-end">
+      <button mat-flat-button color="warn" *ngIf="user.role === 'user'" (click)="onPromote()">Promote To Admin</button>
+      <button mat-flat-button color="accent" *ngIf="user.role === 'admin'" (click)="onDemote()">Demote To User</button>
+    </div>
+  </ng-container>
+</mat-expansion-panel>

@@ -16,14 +16,6 @@ const _appReducer = createReducer(
     on(AppActions.login, (state) => ({ ...state, isLoggingIn: true })),
     on(AppActions.loginSuccess, (state, action) => ({ ...state, isLoggingIn: false, user: action.user })),
     on(AppActions.logOut, (state) => ({ ...state, user: initialAppState.user })),
-    on(AppActions.storeProducts, (state, action) => {
-        return {
-            ...state,
-            storedProducts: state.storedProducts
-                ? { ...state.storedProducts, [action.product.id]: action.product }
-                : { [action.product.id]: action.product }
-        }
-    }),
     on(AppActions.storeProductsList, (state, action) => {
         return {
             ...state,

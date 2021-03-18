@@ -9,6 +9,8 @@ import { adminReducer } from './admin.reducer';
 import { AdminEffects } from './admin.effects';
 import { ProductTypeListComponent } from './product-type-list/product-type-list.component';
 import { SharedModule } from '../shared/shared.module';
+import { UserListComponent } from './user-list/user-list.component';
+import { UserComponent } from './user-list/user/user.component';
 
 const routes: Routes = [
   {
@@ -20,10 +22,14 @@ const routes: Routes = [
     path: 'product-list',
     component: ProductTypeListComponent,
   },
+  {
+    path: 'users',
+    component: UserListComponent,
+  },
 ]
 
 @NgModule({
-  declarations: [SummaryComponent, ProductTypeListComponent],
+  declarations: [SummaryComponent, ProductTypeListComponent, UserListComponent, UserComponent],
   imports: [
     CommonModule,
     SharedModule,

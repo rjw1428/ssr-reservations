@@ -4,15 +4,20 @@
   </mat-card-header>
   <mat-card-content *ngIf="adminSummary$ | async as summary">
     <div *ngFor="let product of summary | keyvalue">
-      <h3 style="margin: 0;">Space Type: {{product.key}}</h3>
+      <h1 style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct">Space Type: {{product.name}}</h1>
       <div *ngFor="let space of product.value | keyvalue">
-        <div>Space Name: {{space.key}}</div>
+        <h2 style="margin: 0;">{{space.value.name}}</h2>
         <div *ngIf="space.value.reserved as reservations; else noReservation">
-          <div *ngFor="let reservation of reservations | keyvalue"
-            style="display: flex; justify-content: space-around; align-items: center;">
-            <h3 style="margin: 0;">{{ reservation.key | date : 'short'}}</h3>
-            <p style="margin: 0;">{{reservation.value.user}}</p>
-            <p style="margin: 0;">{{reservation.value.reservation}}</p>
+          <div *ngFor="let reservation of reservations | keyvalue" style="display: flex;  align-items: center;">
+            <h3 style="margin: 0; flex-basis: 20%;">{{ reservation.key | date : 'MM/dd/yy hh:mm a'}}</h3>
+            <div style="flex-basis: 40%; display: flex;"
+              *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
+              <p style="margin: 0; flex-basis: 50%;">{{user.firstName}} {{ user.lastName}}</p>
+              <p style="margin: 0; flex-basis: 50%; font-style: italic;">{{user.email}}</p>
+            </div>
+            <p style="margin: 0; flex-basis: 40%;">Reservation Id: <a [routerLink]=""
+                (click)="onOpenReservation(reservation.value.reservation, product.key, reservation.value.user, space.value.name)">{{reservation.value.reservation}}</a>
+            </p>
           </div>
         </div>
       </div>
@@ -21,31 +26,19 @@
 </mat-card>
 
 <ng-template #noReservation>
-  <div style="display: flex; justify-content: space-around; align-items: center;">
-    <h3 style="margin: 0;">No Reservations</h3>
+  <div style="display: flex; ; align-items: center;">
+    <p style="margin: 0;">No Reservations</p>
   </div>
 </ng-template>
 
-<!-- <ng-container matColumnDef="expandedDetail">
-        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length"> -->
-<!-- <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-            <div class="example-element-diagram">
-              <div class="example-element-position"> {{element.position}} </div>
-              <div class="example-element-symbol"> {{element.symbol}} </div>
-              <div class="example-element-name"> {{element.name}} </div>
-              <div class="example-element-weight"> {{element.weight}} </div>
-            </div>
-            <div class="example-element-description">
-              {{element.description}}
-              <span class="example-element-description-attribution"> -- Wikipedia </span>
-            </div>
-          </div> -->
-<!-- </td>
-      </ng-container> -->
+<ng-template #noUser>
+  <div style="display: flex; align-items: center;">
+    <p style="margin: 0;">User Not Found</p>
+  </div>
+</ng-template>
 
-<!-- <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr> -->
-
-
-
-<!-- [class.example-expanded-row]="expandedElement === element"
-(click)="expandedElement = expandedElement === element ? null : element" -->
+<ng-template #noProduct>
+    <div style="display: flex; align-items: center;">
+      <p style="margin: 0;">Product Not Found</p>
+    </div>
+  </ng-template>

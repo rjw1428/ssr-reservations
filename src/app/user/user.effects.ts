@@ -10,7 +10,7 @@ import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
-import { userSelector } from "../app.selectors";
+import { cachedProductListSelector, userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
 import { getUsedTimes } from "../utility/constants";
 
@@ -26,7 +26,6 @@ export class UserAccountEffects {
                 return this.db.list(`reservations/${user.id}`).snapshotChanges()
             }),
             map((resp: SnapshotAction<Reservation>[]) => {
-                console.log(resp)
                 if (!resp.length) return UserAccountActions.storeReservations({ reservations: null })
                 const reservations = resp.map(res => ({ ...res.payload.val(), id: res.payload.key }))
                 return UserAccountActions.storeReservations({ reservations })
@@ -37,12 +36,24 @@ export class UserAccountEffects {
     getProductDetails$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.fetchReservationSpaceDetails),
-            switchMap(({ spaceId }) => this.afs.collection('products').doc(spaceId).valueChanges().pipe(
-                map((resp: Product) => {
-                    return { ...resp, id: spaceId }
-                })
-            )),
-            map((product) => AppActions.storeProducts({ product }))
+            switchMap(({ reservation }) => {
+                // Get Matching Product Type
+                return this.store.select(cachedProductListSelector).pipe(
+                    first(),
+                    map(products => {
+                        const matchingProduct = products.find(product => product.id == reservation.productId)
+                        return { reservation, product: matchingProduct }
+                    })
+                )
+            }),
+            switchMap(({ reservation, product }) => {
+                //Get Space Name
+                return reservation['spaceName']
+                    ? of({ spaceName: reservation['spaceName'], reservation, product })
+                    : this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}/name`).valueChanges()
+                        .pipe(map(name => ({ spaceName: name, reservation, product })))
+            }),
+            map(({ spaceName, reservation, product }) => UserAccountActions.storeReservationDetails({ spaceName, reservationId: reservation.id, product }))
         )
     )
 
@@ -54,7 +65,7 @@ export class UserAccountEffects {
                 map(user => {
                     this.db.list(`reservations/${user.id}/${reservation.id}`).remove()
                     const datesToRemove = getUsedTimes(reservation.startTime, reservation.endTime)
-                    datesToRemove.forEach(time=>this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
+                    datesToRemove.forEach(time => this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
                 })
             ))
         ), { dispatch: false }

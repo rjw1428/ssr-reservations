@@ -1,17 +1,13 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
+import { AngularFirestore } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { from, of } from "rxjs";
 import { first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
 import { Product } from "../models/product";
 import { ShoppingActions } from "./shopping.action-types";
 import { AngularFireDatabase } from '@angular/fire/database'
-import { UserAccountActions } from "../user/user.action-types";
 import { Space } from "../models/space";
-import { getUsedTimes, MINIMUM_TIME_SLOT } from "../utility/constants";
-import * as firebase from 'firebase/app';
+import { getUsedTimes } from "../utility/constants";
 @Injectable()
 export class ShoppingEffects {
 

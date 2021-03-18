@@ -3,7 +3,7 @@ export interface User {
     firstName: string;
     lastName: string;
     email: string;
-    role: 'admin' | 'users'
+    role: 'admin' | 'user' | 'master'
     dateCreated: number;     //epoch
     lastLogIn?: number;      //epoch
     ccId?: string;           //from stripe

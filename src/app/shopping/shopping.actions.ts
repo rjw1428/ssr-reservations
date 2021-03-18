@@ -8,11 +8,6 @@ export const getPoductList = createAction(
     "[Shopping Component] Fetch products"
 )
 
-// export const storePoductList = createAction(
-//     "[Shopping Effect] Store fetched products to state",
-//     props<{ products: { [id: string]: Product } }>()
-// )
-
 export const setReservationMode = createAction(
     "[Add Reservation Component] Store Reservation Mode",
     props<{ mode: string }>()

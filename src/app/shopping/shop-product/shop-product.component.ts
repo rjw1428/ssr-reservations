@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
+import { AdminActions } from 'src/app/admin/admin.action-types';
 import { cachedProductListSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
@@ -14,15 +15,17 @@ import { ShoppingActions } from '../shopping.action-types';
   styleUrls: ['./shop-product.component.scss']
 })
 export class ShopProductComponent implements OnInit {
-  productTypes$: Observable<Product[]>
+  productTypes$ = this.store.select(cachedProductListSelector)
   constructor(
     private store: Store<AppState>,
     public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    this.store.dispatch(ShoppingActions.getPoductList())
-    this.productTypes$ = this.store.select(cachedProductListSelector)
+    this.productTypes$.pipe(
+      first(),
+      filter(products => !products.length)
+    ).subscribe(() => this.store.dispatch(ShoppingActions.getPoductList()))
   }
 
 }

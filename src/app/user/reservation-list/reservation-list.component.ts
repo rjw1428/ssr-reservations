@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { AppActions } from 'src/app/app.action-types';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { Reservation } from 'src/app/models/reservation';
@@ -25,7 +26,7 @@ export class ReservationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(UserAccountActions.getReservations())
-
+    this.store.dispatch(AppActions.getProductTypes())
     this.reservations$ = this.route.params.pipe(
       switchMap(params => {
         if (params['type'] == 'current') {

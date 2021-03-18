@@ -49,12 +49,12 @@ export const noAction = createAction(
     '[App Effect] SKIP ACTION'
 )
 
-export const storeProducts = createAction(
-    "[User Effect] Store Product Info",
-    props<{ product: Product }>()
+export const getProductTypes = createAction(
+    "[Reservation List Component] Fetch products"
 )
 
 export const storeProductsList = createAction(
-    "[Shopping | Admin Effect] Store All Products",
+    "[Any Effect] Store All Products",
     props<{ products: { [productId: string]: Product } }>()
 )
+

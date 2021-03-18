@@ -28,7 +28,6 @@ export class LayoutComponent implements OnInit {
 
   user$: Observable<User> = this.store.select(userSelector)
 
-
   constructor(
     private breakpointObserver: BreakpointObserver,
     private store: Store<AppState>,
@@ -43,6 +42,16 @@ export class LayoutComponent implements OnInit {
       // maxWidth: '300px',
       width: '300px'
     })
+  }
+
+  showAdminPanel(): Observable<boolean> {
+    const rolesWithAccess = ['admin', 'master']
+    return this.user$.pipe(map(user => user && rolesWithAccess.includes(user.role)))
+  }
+
+  showUserPanel(): Observable<boolean> {
+    const rolesWithAccess = ['user', 'master']
+    return this.user$.pipe(map(user => !user || rolesWithAccess.includes(user.role)))
   }
 
   onLogOut() {

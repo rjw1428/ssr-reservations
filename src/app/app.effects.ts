@@ -12,6 +12,7 @@ import { GenericPopupComponent } from "./components/generic-popup/generic-popup.
 import { Router } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { DataSnapshot } from "@angular/fire/database/interfaces";
+import { Product } from "./models/product";
 
 
 @Injectable()
@@ -37,8 +38,6 @@ export class AppEffects {
             and return an error, so once a valid response is returned from that switchMap, a NEW user is created
              - DB shouldnt be created until verification occurs (future fix)
     */
-
-
     checkUserPersistance$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.checkUserPersistance),
@@ -56,8 +55,14 @@ export class AppEffects {
     getUserAccount$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.getUserAccount),
-            switchMap(({ uid }) => {
-                console.log(uid)
+            switchMap(({ uid }) =>
+                new Promise((resolve, reject) => {
+                    this.db.database.ref(`users/${uid}`).update({ lastLogIn: new Date().getTime() })
+                        .then(() => resolve(uid))
+                })
+            ),
+            switchMap(uid => {
+                console.log("Logged In As: ", uid)
                 return new Promise((resolve, reject) => {
                     this.db.database.ref(`users/${uid}`).get()
                         .then(snapshot => resolve(snapshot))
@@ -77,9 +82,7 @@ export class AppEffects {
     )
 
 
-
-
-    createUiser$ = createEffect(() =>
+    createUser$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.createUser),
             switchMap(({ user }) => from(this.firebaseAuth.createUserWithEmailAndPassword(user.email, user.password)).pipe(
@@ -143,6 +146,22 @@ export class AppEffects {
             ofType(AppActions.logOut),
             switchMap(() => this.firebaseAuth.signOut())
         ), { dispatch: false }
+    )
+
+    getProductTyles$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.getProductTypes),
+            switchMap(() => this.afs.collection('products').snapshotChanges()),
+            map((docs: DocumentChangeAction<Product>[]) => {
+                return docs
+                    .reduce((obj, doc) => {
+                        const id = doc.payload.doc.id
+                        const data = { id, ...doc.payload.doc.data() }
+                        return { ...obj, [id]: data }
+                    }, {})
+            }),
+            map(products => AppActions.storeProductsList({ products }))
+        )
     )
 
     constructor(

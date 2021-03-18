@@ -75,7 +75,7 @@
           <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide">
             <mat-label>Select an available {{inputProduct.name | lowercase}}</mat-label>
             <mat-select formControlName="space" style="min-width: 100%">
-              <mat-option *ngFor="let space of availableSpaces$ | async" [value]="space.id">{{space.id}}</mat-option>
+              <mat-option *ngFor="let space of availableSpaces$ | async" [value]="space.id">{{space.name}}</mat-option>
             </mat-select>
           </mat-form-field>
           <div style="display: flex; justify-content: center;">

@@ -1,5 +1,4 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { ShoppingState } from "../models/shopping-state";
 import { UserAccountState } from "../models/user-account-state";
 
 export const selectUserAccountState = createFeatureSelector<UserAccountState>("userAccount")
@@ -26,4 +25,11 @@ export const userHistoricReservationsSelector = createSelector(
                 .filter(reservation => reservation.endTime < now)
             : []
     }
+)
+
+export const reservationDetailsSelector = createSelector(
+    selectUserAccountState,
+    (userAccount: UserAccountState, reservationId: string) => userAccount.details && userAccount.details[reservationId]
+        ? userAccount.details[reservationId].spaceName
+        : null
 )

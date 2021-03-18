@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { filter, first } from 'rxjs/operators';
+import { cachedProductListSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { AddProductTypeComponent } from '../add-product-type/add-product-type.component';
 import { AdminActions } from '../admin.action-types';
-import { productTypesSelector } from '../admin.selectors';
 
 @Component({
   selector: 'app-product-type-list',
@@ -14,15 +15,17 @@ import { productTypesSelector } from '../admin.selectors';
   styleUrls: ['./product-type-list.component.scss']
 })
 export class ProductTypeListComponent implements OnInit {
-  productTypes$: Observable<Product[]>
+  productTypes$ = this.store.select(cachedProductListSelector)
   constructor(
     private store: Store<AppState>,
     public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    this.store.dispatch(AdminActions.getPoductList())
-    this.productTypes$ = this.store.select(productTypesSelector)
+    this.productTypes$.pipe(
+      first(),
+      filter(products => !products.length)
+    ).subscribe(() => this.store.dispatch(AdminActions.getPoductList()))
   }
 
   onAdd() {

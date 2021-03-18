@@ -23,7 +23,7 @@
 
     <div style="display: flex; justify-content: space-between;" *ngIf="!infoOnly">
       <ul>
-        <li *ngFor="let tf of timeframes">{{tf.label}}: {{product[tf.value]}}</li>
+        <li *ngFor="let tf of timeframes">{{tf.label}}: {{product[tf.value] | currency}}</li>
       </ul>
 
       <div *ngIf="!editable && !infoOnly">

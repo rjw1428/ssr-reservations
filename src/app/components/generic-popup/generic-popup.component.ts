@@ -10,7 +10,7 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
   @ViewChild('content') contentRef: ElementRef
   constructor(
     private dialogRef: MatDialogRef<GenericPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public input: { title: string, content: string, action?: () => any },
+    @Inject(MAT_DIALOG_DATA) public input: { title: string, content: string, actionLabel: string, action?: () => any },
   ) { }
 
   ngOnInit(): void {
