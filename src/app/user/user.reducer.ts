@@ -1,6 +1,4 @@
 import { createReducer, on } from "@ngrx/store"
-import { AdminState } from "../models/admin-state"
-import { ShoppingState } from "../models/shopping-state"
 import { UserAccountState } from "../models/user-account-state"
 import { UserAccountActions } from "./user.action-types"
 
@@ -32,7 +30,6 @@ export const userAccountReducer = createReducer(
         return {
             ...state,
             details: { ...state.details, ...newDetail }
-
         }
     })
 )

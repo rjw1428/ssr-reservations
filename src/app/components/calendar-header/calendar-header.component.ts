@@ -26,18 +26,29 @@ export class CalendarHeaderComponent implements OnDestroy {
     this._destroyed.complete();
   }
 
+  /**
+   * @returns {string} formatted calendar header label
+   */
   get periodLabel() {
     return this._dateAdapter
       .format(this._calendar.activeDate, this._dateFormats.display.monthYearLabel)
       .toLocaleUpperCase();
   }
 
+  /**
+   * Move calendar date backwards 1 input unit
+   * @param {string} mode unit to move (month/year)
+   */
   previousClicked(mode: 'month' | 'year') {
     this._calendar.activeDate = mode === 'month' ?
       this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
       this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
   }
 
+    /**
+   * Move calendar date forwards 1 input unit
+   * @param {string} mode unit to move (month/year)
+   */
   nextClicked(mode: 'month' | 'year') {
     this._calendar.activeDate = mode === 'month' ?
       this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
