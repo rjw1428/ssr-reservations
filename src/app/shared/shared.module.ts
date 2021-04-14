@@ -63,7 +63,7 @@ import { MatTableModule } from '@angular/material/table';
     MatTableModule,
     ReactiveFormsModule,
 
-    ProductTileComponent
+    ProductTileComponent,
   ],
   providers: [
     MatDatepickerModule

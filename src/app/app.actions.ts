@@ -1,6 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 import { Product } from "./models/product";
 import { User } from "./models/user";
+import { Application } from "./models/application";
 
 export const startLoading = createAction(
     "[App Component] Start Loading Screen"
@@ -40,6 +41,7 @@ export const createUser = createAction(
 export const newUserCreated = createAction(
     '[App Effect] User Created & Stored'
 )
+
 export const resetPassword = createAction(
     '[Forgot Password Component] User Requests Password Reset',
     props<{ email: string }>()

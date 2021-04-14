@@ -23,10 +23,16 @@
             routerLinkActive="router-link-active">Home</a>
           <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }"
             routerLinkActive="router-link-active">Find A Space</a>
+          <a *ngIf="user$ | async" mat-list-item routerLink="user/application-status"
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Pending Applications</a>
           <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/current"
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Current Reservations</a>
           <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/historic"
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Historic Reservations</a>
+          <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a>
+          <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"
+            routerLinkActive="router-link-active">Create Account</a>
         </mat-nav-list>
       </div>
       <div *ngIf="showAdminPanel() | async">
@@ -37,6 +43,8 @@
           <a mat-list-item [routerLink]="['admin','product-list']" routerLinkActive="router-link-active">Product
             List</a>
           <a mat-list-item [routerLink]="['admin','users']" routerLinkActive="router-link-active">Users</a>
+          <a mat-list-item [routerLink]="['admin','applications']" routerLinkActive="router-link-active">Submitted
+            Applications</a>
         </mat-nav-list>
       </div>
     </mat-sidenav>

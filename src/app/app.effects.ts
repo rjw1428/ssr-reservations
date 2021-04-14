@@ -24,10 +24,11 @@ export class AppEffects {
             switchMap(({ username, password }) => this.firebaseAuth.signInWithEmailAndPassword(username, password)),
             map(resp => {
                 console.log(resp)
-                if (!resp.user.emailVerified) console.log("NOT VERIFIED")
-                return resp.user.emailVerified
-                    ? AppActions.getUserAccount({ uid: resp.user.uid })//User Session has persisted
-                    : AppActions.noAction()
+                return AppActions.getUserAccount({ uid: resp.user.uid })
+                // if (!resp.user.emailVerified) console.log("NOT VERIFIED")
+                // return resp.user.emailVerified
+                //     ? AppActions.getUserAccount({ uid: resp.user.uid })//User Session has persisted
+                //     : AppActions.noAction()
             })
         )
     )
@@ -96,29 +97,30 @@ export class AppEffects {
                         ...userData,
                         id: enrolledUser.user.uid
                     })
-                enrolledUser.user.sendEmailVerification({
-                    url: environment.domain,
-                })
+                // enrolledUser.user.sendEmailVerification({
+                //     url: environment.domain,
+                // })
+               
             }),
-            switchMap(() => this.dialog.open(GenericPopupComponent, {
-                width: '300px',
-                data: {
-                    title: 'Almost done...',
-                    content:
-                        `<p>
-                    A verification email has been sent to you. 
-                    Please verify your email address to log in and get started.
-                    </p>`
-                }
-            }).afterClosed().pipe(
-                map(() => this.router.navigate(['/']))
-            ))
+            map(() => this.router.navigate(['user', 'application']))
+            // switchMap(() => this.dialog.open(GenericPopupComponent, {
+            //     width: '300px',
+            //     data: {
+            //         title: 'Almost done...',
+            //         content:
+            //             `<p>
+            //         A verification email has been sent to you. 
+            //         Please verify your email address to log in and get started.
+            //         </p>`
+            //     }
+            // }).afterClosed().pipe(
+            //     map(() => this.router.navigate(['/']))
+            // ))
         ), { dispatch: false }
     )
 
     // AppActions.newUserCreated()
     // () => AppActions.loginSuccess({ uid: enrolledUser.user.uid })
-
 
 
     resetPassword$ = createEffect(() =>

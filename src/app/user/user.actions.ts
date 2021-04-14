@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { Application } from "../models/application";
 import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
 
@@ -26,4 +27,19 @@ export const deleteReservation = createAction(
 export const storeReservationDetails = createAction(
     "[User Effect] Store Expanded Reservation Info",
     props<{ spaceName: string, reservationId: string, product: Product }>()
+)
+
+
+export const submitApplication = createAction(
+    '[Application Component] New Applicatoin Submitted',
+    props<{ application: Application }>()
+)
+
+export const fetchPendingApplications = createAction(
+    "[Application Status Component] Fetch User Pending Applications"
+)
+
+export const storePendingApplications = createAction(
+    "[User Effect] Store User Pending Applications",
+    props<{ pendingApplications: Application[] }>()
 )

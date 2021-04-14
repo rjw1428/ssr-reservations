@@ -24,11 +24,11 @@ export class NewUserComponent implements OnInit {
       password: ['', Validators.required],
       passwordConfirm: ['', Validators.required]
     })
+
   }
 
   onSave() {
     if (this.createAccount.invalid) return
-
     if (this.createAccount.get('password').value != this.createAccount.get('passwordConfirm').value) return
 
     const { passwordConfirm, ...userInfo } = this.createAccount.value

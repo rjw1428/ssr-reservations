@@ -11,6 +11,7 @@ import { ProductTypeListComponent } from './product-type-list/product-type-list.
 import { SharedModule } from '../shared/shared.module';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserComponent } from './user-list/user/user.component';
+import { ApplicationHistoryComponent } from './application-history/application-history.component';
 
 const routes: Routes = [
   {
@@ -26,10 +27,14 @@ const routes: Routes = [
     path: 'users',
     component: UserListComponent,
   },
+  {
+    path: 'applications',
+    component: ApplicationHistoryComponent,
+  },
 ]
 
 @NgModule({
-  declarations: [SummaryComponent, ProductTypeListComponent, UserListComponent, UserComponent],
+  declarations: [SummaryComponent, ProductTypeListComponent, UserListComponent, UserComponent, ApplicationHistoryComponent],
   imports: [
     CommonModule,
     SharedModule,

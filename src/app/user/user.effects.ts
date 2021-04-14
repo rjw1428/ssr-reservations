@@ -13,6 +13,10 @@ import { Store } from "@ngrx/store";
 import { cachedProductListSelector, userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
 import { getUsedTimes } from "../utility/constants";
+import { Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
+import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
+import { Application } from "../models/application";
 
 @Injectable()
 export class UserAccountEffects {
@@ -71,11 +75,51 @@ export class UserAccountEffects {
         ), { dispatch: false }
     )
 
+    submitApplication$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.submitApplication),
+            switchMap(({ application }) => this.db.list(`pending-applications/${application.userId}`).push(application)),
+            map(() => this.dialog.open(GenericPopupComponent, {
+                width: '400px',
+                data: {
+                    title: 'Application submitted...',
+                    content:
+                        `<p>
+                        An application has been submitted for review. Please allow a few days to 
+                        for the application to be reviewed. You will receive an email once the review procees is completed.
+                        You can also check the status of your application or make updates on the next page.
+                        </p>`,
+                    actionLabel: 'Okay',
+                    action: () => this.router.navigate(['/user', 'application-status'])
+                }
+            }))
+        ), { dispatch: false }
+    )
+
+    fetchPendingApplications$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.fetchPendingApplications),
+            switchMap(() => this.store.select(userSelector)),
+            switchMap((user) => {
+                console.log({ user })
+                if (!user) return of([])
+                return this.db.list(`pending-applications/${user.id}`).snapshotChanges()
+            }),
+            map((resp: SnapshotAction<Application>[]) => {
+                console.log(resp)
+                if (!resp.length) return UserAccountActions.storePendingApplications({ pendingApplications: null })
+                const pendingApplications = resp.map(res => ({ ...res.payload.val(), id: res.payload.key }))
+                return UserAccountActions.storePendingApplications({ pendingApplications })
+            })
+        )
+    )
 
     constructor(
         private actions$: Actions,
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
-        private store: Store<AppState>
+        private store: Store<AppState>,
+        public dialog: MatDialog,
+        private router: Router
     ) { }
 }

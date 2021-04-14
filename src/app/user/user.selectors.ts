@@ -33,3 +33,11 @@ export const reservationDetailsSelector = createSelector(
         ? userAccount.details[reservationId].spaceName
         : null
 )
+
+export const userPendingApplicationsSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.pendingApplications
+        ? Object.values(userAccount.pendingApplications)
+        : []
+
+)

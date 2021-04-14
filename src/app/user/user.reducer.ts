@@ -4,7 +4,8 @@ import { UserAccountActions } from "./user.action-types"
 
 export const initialState: UserAccountState = {
     reservations: null,
-    details: null
+    details: null,
+    pendingApplications: null
 }
 
 export const userAccountReducer = createReducer(
@@ -30,6 +31,17 @@ export const userAccountReducer = createReducer(
         return {
             ...state,
             details: { ...state.details, ...newDetail }
+        }
+    }),
+    on(UserAccountActions.storePendingApplications, (state, action) => {
+        const pendingApplications = action.pendingApplications
+            ? action.pendingApplications
+                .map(res => ({ [res.id]: res }))
+                .reduce((obj, res) => ({ ...obj, ...res }), {})
+            : initialState.pendingApplications
+        return {
+            ...state,
+            pendingApplications
         }
     })
 )

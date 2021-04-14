@@ -1,3 +1,4 @@
+import { Application } from "./application";
 import { Product } from "./product";
 import { Reservation } from "./reservation";
 
@@ -8,4 +9,5 @@ export interface UserAccountState {
             spaceName: string
         }
     }
+    pendingApplications: { [id: string]: Application }
 }
