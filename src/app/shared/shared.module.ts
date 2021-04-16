@@ -19,9 +19,15 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
+import { PendingApplicationComponent } from '../components/pending-application/pending-application.component';
+import { SortByPipe } from './sort-by.pipe';
 @NgModule({
 
-  declarations: [ProductTileComponent],
+  declarations: [
+    ProductTileComponent,
+    PendingApplicationComponent,
+    SortByPipe
+  ],
   imports: [
     MatMenuModule,
     CommonModule,
@@ -64,6 +70,8 @@ import { MatTableModule } from '@angular/material/table';
     ReactiveFormsModule,
 
     ProductTileComponent,
+    PendingApplicationComponent,
+    SortByPipe
   ],
   providers: [
     MatDatepickerModule

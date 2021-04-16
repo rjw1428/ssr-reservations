@@ -1,5 +1,4 @@
 import { AdminSummary } from "./admin-summary";
-import { Product } from "./product";
 import { Reservation } from "./reservation";
 import { User } from "./user";
 
@@ -12,4 +11,6 @@ export interface AdminState {
             [reservationId: string]: Reservation
         }
     }
+    submittedApplications: { [id: string]: Reservation },
+    submittedApplicationFilter: string
 }

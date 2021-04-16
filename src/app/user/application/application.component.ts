@@ -29,15 +29,15 @@ export class ApplicationComponent implements OnInit {
   }
 
   onSave(user: User) {
-    if (this.application.invalid) return
+    // if (this.application.invalid) return
 
-    const application = {
-      ...this.application.value,
-      userId: user.id,
-      status: 'Pending',
-      dateCreated: new Date().getTime()
-    }
+    // const application = {
+    //   ...this.application.value,
+    //   userId: user.id,
+    //   status: 'pending',
+    //   dateCreated: new Date().getTime()
+    // }
 
-    this.store.dispatch(UserAccountActions.submitApplication({ application }))
+    // this.store.dispatch(UserAccountActions.submitApplication({ application }))
   }
 }

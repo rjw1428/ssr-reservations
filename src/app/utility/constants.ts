@@ -1,14 +1,18 @@
 export const MINIMUM_TIME_SLOT = 1000 * 60 * 60
 
 
-export function getUsedTimes(startTime: number, endTime: number): number[] {
+export function getUsedTimes(startDate: number, endDate: number): number[] {
     let usedTimes = []
-    let x = startTime
-    do {
-        usedTimes.push(x)
-        x += MINIMUM_TIME_SLOT
+    const startMonth = new Date(startDate).getMonth()
+    const startYear = new Date(startDate).getFullYear()
+    const endMonth = new Date(endDate).getMonth()
+    const delta = endMonth - startMonth < 0
+        ? endMonth + 12 - startMonth
+        : endMonth - startMonth
+
+    for (let i = 0; i < delta; i++) {
+        usedTimes.push(new Date(startYear, startMonth + i, 1).getTime())
     }
-    while (x < endTime)
     return usedTimes
 }
 
@@ -18,57 +22,41 @@ export function padLeadingZeros(number: number, size: number): string {
     return s
 }
 
-export const TIMEFRAMES = [{
-    value: 'hour',
-    label: 'By The Hour'
+export const TIMEFRAMES = [
+    {
+        value: 'month',
+        label: 'By The Month'
+    }]
+
+export const LEASETYPES = [{
+    id: '3_month',
+    label: "3 Month Lease",
+    number: 3
 },
 {
-    value: 'day',
-    label: 'By The Day'
+    id: '6_month',
+    label: "6 Month Lease",
+    number: 6
 },
 {
-    value: 'week',
-    label: 'By The Week'
-},
-{
-    value: 'month',
-    label: 'By The Month'
+    id: '12_month',
+    label: "12 Month Lease",
+    number: 12
 }]
 
-export const BOOKTIMES = [{
-    value: 32400000,
-    label: '9:00 AM'
-},
-{
-    value: 36000000,
-    label: '10:00 AM'
-},
-{
-    value: 39600000,
-    label: '11:00 AM'
-},
-{
-    value: 43200000,
-    label: '12:00 PM'
-},
-{
-    value: 46800000,
-    label: '1:00 PM'
-},
-{
-    value: 50400000,
-    label: '2:00 PM'
-},
-{
-    value: 54000000,
-    label: '3:00 PM'
-},
-{
-    value: 57600000,
-    label: '4:00 PM'
-},
-{
-    value: 61200000,
-    label: '5:00 PM'
+export const MONTHS = {
+    0: "January",
+    1: "Febuary",
+    2: "March",
+    3: "April",
+    4: "May",
+    5: "June",
+    6: "July",
+    7: "August",
+    8: "September",
+    9: "October",
+    10: "November",
+    11: "December",
 }
-]
+
+export const BOOKTIMES = []

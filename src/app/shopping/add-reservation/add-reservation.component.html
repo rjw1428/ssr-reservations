@@ -5,8 +5,7 @@
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content *ngIf="submissionMode$ | async as mode"
-    style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;">
+  <mat-card-content style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;">
     <div style="display: flex;">
       <div style="flex-basis: 50%; display: flex; justify-content: center; align-items: center;" class="test">
         IMG
@@ -17,17 +16,7 @@
       </div>
     </div>
 
-    <div style="align-self: flex-start; padding: 1em 0;">
-      <!-- <h1 style="margin: 0 16px;">Select Your Plan:</h1> -->
-      <mat-form-field appearance="outline">
-        <mat-label>Select Your Plan</mat-label>
-        <mat-select [value]="'single'">
-          <mat-option [value]="'single'">Single Day</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <mat-horizontal-stepper style="width: 75%" linear>
+    <mat-horizontal-stepper style="width: 100%" linear>
       <!-- Icon overrides. -->
       <!-- <ng-template matStepperIcon="single">
         <mat-icon>bookmark</mat-icon>
@@ -38,39 +27,34 @@
 
 
       <mat-step label="Select Timeframe" state="single">
-        <form [formGroup]="singleDayForm" style="display: flex; flex-direction: column;">
-          <div style="display: flex; justify-content: center;">
-            <mat-form-field appearance="outline">
-              <mat-label>Select Your Reservation Day</mat-label>
-              <input name="startDay" matInput [matDatepicker]="picker" formControlName="day">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker [calendarHeaderComponent]="datePickerHeader"></mat-datepicker>
-            </mat-form-field>
-          </div>
+        <form [formGroup]="timeFrameForm" style="display: flex; flex-direction: column;">
+          <mat-form-field appearance="outline">
+            <mat-label>Select Lease Lenght</mat-label>
+            <mat-select formControlName="leaseType">
+              <mat-option *ngFor="let type of leaseTypes" [value]="type.id">{{type.label}}</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-          <div style="display: flex; justify-content: space-around;">
-            <mat-form-field appearance="outline">
-              <mat-label>Start Time</mat-label>
-              <mat-select formControlName="startHour" (selectionChange)="setEndTimes($event)">
-                <mat-option *ngFor="let time of startTimes" [value]="time.value">{{time.label}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>End Time</mat-label>
-              <mat-select formControlName="endHour">
-                <mat-option *ngFor="let time of endTimes" [value]="time.value">{{time.label}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Select Lease Start Month</mat-label>
+            <mat-select formControlName="startMonth">
+              <mat-option *ngFor="let month of months | keyvalue | sortBy : 'key'" [value]="month.key">{{month.value}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </form>
+
         <div style="display: flex; justify-content: center;">
-          <button mat-button matStepperNext [disabled]="singleDayForm.invalid"
+          <button mat-button matStepperNext [disabled]="timeFrameForm.invalid"
             (click)="queryAvailability()">Next</button>
         </div>
       </mat-step>
 
       <mat-step label="Availability" state="availability">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <h2>Start: {{startDate$ | async | date : 'MM/dd/yyyy'}}</h2>
+          <h2>End: {{endDate$ | async | date : 'MM/dd/yyyy'}}</h2>
+        </div>
         <form [formGroup]="selectSpaceForm">
           <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide">
             <mat-label>Select an available {{inputProduct.name | lowercase}}</mat-label>
@@ -84,51 +68,20 @@
               (click)="createTempReservation()">Next</button>
           </div>
         </form>
-
-        <!-- <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
-          <mat-form-field appearance="outline">
-            <mat-label>Select Your Reservation Dates</mat-label>
-            <mat-date-range-input [formGroup]="multiDayForm" [rangePicker]="startPicker">
-              <input matStartDate formControlName="startDay" placeholder="Start date">
-              <input matEndDate formControlName="endDay" placeholder="End date">
-            </mat-date-range-input>
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-date-range-picker #startPicker [calendarHeaderComponent]="datePickerHeader"></mat-date-range-picker>
-
-            <mat-error *ngIf="multiDayForm.controls.startDay.hasError('matStartDateInvalid')">Invalid start date
-            </mat-error>
-            <mat-error *ngIf="multiDayForm.controls.endDay.hasError('matEndDateInvalid')">Invalid end date</mat-error>
-          </mat-form-field>
-        </form> -->
       </mat-step>
 
       <mat-step label="Payment" state="confirm">
         <div *ngIf="reservation$ | async as reservation">
           <h1>Reservation Summary</h1>
-          <p>{{reservation.startTime | date : 'short'}}</p>
-          <p>{{reservation.endTime | date : 'short'}}</p>
-          <p>By clicking 'Complete Reservation' you will be charged this amount and your reservation will be booked.</p>
+          <p>{{ (selectedSpace$ | async).name}}</p>
+          <p>{{reservation.startDate | date : 'MM/dd/y'}}</p>
+          <p>{{reservation.endDate | date : 'MM/dd/yy'}}</p>
+          <p>By clicking 'Complete Reservation' you application will be submitted for review.</p>
           <div style="display: flex; justify-content: center;">
             <button mat-button matStepperPrevious>Previous</button>
-            <button mat-button matStepperNext (click)="processPayment(reservation)">Complete Reservation</button>
+            <button mat-button matStepperNext (click)="submitApplication(reservation)">Submit Application</button>
           </div>
         </div>
-
-        <!-- <form [formGroup]="multiDayForm" style="display: flex; justify-content: space-around;">
-          <mat-form-field appearance="outline">
-            <mat-label>Select Your Reservation Dates</mat-label>
-            <mat-date-range-input [formGroup]="multiDayForm" [rangePicker]="startPicker">
-              <input matStartDate formControlName="startDay" placeholder="Start date">
-              <input matEndDate formControlName="endDay" placeholder="End date">
-            </mat-date-range-input>
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-date-range-picker #startPicker [calendarHeaderComponent]="datePickerHeader"></mat-date-range-picker>
-
-            <mat-error *ngIf="multiDayForm.controls.startDay.hasError('matStartDateInvalid')">Invalid start date
-            </mat-error>
-            <mat-error *ngIf="multiDayForm.controls.endDay.hasError('matEndDateInvalid')">Invalid end date</mat-error>
-          </mat-form-field>
-        </form> -->
       </mat-step>
     </mat-horizontal-stepper>
 
@@ -143,9 +96,9 @@
             Total: {{ total$ | async | currency }}
           </h1>
         </mat-expansion-panel-header>
-        <div>
-          <p>{{ time$ | async}} {{mode=='single' ? 'hours' : 'days'}} at
-            {{(mode=='single' ? inputProduct.hour : inputProduct.day) | currency}}/{{mode == 'single' ? 'hours' : 'days'}}...
+        <div *ngIf="selectedLeaseType$ | async as selectedLeaseType">
+          <p>{{selectedLeaseType.label}} at
+            {{inputProduct.month | currency}}/month...
             {{subtotal$ | async | currency}}</p>
           <p>{{ feePercent * 100}}% Service Fee... {{ fees$ | async | currency}}</p>
           <p>Taxes... {{ taxes$ | async | currency}}</p>

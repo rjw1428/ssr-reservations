@@ -1,5 +1,3 @@
-import { Application } from "./application";
-import { Product } from "./product";
 import { Reservation } from "./reservation";
 
 export interface UserAccountState {
@@ -9,5 +7,5 @@ export interface UserAccountState {
             spaceName: string
         }
     }
-    pendingApplications: { [id: string]: Application }
+    pendingApplications: { [id: string]: Reservation }
 }

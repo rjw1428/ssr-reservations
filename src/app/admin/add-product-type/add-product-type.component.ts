@@ -29,7 +29,6 @@ export class AddProductTypeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.inputProduct)
     this.productForm = this.formBuilder.group({
       name: [this.inputProduct ? this.inputProduct.name : '', Validators.required],
       description: [this.inputProduct ? this.inputProduct.description : '', Validators.required],

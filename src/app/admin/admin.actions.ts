@@ -57,7 +57,7 @@ export const storeUserReservation = createAction(
 )
 
 export const openReservation = createAction(
-    '[Admin Effect Component] Open Reservation Popup',
+    '[Admin Effect] Open Reservation Popup',
     props<{ spaceName: string, reservation: Reservation, product: Product }>()
 )
 
@@ -79,4 +79,34 @@ export const demoteUser = createAction(
 export const promote = createAction(
     '[User List Component] Promote User to Admin',
     props<{ userId: string }>()
+)
+
+export const fetchSubmittedApplications = createAction(
+    '[Application History Component] Fetch Applications',
+    props<{ filter: string }>()
+)
+
+export const storeSubmittedApplications = createAction(
+    '[Admin Effect] Store Pending Applications',
+    props<{ applications: Reservation[] }>()
+)
+
+export const rejectApplicationFeedbackForm = createAction(
+    '[Application History Component] Trigger Reject Application Form',
+    props<{ application: Reservation }>()
+)
+
+export const rejectApplication = createAction(
+    '[Admin Effect] Reject Application',
+    props<{ application: Reservation }>()
+)
+
+export const acceptApplication = createAction(
+    '[Application History Component] Accept Application',
+    props<{ application: Reservation }>()
+)
+
+export const updatedSubmittedApplicationFilter = createAction(
+    '[Application History Component] Update Applicatoin Filter',
+    props<{ filter: string }>()
 )

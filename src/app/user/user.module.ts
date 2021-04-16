@@ -39,7 +39,13 @@ const routes: Routes = [
 
 
 @NgModule({
-  declarations: [AccountInfoComponent, ReservationListComponent, ReservationComponent, ApplicationComponent, ApplicationStatusComponent],
+  declarations: [
+    AccountInfoComponent,
+    ReservationListComponent,
+    ReservationComponent,
+    ApplicationComponent,
+    ApplicationStatusComponent
+  ],
   imports: [
     CommonModule,
     SharedModule,

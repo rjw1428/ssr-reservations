@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>Add Space Type</mat-card-title>
+    <mat-card-title>{{inputProduct?'Edit':'Add'}} Space Type</mat-card-title>
     <mat-card-subtitle>
       Define the type of rental space that you are providing to clients,
       the number of available
@@ -22,7 +22,7 @@
         <mat-error *ngIf="productForm.invalid">Must include a description of this type of space</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline"*ngIf="!inputProduct">
         <mat-label>Number of Spaces</mat-label>
         <input autocomplete="off" matInput type="number" formControlName="count">
         <mat-error *ngIf="productForm.invalid">Must input a number greater than 0</mat-error>

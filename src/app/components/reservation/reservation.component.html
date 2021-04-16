@@ -4,8 +4,8 @@
   <mat-expansion-panel-header
     style=" display: flex; justify-content: space-between; align-items: center; padding: .5em 2em;">
     <mat-panel-title style="display: flex; align-items: center; justify-content: space-around;">
-      <h4 style="margin: 0">Start: {{reservation.startTime | date : 'short'}}</h4>
-      <h4 style="margin: 0">End: {{reservation.endTime | date : 'short'}}</h4>
+      <h4 style="margin: 0">Start: {{reservation.startDate | date : 'MM/dd/yy'}}</h4>
+      <h4 style="margin: 0">End: {{reservation.startDate | date : 'MM/dd/yy'}}</h4>
     </mat-panel-title>
     <mat-panel-description style="display: flex; justify-content: space-between;">
       <div style="display: flex; align-items: center;">
@@ -17,8 +17,8 @@
     style="display: flex; flex-direction: column; justify-content: center;">
     <div>
       <h2 style="margin: 0; text-align: center;">
-        Start: {{reservation.startTime | date : 'short'}}
-        - End: {{reservation.endTime | date : 'short'}}
+        Start: {{reservation.startDate | date : 'MM/dd/yy'}}
+        - End: {{reservation.endDate | date : 'MM/dd/yy'}}
       </h2>
     </div>
     <div style="display: flex; flex-direction: column; align-items: space-between;">
@@ -29,7 +29,7 @@
       </div>
     </div>
     <div style="display: flex; justify-content: space-between;">
-      <p>Date Created: {{ reservation.createdTime | date : 'MM/dd/yy' }}</p>
+      <p>Date Approved: {{ reservation.dateApproved | date : 'MM/dd/yy' }}</p>
       <div *ngIf="!isHistoric">
         <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
         <button mat-flat-button color="accent" (click)="onRemove(reservation)">Cancel</button>

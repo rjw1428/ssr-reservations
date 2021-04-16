@@ -4,8 +4,5 @@ export interface Product {
     description: string;
     dateCreated: Date
     count: number;
-    hour: number,
-    day: number,
-    week: number,
     month: number
 }

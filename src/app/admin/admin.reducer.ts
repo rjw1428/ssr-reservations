@@ -6,7 +6,9 @@ export const initialState: AdminState = {
     isSaving: false,
     summary: null,
     users: null,
-    userReservations: null
+    userReservations: null,
+    submittedApplications: null,
+    submittedApplicationFilter: 'pending'
 }
 
 export const adminReducer = createReducer(
@@ -24,5 +26,14 @@ export const adminReducer = createReducer(
                 ...action.reservations
             }
         }
-    ))
+    )),
+    on(AdminActions.storeSubmittedApplications, (state, action) => (
+        {
+            ...state,
+            submittedApplications: action.applications
+                .map(app => ({ [app.id]: app }))
+                .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+        })
+    ),
+    on(AdminActions.updatedSubmittedApplicationFilter, (state, action)=>({...state, submittedApplicationFilter: action.filter}))
 )

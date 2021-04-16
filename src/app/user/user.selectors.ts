@@ -10,7 +10,7 @@ export const userCurrentReservationsSelector = createSelector(
         return userAccount.reservations
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
-                .filter(reservation => reservation.endTime >= now)
+                .filter(reservation => reservation.endDate >= now)
             : []
     }
 )
@@ -22,7 +22,7 @@ export const userHistoricReservationsSelector = createSelector(
         return userAccount.reservations
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
-                .filter(reservation => reservation.endTime < now)
+                .filter(reservation => reservation.endDate < now)
             : []
     }
 )

@@ -5,15 +5,16 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatStep } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
 import { combineLatest, iif, Observable, of, Subscription, zip } from 'rxjs';
-import { filter, first, map, mergeMap, shareReplay, skip, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, find, first, map, mergeMap, shareReplay, skip, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { userSelector } from 'src/app/app.selectors';
 import { CalendarHeaderComponent } from 'src/app/components/calendar-header/calendar-header.component';
 import { AdminState } from 'src/app/models/admin-state';
 import { Product } from 'src/app/models/product';
 import { Reservation } from 'src/app/models/reservation';
 import { ShoppingState } from 'src/app/models/shopping-state';
+import { Space } from 'src/app/models/space';
 import { UserAccountActions } from 'src/app/user/user.action-types';
-import { BOOKTIMES } from 'src/app/utility/constants';
+import { BOOKTIMES, LEASETYPES, MONTHS } from 'src/app/utility/constants';
 import { ShoppingActions } from '../shopping.action-types';
 import { availableSpacesSelector, reservationModeSelector, reservationSubmissionSuccessSelector } from '../shopping.selectors';
 
@@ -25,26 +26,30 @@ import { availableSpacesSelector, reservationModeSelector, reservationSubmission
 })
 export class AddReservationComponent implements OnInit, OnDestroy {
   datePickerHeader = CalendarHeaderComponent
-  startTimes = BOOKTIMES
-  endTimes = BOOKTIMES
-  singleDayForm: FormGroup
-  selectSpaceForm: FormGroup
-  multiDayForm: FormGroup
 
-  // hours$: Observable<number>
-  // days$: Observable<number>
+  timeFrameForm: FormGroup
+  months = MONTHS
+  leaseTypes = LEASETYPES
+  startDate$: Observable<number>
+  endDate$: Observable<number>
+
+  selectSpaceForm: FormGroup
+  selectedLeaseType$: Observable<{ id: string, label: string, number: number }>
   time$: Observable<number>
   subtotal$: Observable<number>
   taxes$: Observable<number>
   fees$: Observable<number>
   total$: Observable<number>
+  selectedSpace$: Observable<Space>
 
-  feePercent = 0.02
-  taxRate = 0.05
   submissionMode$: Observable<string>
   submissionSuccess$: Observable<boolean>
   availableSpaces$ = this.store.select(availableSpacesSelector)
   reservation$: Observable<Reservation>
+
+  readonly feePercent = 0.02
+  readonly taxRate = 0.05
+
   constructor(
     public dialogRef: MatDialogRef<AddReservationComponent>,
     @Inject(MAT_DIALOG_DATA) public inputProduct: Product,
@@ -57,176 +62,91 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.singleDayForm = this.formBuilder.group({
-      day: ['', Validators.required],
-      startHour: ['', Validators.required],
-      endHour: ['', Validators.required]
-    })
-
-    this.multiDayForm = this.formBuilder.group({
-      startDay: ['', Validators.required],
-      endDay: ['', Validators.required]
+    this.timeFrameForm = this.formBuilder.group({
+      leaseType: ['', Validators.required],
+      startMonth: ['', Validators.required]
     })
 
     this.selectSpaceForm = this.formBuilder.group({
       space: ['', Validators.required],
     })
 
-    this.submissionMode$ = this.store.select(reservationModeSelector).pipe(tap(console.log))
+    this.selectedSpace$ = this.availableSpaces$.pipe(map(spaces => spaces.find(space => space.id == this.selectSpaceForm.value['space'])))
 
-    const singleFormTime$ = this.singleDayForm.valueChanges.pipe(
-      map(formValues => formValues.endHour && formValues.startHour ? (formValues.endHour - formValues.startHour) / (1000 * 60 * 60) : 0),
-      shareReplay()
-    )
-    const multiFormTime$ = this.multiDayForm.valueChanges.pipe(
-      map(formValues => formValues.endDay && formValues.startDay ? (formValues.endDay.getTime() - formValues.startDay.getTime()) / (1000 * 60 * 60 * 24) : 0),
-      shareReplay()
-    )
-    // USED IN SUMMARY
-    this.time$ = this.store.select(reservationModeSelector).pipe(
-      switchMap(mode => iif(() => mode == 'single', singleFormTime$, multiFormTime$)),
-      shareReplay(),
-      startWith(0),
-    )
-
-    this.subtotal$ = this.store.select(reservationModeSelector).pipe(
-      switchMap(mode => {
-        if (mode == 'single')
-          return this.singleDayForm.valueChanges.pipe(
-            filter(formValues => formValues.endHour && formValues.startHour),
-            map(formValues => this.getSingleDayCost(formValues.startHour, formValues.endHour))
-          )
-        else
-          return this.multiDayForm.valueChanges.pipe(
-            filter(formValues => formValues.endDay && formValues.startDay),
-            map(formValues => this.getMultiDayCost(formValues.startDay, formValues.endDay))
-          )
+    this.startDate$ = this.timeFrameForm.get('startMonth').valueChanges.pipe(
+      map(monthNum => {
+        const now = new Date()
+        const tempDate = new Date(now.getFullYear(), +monthNum, 1).getTime()
+        return tempDate < now.getTime()
+          ? new Date(now.getFullYear(), (+monthNum + 12), 1).getTime()
+          : tempDate
       }),
-      startWith(0),
+      shareReplay()
     )
-    // this.subtotal$ = this.store.select(reservationModeSelector).pipe(
-    //   switchMap(mode => iif(() => mode == 'single',
-    //     singleFormTime$.pipe(map(delta => delta * this.inputProduct.hour), shareReplay()),
-    //     multiFormTime$.pipe(map(delta => delta * this.inputProduct.day), shareReplay())
-    //   )),
-    //   startWith(0),
-    //   shareReplay()
-    // )
+    this.endDate$ = this.startDate$.pipe(map(startDate => {
+      const delta = this.leaseTypes.find(lease => lease.id == this.timeFrameForm.get('leaseType').value).number
+      const start = new Date(startDate)
+      return new Date(start.getFullYear(), start.getMonth() + delta, 1).getTime()
+    }), shareReplay())
+
+    this.selectedLeaseType$ = this.timeFrameForm.get('leaseType').valueChanges.pipe(
+      map(leaseId => this.leaseTypes.find(lease => lease.id == leaseId))
+    )
+
+    this.subtotal$ = this.selectedLeaseType$.pipe(
+      map(lease => lease.number * this.inputProduct.month),
+      startWith(0),
+      shareReplay()
+    )
+
     this.fees$ = this.subtotal$.pipe(map(subtotal => subtotal * this.feePercent), shareReplay())
     this.taxes$ = this.subtotal$.pipe(map(subtotal => subtotal * this.taxRate), shareReplay())
 
     this.total$ = zip(this.subtotal$, this.fees$, this.taxes$).pipe(
-      map(values => values.reduce((total, num) => total + num, 0))
+      map(values => values.reduce((total, num) => total + num, 0)),
+      shareReplay(1)
     )
+
     this.submissionSuccess$ = this.store.select(reservationSubmissionSuccessSelector).pipe(skip(1))
   }
 
-  // onModeSelected(event: { selectedStep: MatStep, selectedIndex: number }) {
-  //   this.singleDayForm.reset({ day: '', startHour: '', endHour: '' }, { emitEvent: false })
-  //   this.multiDayForm.reset({ startDay: '', endDay: '' }, { emitEvent: false })
-  //   this.store.dispatch(ShoppingActions.setReservationMode({ mode: event.selectedStep.state }))
-  // }
 
   queryAvailability() {
-    const day: Date = this.singleDayForm.get('day').value
-    const startTime: number = day.getTime() + this.singleDayForm.get('startHour').value
-    const endTime: number = day.getTime() + this.singleDayForm.get('endHour').value
-    this.store.dispatch(ShoppingActions.queryAvailability({ startTime, endTime, productId: this.inputProduct.id }))
-
-
-    // this.store.select(reservationModeSelector).pipe(
-    //   first(),
-    //   map(submissionMode => {
-    //     if (submissionMode == 'single') {
-    //       if (!this.singleDayForm.valid) {
-    //         console.log("SINGLEFORM INVALID")
-    //         return
-    //       }
-    //       const day: Date = this.singleDayForm.get('day').value
-    //       const startTime: number = day.getTime() + this.singleDayForm.get('startHour').value
-    //       const endTime: number = day.getTime() + this.singleDayForm.get('endHour').value
-    //       const subtotal = this.getSingleDayCost(startTime, endTime)
-    //       const cost = subtotal + subtotal * this.feePercent + subtotal * this.taxRate
-    //       return { startTime, endTime, cost }
-    //     }
-    //     else {
-    //       if (!this.multiDayForm.valid) {
-    //         console.log("MULTIFORM INVALID")
-    //         return
-    //       }
-    //       const { startDay, endDay }: { startDay: Date, endDay: Date } = this.multiDayForm.value
-    //       const subtotal = this.getMultiDayCost(startDay, endDay)
-    //       const cost = subtotal + subtotal * this.feePercent + subtotal * this.taxRate
-    //       return { startTime: startDay.getTime(), endTime: endDay.getTime(), cost }
-    //     }
-    //   }),
-    //   switchMap(({ startTime, endTime, cost }) => {
-    //     return this.store.select(userSelector).pipe(
-    //       first(),
-    //       map(user => {
-    //         const reservation: Reservation = {
-    //           userId: user.id,
-    //           spaceId: this.inputProduct.id,
-    //           startTime,
-    //           endTime,
-    //           createdTime: new Date().getTime(),
-    //           lastModifiedTime: new Date().getTime(),
-    //           cost
-    //         }
-    //         return reservation
-    //       })
-    //     )
-    //   })
-    // ).subscribe(
-    //   reservation => this.store.dispatch(ShoppingActions.saveReservation({ reservation })),
-    //   err => console.log(err),
-    //   () => console.log("COMPLETE")
-    // )
-
-
-
-
-
-    // NEED TO FIGURE OUT COST FOR MULTI DAY
-    // const startDay: Date = this.multiDayForm.get('startDay').value
-    // const endDay: Date = this.multiDayForm.get('endDay').value
-    // const months = endDay.getMonth() - startDay.getMonth()
-    // const dayDiff = endDay.getDate() - startDay.getDate()
-    // const weeks = Math.floor(dayDiff / 7)
-    // const days = dayDiff % 7
+    combineLatest([this.startDate$, this.endDate$]).pipe(first())
+      .subscribe(([startDate, endDate]) =>
+        this.store.dispatch(ShoppingActions.queryAvailability({ startDate, endDate, productId: this.inputProduct.id }))
+      )
   }
 
   createTempReservation() {
     const { space } = this.selectSpaceForm.value
-    const day: Date = this.singleDayForm.get('day').value
-    const startTime: number = day.getTime() + this.singleDayForm.get('startHour').value
-    const endTime: number = day.getTime() + this.singleDayForm.get('endHour').value
-    const subtotal = this.getSingleDayCost(startTime, endTime)
-    const cost = subtotal + subtotal * this.feePercent + subtotal * this.taxRate
+    const user$ = this.store.select(userSelector)
 
-    this.reservation$ = this.store.select(userSelector).pipe(
-      first(),
-      map(user => {
-        const reservation: Reservation = {
-          userId: user.id,
-          productId: this.inputProduct.id,
-          spaceId: space,
-          startTime,
-          endTime,
-          createdTime: new Date().getTime(),
-          lastModifiedTime: new Date().getTime(),
-          cost
-        }
-        return reservation
-      })
-    )
+    this.total$.subscribe(console.log)
+    this.reservation$ = combineLatest([user$, this.startDate$, this.endDate$, this.total$])
+      .pipe(
+        first(),
+        tap(console.log),
+        map(([user, startDate, endDate, cost]) => {
+          const now = new Date().getTime()
+          const reservation: Reservation = {
+            userId: user.id,
+            productId: this.inputProduct.id,
+            spaceId: space,
+            startDate,
+            endDate,
+            createdTime: now,
+            lastModifiedTime: now,
+            cost,
+            status: "pending"
+          }
+          return reservation
+        })
+      )
   }
 
-  processPayment(reservation) {
-    this.store.dispatch(ShoppingActions.saveReservation({ 
-      reservation,
-      productId: this.inputProduct.id 
-    }))
+  submitApplication(reservation) {
+    this.store.dispatch(ShoppingActions.saveReservation({ reservation }))
 
 
     // LISTEN FOR WRITE SUCCESS (CLOSE FORM)
@@ -238,21 +158,4 @@ export class AddReservationComponent implements OnInit, OnDestroy {
         this.dialogRef.close()
     })
   }
-
-
-  setEndTimes(event: MatSelectChange) {
-    const maxIndex = this.startTimes.findIndex(time => time.value == event.value)
-    this.endTimes = this.startTimes.slice(maxIndex + 1)
-  }
-
-  getMultiDayCost(startDay: Date, endDay: Date): number {
-    const time = (endDay.getTime() - startDay.getTime()) / (1000 * 60 * 60 * 24)
-    return time * this.inputProduct.day
-  }
-
-  getSingleDayCost(startHour: number, endHour: number): number {
-    const time = (endHour - startHour) / (1000 * 60 * 60)
-    return time * this.inputProduct.hour
-  }
-
 }

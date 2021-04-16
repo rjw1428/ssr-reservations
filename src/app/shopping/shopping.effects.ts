@@ -8,6 +8,9 @@ import { ShoppingActions } from "./shopping.action-types";
 import { AngularFireDatabase } from '@angular/fire/database'
 import { Space } from "../models/space";
 import { getUsedTimes } from "../utility/constants";
+import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
+import { MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
 @Injectable()
 export class ShoppingEffects {
 
@@ -27,45 +30,47 @@ export class ShoppingEffects {
     saveReservation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.saveReservation),
-            switchMap(async ({ reservation, productId }) => {
-                const usedTimes = getUsedTimes(reservation.startTime, reservation.endTime)
-                const resp = await this.db.database.ref(`reservations/${reservation.userId}`).push(reservation)
-                const payload = usedTimes
-                    .map(time => ({
-                        [time]: {
-                            user: reservation.userId,
-                            reservation: resp.key
-                        }
-                    }))
-                    .reduce((acc, cur) => ({ ...acc, ...cur }))
-                return this.db.database.ref(`spaces/${productId}/${reservation.spaceId}/reserved`).update(payload)
-            }),
-            map((resp) => ShoppingActions.saveReservationComplete()),
-            tap(() => AppActions.stopLoading())
+            switchMap(async ({ reservation }) => this.db.database.ref(`submitted-applications/${reservation.userId}`).push(reservation)),
+            tap(() => this.dialog.open(GenericPopupComponent, {
+                width: '400px',
+                data: {
+                    title: 'Application submitted...',
+                    content:
+                        `<p>
+                        An application has been submitted for review. Please allow a few days to 
+                        for the application to be reviewed. You will receive an email once the review procees is completed.
+                        You can also check the status of your application or make updates on the next page.
+                        </p>`,
+                    actionLabel: 'Okay',
+                    action: () => this.router.navigate(['/user', 'application-status'])
+                }
+            })),
+            map((resp) => ShoppingActions.saveReservationComplete())
         )
     )
 
     queryAvailability$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.queryAvailability),
-            switchMap(({ startTime, endTime, productId }) => this.db.list(`spaces/${productId}`).snapshotChanges().pipe(
+            switchMap(({ startDate, endDate, productId }) => this.db.list(`spaces/${productId}`).snapshotChanges().pipe(
                 first(),
                 map(resp => {
                     const spaces = resp.map(space => {
                         const data = space.payload.val() as Space
                         return { id: space.key, ...data }
                     })
-                    return ({ spaces, startTime, endTime })
+                    return ({ spaces, startDate, endDate })
                 })
             )),
-            map((resp: { spaces: Space[], startTime: number, endTime: number }) => {
-                const filteredSpaces = resp.spaces.filter(space => {
-                    if (!space.reserved) return true
-                    const requestedTimes = getUsedTimes(resp.startTime, resp.endTime)
-                    const bookedTimes = Object.keys(space.reserved).map(time => +time)
-                    const overlap = requestedTimes.reduce((overlap, time) => overlap + +bookedTimes.includes(time), 0)
-                    return overlap < 1
-                })
+            map((resp: { spaces: Space[], startDate: number, endDate: number }) => {
+                const filteredSpaces = resp.spaces
+                    .filter(space => {
+                        if (!space.reserved) return true
+                        const requestedTimes = getUsedTimes(resp.startDate, resp.endDate)
+                        const bookedTimes = Object.keys(space.reserved).map(time => +time)
+                        const overlap = requestedTimes.reduce((overlap, time) => overlap + +bookedTimes.includes(time), 0)
+                        return overlap < 1
+                    })
                 return ShoppingActions.saveAvailableSpaces({ spaces: filteredSpaces })
             })
         )
@@ -75,6 +80,8 @@ export class ShoppingEffects {
     constructor(
         private actions$: Actions,
         private afs: AngularFirestore,
-        private db: AngularFireDatabase
+        private db: AngularFireDatabase,
+        public dialog: MatDialog,
+        private router: Router
     ) { }
 }

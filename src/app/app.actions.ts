@@ -1,7 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { Product } from "./models/product";
 import { User } from "./models/user";
-import { Application } from "./models/application";
 
 export const startLoading = createAction(
     "[App Component] Start Loading Screen"

@@ -3,7 +3,7 @@
     *ngIf="isHandset$ | async">
     <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
   </button>
-  <span>Title</span>
+  <span>Burwell Project</span>
   <span *ngIf="!(user$ | async)" (click)="onLogIn()">Login</span>
   <span *ngIf="(user$ | async) as user" mat-button [matMenuTriggerFor]="menu">{{user.firstName}}
     {{user.lastName}}</span>
@@ -26,13 +26,13 @@
           <a *ngIf="user$ | async" mat-list-item routerLink="user/application-status"
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Pending Applications</a>
           <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/current"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Current Reservations</a>
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Current Leases</a>
           <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/historic"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Historic Reservations</a>
-          <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a>
-          <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active">Create Account</a>
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Historic Leases</a>
+          <!-- <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a> -->
+          <!-- <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"
+            routerLinkActive="router-link-active">Create Account</a> -->
         </mat-nav-list>
       </div>
       <div *ngIf="showAdminPanel() | async">

@@ -1,0 +1,20 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header style=" display: flex; align-items: center; padding: .5em 2em;">
+    <mat-panel-title style="display: flex; align-items: center; flex-basis: 40%;">
+      <h4 style="margin: 0">{{application.user.firstName}} {{application.user.lastName}}</h4>
+    </mat-panel-title>
+    <mat-panel-description style="display: flex; justify-content: space-between; flex-basis: 60%;">
+      <p style="margin: 0"> Submitted: {{application.createdTime | date : 'MM/dd/YY'}}</p>
+      <p style="margin: 0; font-style: italic;"> Status: {{application.status | titlecase}}</p>
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <ng-container style="display: flex; flex-direction: column; justify-content: center;">
+    <div style="display: flex; justify-content: space-between;">
+      <pre>{{ application | json}}</pre>
+    </div>
+    <div style="display: flex; justify-content: flex-end" *ngIf="admin">
+      <button mat-flat-button color="primary" (click)="onAccept()">Accept</button>
+      <button mat-flat-button color="accent" (click)="onReject()">Reject</button>
+    </div>
+  </ng-container>
+</mat-expansion-panel>

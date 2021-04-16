@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { AngularFireDatabase } from "@angular/fire/database";
+import { AngularFireDatabase, SnapshotAction } from "@angular/fire/database";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { MatDialog } from "@angular/material/dialog";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
@@ -10,14 +10,13 @@ import { filter, find, first, flatMap, map, mergeMap, switchMap } from "rxjs/ope
 import { AppActions } from "../app.action-types";
 import { cachedProductListSelector } from "../app.selectors";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
-import { AdminSummary } from "../models/admin-summary";
 import { AppState } from "../models/app-state";
 import { Product } from "../models/product";
 import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { User } from "../models/user";
-import { padLeadingZeros } from "../utility/constants";
+import { getUsedTimes, padLeadingZeros } from "../utility/constants";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -57,18 +56,15 @@ export class AdminEffects {
                 .pipe(map(resp => ({ id: resp.id, product })))
             ),
             switchMap((resp) => {
-                console.log(resp)
                 this.afs.collection('products').doc(resp.id).update({ id: resp.id })
                 const templateSpace: Space = { productId: resp.id, reserved: [], name: '' }
                 const spaceGroup = Array(resp.product.count).fill(templateSpace)
-                console.log(spaceGroup)
                 return forkJoin(spaceGroup.map((space, i) => this.db.list(`spaces/${resp.id}`).push({
                     ...space,
-                    name: `${resp.product.name} - ${padLeadingZeros(i + 1, 3)}`
+                    name: `${resp.product.name}` // - ${padLeadingZeros(i + 1, 3)}
                 })))
             }),
             flatMap(resp => {
-                console.log(resp)
                 return resp
                     ? [
                         AppActions.stopLoading(),
@@ -228,7 +224,102 @@ export class AdminEffects {
         ), { dispatch: false }
     )
 
+    fetchPendingApplications$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.fetchSubmittedApplications),
+            switchMap(({ filter }) => this.db.list(`submitted-applications`).snapshotChanges().pipe(map(resp => ({ resp, filter })))),
+            map(({ resp, filter }: { resp: SnapshotAction<{ [userId: string]: { [applicationId: string]: Reservation[] } }>[], filter: string }) => {
+                return resp.length
+                    ? resp
+                        .map(res => ({ ...res.payload.val() }))
+                        .reduce((totalList, userApplications) => {
+                            const userApplicationsList = Object.keys(userApplications)
+                                .map(key => ({ ...userApplications[key], id: key }))
+                            return totalList.concat(userApplicationsList)
+                        }, [])
+                        .filter((application: Reservation) => filter == 'all' ? true : application.status == filter)
+                    : []
+            }),
+            // Get Users as well and link with applications
+            switchMap((applications: Reservation[]) => this.db.list('users').snapshotChanges()
+                .pipe(
+                    first(),
+                    map((resp) => resp
+                        .map(doc => {
+                            const id = doc.key
+                            const data = doc.payload.val() as User
+                            return { [id]: data }
+                        })
+                        .reduce((acc, cur) => ({ ...acc, ...cur }))
+                    ),
+                    map(users => applications.map(application => {
+                        const user = users[application.userId]
+                        return { ...application, user }
+                    })
+                    )
+                )),
+            map(applications => AdminActions.storeSubmittedApplications({ applications }))
+        )
+    )
 
+    updateFilter$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.updatedSubmittedApplicationFilter),
+            map(({ filter }) => AdminActions.fetchSubmittedApplications({ filter }))
+        )
+    )
+
+    rejectApplicationForm$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.rejectApplicationFeedbackForm),
+            switchMap(({ application }) => {
+                return this.dialog.open(GenericPopupComponent, {
+                    data: {
+                        title: `Provide Rejection Feedback`,
+                        content: "",
+                        actionLabel: 'Reject',
+                        action: () => application,
+                        form: ['feedback']
+                    }
+                }).afterClosed()
+            }),
+            filter(formResponse => !!formResponse),
+            map(({ action, feedback }) => AdminActions.rejectApplication({ application: { ...action, feedback } }))
+        )
+    )
+
+    rejectApp$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.rejectApplication),
+            switchMap(({ application }) =>
+                this.db.object(`submitted-applications/${application.userId}/${application.id}`)
+                    .update({ status: "rejected", feedback: application.feedback })
+            )
+        ), { dispatch: false }
+    )
+
+    acceptApplicatoin$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.acceptApplication),
+            switchMap(({ application }) => {
+                const { user, id, createdTime, ...reservation } = application
+                const usedTimes = getUsedTimes(application.startDate, application.endDate)
+                const payload = usedTimes
+                    .map(time => ({
+                        [time]: {
+                            user: application.userId,
+                            reservation: application.id
+                        }
+                    }))
+                    .reduce((acc, cur) => ({ ...acc, ...cur }))
+                this.db.database.ref(`spaces/${application.productId}/${application.spaceId}/reserved`).update(payload)
+                this.db.object(`submitted-applications/${application.userId}/${application.id}`)
+                    .update({ status: "accepted", feedback: "Accepted" })
+                return this.db.list(`reservations/${application.userId}`).push({ ...reservation, dateApproved: new Date().getTime() })
+            }),
+            map(resp => console.log(resp))
+        ), { dispatch: false }
+    )
 
 
     constructor(

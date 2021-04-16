@@ -9,7 +9,7 @@
         <h2 style="margin: 0;">{{space.value.name}}</h2>
         <div *ngIf="space.value.reserved as reservations; else noReservation">
           <div *ngFor="let reservation of reservations | keyvalue" style="display: flex;  align-items: center;">
-            <h3 style="margin: 0; flex-basis: 20%;">{{ reservation.key | date : 'MM/dd/yy hh:mm a'}}</h3>
+            <h3 style="margin: 0; flex-basis: 20%;">{{ reservation.key | date : 'MM/dd/yy'}}</h3>
             <div style="flex-basis: 40%; display: flex;"
               *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
               <p style="margin: 0; flex-basis: 50%;">{{user.firstName}} {{ user.lastName}}</p>

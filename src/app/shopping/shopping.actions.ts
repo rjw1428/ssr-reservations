@@ -15,7 +15,7 @@ export const setReservationMode = createAction(
 
 export const saveReservation = createAction(
     "[Add Reservation Component] Save Reservation",
-    props<{ reservation: Reservation, productId: string}>()
+    props<{ reservation: Reservation }>()
 )
 
 export const saveReservationComplete = createAction(
@@ -24,7 +24,7 @@ export const saveReservationComplete = createAction(
 
 export const queryAvailability = createAction(
     '[Reservation Component] Get Available Spaces',
-    props<{ startTime: number, endTime: number, productId: string }>()
+    props<{ startDate: number, endDate: number, productId: string }>()
 )
 
 export const saveAvailableSpaces = createAction(

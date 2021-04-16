@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>Application</mat-card-title>
     <mat-card-subtitle>
-      Please fill out the below information to create your account and allow you to reserve a work space.
+      Please fill out the below information to submit your application and reserve a work space.
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -26,9 +26,8 @@
   </mat-card-content>
 
   <mat-card-actions style="display: flex;justify-content: center;">
-    <button *ngIf="user$ | async as user" mat-flat-button color="primary" 
-        [disabled]="application.invalid" 
-        (click)="onSave(user)">Save
+    <button *ngIf="user$ | async as user" mat-flat-button color="primary" [disabled]="application.invalid"
+      (click)="onSave(user)">Save
     </button>
   </mat-card-actions>
 </mat-card>

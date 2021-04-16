@@ -1,5 +1,4 @@
 import { createAction, props } from "@ngrx/store";
-import { Application } from "../models/application";
 import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
 
@@ -32,7 +31,7 @@ export const storeReservationDetails = createAction(
 
 export const submitApplication = createAction(
     '[Application Component] New Applicatoin Submitted',
-    props<{ application: Application }>()
+    props<{ application: Reservation }>()
 )
 
 export const fetchPendingApplications = createAction(
@@ -41,5 +40,5 @@ export const fetchPendingApplications = createAction(
 
 export const storePendingApplications = createAction(
     "[User Effect] Store User Pending Applications",
-    props<{ pendingApplications: Application[] }>()
+    props<{ pendingApplications: Reservation[] }>()
 )

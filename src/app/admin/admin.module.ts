@@ -34,7 +34,13 @@ const routes: Routes = [
 ]
 
 @NgModule({
-  declarations: [SummaryComponent, ProductTypeListComponent, UserListComponent, UserComponent, ApplicationHistoryComponent],
+  declarations: 
+  [SummaryComponent, 
+    ProductTypeListComponent, 
+    UserListComponent, 
+    UserComponent, 
+    ApplicationHistoryComponent,
+  ],
   imports: [
     CommonModule,
     SharedModule,

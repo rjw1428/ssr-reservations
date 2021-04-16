@@ -4,15 +4,6 @@
   </mat-card-header>
 
   <mat-card-content>
-
-    <!-- <mat-accordion style="width: 100%;" multi>
-        <app-reservation *ngFor="let reservation of reservations$ | async; trackBy: identify" 
-          [reservation]="reservation"
-          [isHistoric]="isHistoric">
-        </app-reservation>
-      </mat-accordion> -->
-
-    <pre *ngFor="let application of pendingApplications$ | async">{{ application | json}}</pre>
-
+    <app-pending-application *ngFor="let application of pendingApplications$ | async" [application]="application"></app-pending-application>
   </mat-card-content>
 </mat-card>
