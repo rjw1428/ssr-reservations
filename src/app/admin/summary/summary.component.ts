@@ -31,31 +31,30 @@ export class SummaryComponent implements OnInit {
     If the room is deactiveated but has reservations remaining,
     then show it on the summary
   */
-  adminSummary$ = zip(
-    this.store.select(adminSummarySelector),
-    this.store.select(deactiveProductIdsSelector)
-  ).pipe(
-    map(([summary, deactiveProductTypeIds]) =>
-      summary
-        ? Object.keys(summary)
-          .map(key => {
-            const productSummary = summary[key]
-            const isDeactive = deactiveProductTypeIds.includes(key)
-            const reducedRooms = isDeactive
-              ? Object.keys(productSummary)
-                .map(key => ({ ...productSummary[key], id: key }))
-                .filter((productDetails: { name: string, productId: string, reserved: any, id: string }) => !!productDetails.reserved)
-                .reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
-              : summary[key]
-            return Object.values(reducedRooms).length
-              ? { [key]: reducedRooms }
-              : null
-          })
-          .filter(productSummary => !!productSummary)
-          .reduce((acc, cur) => ({ ...acc, ...cur }), {})
-        : null
+  adminSummary$ = this.store.select(adminSummarySelector)
+    .pipe(
+      withLatestFrom(this.store.select(deactiveProductIdsSelector)),
+      map(([summary, deactiveProductTypeIds]) =>
+        summary
+          ? Object.keys(summary)
+            .map(key => {
+              const productSummary = summary[key]
+              const isDeactive = deactiveProductTypeIds.includes(key)
+              const reducedRooms = isDeactive
+                ? Object.keys(productSummary)
+                  .map(key => ({ ...productSummary[key], id: key }))
+                  .filter((productDetails: { name: string, productId: string, reserved: any, id: string }) => !!productDetails.reserved)
+                  .reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
+                : summary[key]
+              return Object.values(reducedRooms).length
+                ? { [key]: reducedRooms }
+                : null
+            })
+            .filter(productSummary => !!productSummary)
+            .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+          : null
+      )
     )
-  )
   productList$ = this.store.select(cachedProductListSelector)
   users$ = this.store.select(userListSelector)
   constructor(
