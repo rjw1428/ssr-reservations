@@ -2,13 +2,23 @@
   display: flex;
 }
 
+.product-title {
+  display: flex;
+  justify-content: center;
+}
+
 .space-name {
   cursor: pointer;
 }
 
+.product-name:hover+.edit-hidden,
 .space-name:hover+.edit-hidden {
   visibility: visible;
 }
+
+.product-name {
+    cursor: pointer;
+  }
 
 .edit-hidden {
   opacity: .3;

@@ -1,5 +1,6 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, zip } from 'rxjs';
 import { filter, first, map, shareReplay, withLatestFrom } from 'rxjs/operators';
@@ -7,6 +8,7 @@ import { cachedProductListSelector, cachedProductSelector, deactiveProductIdsSel
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { User } from 'src/app/models/user';
+import { AddProductTypeComponent } from '../add-product-type/add-product-type.component';
 import { AdminActions } from '../admin.action-types';
 import { adminSummarySelector, userListSelector, userSelector } from '../admin.selectors';
 
@@ -33,7 +35,7 @@ export class SummaryComponent implements OnInit {
     this.store.select(adminSummarySelector),
     this.store.select(deactiveProductIdsSelector)
   ).pipe(
-    map(([summary, deactiveProductTypeIds]) => 
+    map(([summary, deactiveProductTypeIds]) =>
       summary
         ? Object.keys(summary)
           .map(key => {
@@ -55,7 +57,8 @@ export class SummaryComponent implements OnInit {
   productList$ = this.store.select(cachedProductListSelector)
   users$ = this.store.select(userListSelector)
   constructor(
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -85,6 +88,12 @@ export class SummaryComponent implements OnInit {
 
   onOpenReservation(reservationId: string, productId: string, userId: string, spaceName: string) {
     this.store.dispatch(AdminActions.getFullReservationDataFromSummary({ reservationId, productId, userId, spaceName }))
+  }
+
+  onEditProductType(product: Product) {
+    this.dialog.open(AddProductTypeComponent, {
+      data: product
+    })
   }
 
   onEditSpaceName(productId, spaceId, currentName) {

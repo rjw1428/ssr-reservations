@@ -4,7 +4,12 @@
   </mat-card-header>
   <mat-card-content *ngIf="adminSummary$ | async as summary">
     <div *ngFor="let product of summary | keyvalue">
-      <h1 style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct">Space Type: {{product.name}}</h1>
+      <div class="product-title">
+        <h1 class="product-name" style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct" (click)="onEditProductType(product)">
+          {{product.name}}
+        </h1>
+        <mat-icon class="edit-hidden">create</mat-icon>
+    </div>
       <div *ngFor="let space of product.value | keyvalue">
         <div class="space-title">
           <h2 class="space-name" style="margin: 0;" (click)="onEditSpaceName(space.value.productId, space.key, space.value.name)">
