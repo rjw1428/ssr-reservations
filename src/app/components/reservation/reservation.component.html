@@ -1,13 +1,16 @@
 <mat-expansion-panel (afterExpand)="onExpand()">
   <mat-expansion-panel-header
     style=" display: flex; justify-content: space-between; align-items: center; padding: .5em 2em;">
-    <mat-panel-title style="display: flex; align-items: center; justify-content: space-around;">
-      <h4 style="margin: 0">Start: {{reservation.startDate | date : 'MM/dd/yy'}}</h4>
-      <h4 style="margin: 0">End: {{reservation.endDate | date : 'MM/dd/yy'}}</h4>
+    <mat-panel-title style="display: flex; align-items: center;">
+      <h4 style="margin: 0">{{reservation.startDate | date : 'MM/dd/yy'}} - {{reservation.endDate | date : 'MM/dd/yy'}}</h4>
     </mat-panel-title>
-    <mat-panel-description style="display: flex; justify-content: space-between;">
-      <div style="display: flex; align-items: center;">
-        Reservation ID: {{reservation.id}}
+    <mat-panel-description style="display: flex; justify-content: space-between; width: 60%">
+      <div style="display: flex; align-items: center; flex-basis: 40%; white-space: nowrap;">ID: {{reservation.id}}</div>
+      <div style="display: flex; align-items: center; font-style: italic; flex-basis: 30%; white-space: nowrap;" *ngIf="isAdmin">
+        {{reservation.user.firstName}} {{reservation.user.lastName}}
+      </div>
+      <div style="display: flex; align-items: center; font-style: italic; flex-basis: 30%;">
+        Status: {{reservation.status | titlecase}}
       </div>
     </mat-panel-description>
   </mat-expansion-panel-header>
@@ -21,6 +24,7 @@
     </div>
     <div style="display: flex; flex-direction: column; align-items: space-between;">
       <h2 style="margin: 0; text-align: center;">Space: {{ spaceName$ | async}}</h2>
+      <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="color: red;">Accepted Application has made this date range invalid</h3>
       <app-product-tile style="flex-basis: 75%;" [product]="product" [infoOnly]="true"></app-product-tile>
       <div style="display: flex; justify-content: center; align-items: center;">
         <h3 style="flex-basis: 25%;">Cost: {{ reservation.cost| currency }}</h3>
@@ -28,9 +32,13 @@
     </div>
     <div style="display: flex; justify-content: space-between;">
       <p>Date Approved: {{ reservation.dateApproved | date : 'MM/dd/yy' }}</p>
-      <div *ngIf="!isHistoric">
+      <div *ngIf="!isHistoric && !isAdmin && reservation.status != 'rejected'">
         <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
-        <button mat-flat-button color="accent" (click)="onRemove(reservation)">Cancel</button>
+        <button mat-flat-button color="accent" (click)="onRemove()">Cancel</button>
+      </div>
+      <div *ngIf="isAdmin">
+        <button mat-flat-button color="warn" (click)="onReject()">Reject</button>
+        <button mat-flat-button color="primary" (click)="onAccept()">Accept</button>
       </div>
     </div>
   </ng-container>

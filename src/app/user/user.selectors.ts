@@ -27,13 +27,6 @@ export const userHistoricReservationsSelector = createSelector(
     }
 )
 
-export const reservationDetailsSelector = createSelector(
-    selectUserAccountState,
-    (userAccount: UserAccountState, reservationId: string) => userAccount.details && userAccount.details[reservationId]
-        ? userAccount.details[reservationId].spaceName
-        : null
-)
-
 export const userPendingApplicationsSelector = createSelector(
     selectUserAccountState,
     userAccount => userAccount.pendingApplications

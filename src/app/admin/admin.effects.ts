@@ -269,6 +269,25 @@ export class AdminEffects {
         )
     )
 
+    udateSpaceName$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.udateSpaceName),
+            switchMap(({ productId, spaceId, currentName }) => {
+                return this.dialog.open(GenericPopupComponent, {
+                    data: {
+                        title: `Rename "${currentName}"`,
+                        content: "",
+                        actionLabel: 'Rename',
+                        action: () => ({ productId, spaceId }),
+                        form: ['spaceName']
+                    }
+                }).afterClosed()
+            }),
+            filter(formResponse => !!formResponse),
+            map(({ action, spaceName }) => this.db.object(`spaces/${action.productId}/${action.spaceId}`).update({name: spaceName}))
+        ), { dispatch: false }
+    )
+
     rejectApplicationForm$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.rejectApplicationFeedbackForm),

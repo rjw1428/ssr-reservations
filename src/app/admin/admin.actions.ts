@@ -74,6 +74,11 @@ export const getFullReservationDataFromSummary = createAction(
     props<{ reservationId: string, productId: string, userId: string, spaceName: string }>()
 )
 
+export const udateSpaceName = createAction(
+    '[Summary Component] Trigger rename space form',
+    props<{ productId: string, spaceId: string, currentName: string }>()
+)
+
 export const demoteUser = createAction(
     '[User List Component] Demote Admin to User',
     props<{ userId: string }>()

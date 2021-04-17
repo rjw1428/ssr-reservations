@@ -24,8 +24,11 @@ export const routes: Routes = [{
 {
   path: 'shop',
   loadChildren: () => import('./shopping/shopping.module').then((m) => m.ShoppingModule),
-}
-];
+},
+{
+  path: '**',
+  redirectTo: '',
+}];
 @NgModule({
   imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]

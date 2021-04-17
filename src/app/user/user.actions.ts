@@ -16,21 +16,10 @@ export const storeReservations = createAction(
     props<{ reservations: Reservation[] }>()
 )
 
-export const fetchReservationSpaceDetails = createAction(
-    "[Reservation Component] Fetch Selected Reservation Space Details",
-    props<{ reservation: Reservation }>()
-)
-
 export const deleteReservation = createAction(
     "[Reservation Component] Delete Reservation",
-    props<{ reservation: Reservation }>()
+    props<{ reservation: Reservation, status: string }>()
 )
-
-export const storeReservationDetails = createAction(
-    "[User Effect] Store Expanded Reservation Info",
-    props<{ spaceName: string, reservationId: string, product: Product }>()
-)
-
 
 export const submitApplication = createAction(
     '[Application Component] New Applicatoin Submitted',

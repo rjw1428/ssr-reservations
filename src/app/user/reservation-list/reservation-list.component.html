@@ -8,7 +8,8 @@
     <mat-accordion style="width: 100%;" multi>
       <app-reservation *ngFor="let reservation of reservations$ | async; trackBy: identify" 
         [reservation]="reservation"
-        [isHistoric]="isHistoric">
+        [isHistoric]="isHistoric"
+        (remove)="onRemove(reservation)">
       </app-reservation>
     </mat-accordion>
   </mat-card-content>

@@ -5,9 +5,10 @@
 
   <mat-card-content *ngIf="(pendingApplications$ | async) as pendingApplications;">
     <div *ngIf="pendingApplications.length; else noPending">
-      <app-pending-application *ngFor="let application of pendingApplications" 
-        [application]="application">
-      </app-pending-application>
+      <app-reservation *ngFor="let application of pendingApplications; trackBy: identify" 
+        [reservation]="application"
+        (remove)="onRemove(application)">
+      </app-reservation>
     </div>
     <ng-template #noPending>
       <div style="display: flex; justify-content: center;">
@@ -25,9 +26,9 @@
 
   <mat-card-content *ngIf="(rejectedApplications$ | async) as rejectedApplications;">
     <div *ngIf="rejectedApplications.length; else noRejected">
-      <app-pending-application *ngFor="let application of rejectedApplications" 
-        [application]="application">
-      </app-pending-application>
+      <app-reservation *ngFor="let application of rejectedApplications; trackBy: identify" 
+        [reservation]="application">
+      </app-reservation>
     </div>
     <ng-template #noRejected>
       <div style="display: flex; justify-content: center;">

@@ -4,7 +4,6 @@ import { UserAccountActions } from "./user.action-types"
 
 export const initialState: UserAccountState = {
     reservations: null,
-    details: null,
     pendingApplications: null,
     rejectedApplications: null
 }
@@ -22,17 +21,6 @@ export const userAccountReducer = createReducer(
         return {
             ...state,
             reservations
-        }
-    }),
-    on(UserAccountActions.storeReservationDetails, (state, action) => {
-        const newDetail = {
-            [action.reservationId]: {
-                spaceName: action.spaceName
-            }
-        }
-        return {
-            ...state,
-            details: { ...state.details, ...newDetail }
         }
     }),
     on(UserAccountActions.storePendingApplications, (state, action) => {

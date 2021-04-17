@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 import { Store } from '@ngrx/store';
 import { first, filter, switchMap, withLatestFrom, tap } from 'rxjs/operators';
+import { AppActions } from 'src/app/app.action-types';
 import { userSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Reservation } from 'src/app/models/reservation';
@@ -25,6 +26,7 @@ export class ApplicationHistoryComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.store.dispatch(AppActions.getProductTypes())
     this.applications$.pipe(
       first(),
       withLatestFrom(this.filterSelection$),
@@ -35,7 +37,7 @@ export class ApplicationHistoryComponent implements OnInit {
 
   showAdminButtons(user: User): boolean {
     if (!user) return false
-    const rolesWithAccess = ['user', 'master']
+    const rolesWithAccess = ['admin', 'master']
     return rolesWithAccess.includes(user.role)
   }
 

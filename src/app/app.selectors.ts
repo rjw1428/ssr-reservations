@@ -31,7 +31,15 @@ export const cachedProductListSelector = createSelector(
     selectAppState,
     app => {
         return app.storedProducts
-            ? Object.values(app.storedProducts).sort((a,b)=>a.name.localeCompare(b.name))
+            ? Object.values(app.storedProducts).sort((a, b) => a.name.localeCompare(b.name))
             : []
     }
+)
+
+
+export const reservationDetailsSelector = createSelector(
+    selectAppState,
+    (app: AppState, reservationId: string) => app.storedSpaceDetails && app.storedSpaceDetails[reservationId]
+        ? app.storedSpaceDetails[reservationId].spaceName
+        : null
 )

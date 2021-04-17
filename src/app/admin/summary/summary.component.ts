@@ -62,5 +62,7 @@ export class SummaryComponent implements OnInit {
     this.store.dispatch(AdminActions.getFullReservationDataFromSummary({ reservationId, productId, userId, spaceName }))
   }
 
-
+  onEditSpaceName(productId, spaceId, currentName) {
+    this.store.dispatch(AdminActions.udateSpaceName({ productId, spaceId, currentName }))
+  }
 }

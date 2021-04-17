@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
+import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { Reservation } from 'src/app/models/reservation';
@@ -21,7 +23,8 @@ export class ReservationListComponent implements OnInit {
   isHistoric = false
   constructor(
     private route: ActivatedRoute,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -38,6 +41,17 @@ export class ReservationListComponent implements OnInit {
           return this.store.select(userHistoricReservationsSelector)
         }
       }));
+  }
+
+  onRemove(reservation: Reservation) {
+    this.dialog.open(GenericPopupComponent, {
+      data: {
+        title: "Are you sure?",
+        content: '<p>Are you sure you want to cancel your reservation?. Click Confirm to Cancel</p>',
+        actionLabel: 'Confirm',
+        action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation, status: 'accepted' }))
+      }
+    }).afterClosed().subscribe(callback => callback)
   }
 
   identify(index: number, item: Product) {

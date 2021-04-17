@@ -6,4 +6,9 @@ export interface AppState {
     isLoggingIn: boolean,
     user: User
     storedProducts: { [spaceId: string]: Product }
+    storedSpaceDetails: {
+        [reservationId: string]: {
+            spaceName: string
+        }
+    }
 }

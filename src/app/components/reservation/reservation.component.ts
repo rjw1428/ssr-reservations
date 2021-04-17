@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
-import { cachedProductSelector } from 'src/app/app.selectors';
+import { filter, first, map } from 'rxjs/operators';
+import { AppActions } from 'src/app/app.action-types';
+import { cachedProductSelector, reservationDetailsSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { Reservation } from 'src/app/models/reservation';
 import { UserAccountActions } from 'src/app/user/user.action-types';
-import { reservationDetailsSelector } from 'src/app/user/user.selectors';
 import { GenericPopupComponent } from '../generic-popup/generic-popup.component';
 
 @Component({
@@ -20,7 +20,11 @@ import { GenericPopupComponent } from '../generic-popup/generic-popup.component'
 export class ReservationComponent implements OnInit {
   @Input() reservation: Reservation
   @Input() isHistoric: boolean = false
-
+  @Input() isAdmin: boolean = false
+  @Output() accept = new EventEmitter()
+  @Output() reject = new EventEmitter()
+  @Output() remove = new EventEmitter()
+  
   product$: Observable<Product>
   spaceName$: Observable<string>
   constructor(
@@ -34,17 +38,23 @@ export class ReservationComponent implements OnInit {
   }
 
   onExpand() {
-    this.store.dispatch(UserAccountActions.fetchReservationSpaceDetails({ reservation: this.reservation }))
+    this.spaceName$.pipe(
+      first(),
+      filter(spaceName => !spaceName)
+    ).subscribe(() =>
+      this.store.dispatch(AppActions.fetchSpaceDetails({ reservation: this.reservation }))
+    )
   }
 
-  onRemove(reservation: Reservation) {
-    this.dialog.open(GenericPopupComponent, {
-      data: {
-        title: "Are you sure?",
-        content: '<p>Are you sure you want to cancel your reservation?. Click Confirm to Cancel</p>',
-        actionLabel: 'Confirm',
-        action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation }))
-      }
-    }).afterClosed().subscribe(callback => callback)
+  onReject() {
+    this.reject.emit()
+  }
+
+  onAccept() {
+    this.accept.emit()
+  }
+
+  onRemove() {
+    this.remove.emit()
   }
 }

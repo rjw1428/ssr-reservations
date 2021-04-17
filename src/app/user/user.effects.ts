@@ -32,35 +32,11 @@ export class UserAccountEffects {
         )
     )
 
-    getProductDetails$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(UserAccountActions.fetchReservationSpaceDetails),
-            switchMap(({ reservation }) => {
-                // Get Matching Product Type
-                return this.store.select(cachedProductListSelector).pipe(
-                    first(),
-                    map(products => {
-                        const matchingProduct = products.find(product => product.id == reservation.productId)
-                        return { reservation, product: matchingProduct }
-                    })
-                )
-            }),
-            switchMap(({ reservation, product }) => {
-                //Get Space Name
-                return reservation['spaceName']
-                    ? of({ spaceName: reservation['spaceName'], reservation, product })
-                    : this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}/name`).valueChanges()
-                        .pipe(map(name => ({ spaceName: name, reservation, product })))
-            }),
-            map(({ spaceName, reservation, product }) => UserAccountActions.storeReservationDetails({ spaceName, reservationId: reservation.id, product }))
-        )
-    )
-
     deleteReservation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.deleteReservation),
-            map(({ reservation }) => {
-                this.db.list(`accepted-applications/${reservation.userId}/${reservation.id}`).remove()
+            map(({ reservation, status }) => {
+                this.db.list(`${status}-applications/${reservation.userId}/${reservation.id}`).remove()
                 const datesToRemove = getUsedTimes(reservation.startDate, reservation.endDate)
                 datesToRemove.forEach(time => this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
             })

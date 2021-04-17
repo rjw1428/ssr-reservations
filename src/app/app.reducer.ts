@@ -6,7 +6,8 @@ export const initialAppState: AppState = {
     isLoading: false,
     isLoggingIn: false,
     user: null,
-    storedProducts: null
+    storedProducts: null,
+    storedSpaceDetails: null
 }
 
 const _appReducer = createReducer(
@@ -21,7 +22,18 @@ const _appReducer = createReducer(
             ...state,
             storedProducts: action.products
         }
-    })
+    }),
+    on(AppActions.storedSpaceDetails, (state, action) => {
+        const newDetail = {
+            [action.reservationId]: {
+                spaceName: action.spaceName
+            }
+        }
+        return {
+            ...state,
+            storedSpaceDetails: { ...state.storedSpaceDetails, ...newDetail }
+        }
+    }),
 )
 
 export function appReducer(state, action) {

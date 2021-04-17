@@ -1,5 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { Product } from "./models/product";
+import { Reservation } from "./models/reservation";
 import { User } from "./models/user";
 
 export const startLoading = createAction(
@@ -59,3 +60,12 @@ export const storeProductsList = createAction(
     props<{ products: { [productId: string]: Product } }>()
 )
 
+export const fetchSpaceDetails = createAction(
+    "[Reservation Component] Fetch Selected Reservation Space Details",
+    props<{ reservation: Reservation }>()
+)
+
+export const storedSpaceDetails = createAction(
+    "[Any Effect] Store Expanded Reservation Info",
+    props<{ spaceName: string, reservationId: string, product: Product }>()
+)

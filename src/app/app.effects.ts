@@ -5,7 +5,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { from, of } from "rxjs";
-import { flatMap, map, mergeMap, switchMap } from "rxjs/operators";
+import { first, flatMap, map, mergeMap, switchMap } from "rxjs/operators";
 import { AppActions } from "./app.action-types";
 import { MatDialog } from "@angular/material/dialog";
 import { GenericPopupComponent } from "./components/generic-popup/generic-popup.component";
@@ -15,6 +15,9 @@ import { DataSnapshot } from "@angular/fire/database/interfaces";
 import { Product } from "./models/product";
 import { UserAccountActions } from "./user/user.action-types";
 import { AdminActions } from "./admin/admin.action-types";
+import { cachedProductListSelector } from "./app.selectors";
+import { AppState } from "./models/app-state";
+import { Store } from "@ngrx/store";
 
 
 @Injectable()
@@ -169,12 +172,37 @@ export class AppEffects {
         )
     )
 
+    getProductDetails$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.fetchSpaceDetails),
+            switchMap(({ reservation }) => {
+                // Get Matching Product Type
+                return this.store.select(cachedProductListSelector).pipe(
+                    first(),
+                    map(products => {
+                        const matchingProduct = products.find(product => product.id == reservation.productId)
+                        return { reservation, product: matchingProduct }
+                    })
+                )
+            }),
+            switchMap(({ reservation, product }) => {
+                //Get Space Name
+                return reservation['spaceName']
+                    ? of({ spaceName: reservation['spaceName'], reservation, product })
+                    : this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}/name`).valueChanges()
+                        .pipe(map(name => ({ spaceName: name, reservation, product })))
+            }),
+            map(({ spaceName, reservation, product }) => AppActions.storedSpaceDetails({ spaceName, reservationId: reservation.id, product }))
+        )
+    )
+
     constructor(
         private actions$: Actions,
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
         private firebaseAuth: AngularFireAuth,
         public dialog: MatDialog,
-        private router: Router
+        private router: Router,
+        private store: Store<AppState>
     ) { }
 }

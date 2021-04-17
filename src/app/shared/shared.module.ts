@@ -19,13 +19,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
-import { PendingApplicationComponent } from '../components/pending-application/pending-application.component';
 import { SortByPipe } from './sort-by.pipe';
+import { ReservationComponent } from '../components/reservation/reservation.component';
 @NgModule({
 
   declarations: [
     ProductTileComponent,
-    PendingApplicationComponent,
+    ReservationComponent,
     SortByPipe
   ],
   imports: [
@@ -70,7 +70,7 @@ import { SortByPipe } from './sort-by.pipe';
     ReactiveFormsModule,
 
     ProductTileComponent,
-    PendingApplicationComponent,
+    ReservationComponent,
     SortByPipe
   ],
   providers: [

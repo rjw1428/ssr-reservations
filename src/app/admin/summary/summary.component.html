@@ -6,7 +6,12 @@
     <div *ngFor="let product of summary | keyvalue">
       <h1 style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct">Space Type: {{product.name}}</h1>
       <div *ngFor="let space of product.value | keyvalue">
-        <h2 style="margin: 0;">{{space.value.name}}</h2>
+        <div class="space-title">
+          <h2 class="space-name" style="margin: 0;" (click)="onEditSpaceName(space.value.productId, space.key, space.value.name)">
+            {{space.value.name}}
+          </h2>
+          <mat-icon class="edit-hidden">create</mat-icon>
+        </div>
         <div *ngIf="space.value.reserved as reservations; else noReservation">
           <div *ngFor="let reservation of reservations | keyvalue" style="display: flex;  align-items: center;">
             <h3 style="margin: 0; flex-basis: 20%;">{{ reservation.key | date : 'MM/dd/yy'}}</h3>
