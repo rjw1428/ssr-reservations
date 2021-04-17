@@ -47,9 +47,11 @@ export class SummaryComponent implements OnInit {
                 .filter((productDetails: { name: string, productId: string, reserved: any, id: string }) => !!productDetails.reserved)
                 .reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
               : summary[key]
-
-            return { [key]: reducedRooms }
+            return Object.values(reducedRooms).length
+              ? { [key]: reducedRooms }
+              : null
           })
+          .filter(productSummary => !!productSummary)
           .reduce((acc, cur) => ({ ...acc, ...cur }), {})
         : null
     )
