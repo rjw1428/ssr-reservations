@@ -16,7 +16,7 @@ import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { User } from "../models/user";
-import { getUsedTimes, padLeadingZeros } from "../utility/constants";
+import { getUsedTimes, isOverlapingTime, padLeadingZeros } from "../utility/constants";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -352,11 +352,11 @@ export class AdminEffects {
                     map((resp: SnapshotAction<{ [appId: string]: Reservation }>[]) => {
                         return resp.reduce((agg, doc) => {
                             const payload = doc.payload.val()
-                            const x = Object.keys(payload).map(id => ({ ...payload[id], id }))
-                            return x.length
-                                ? agg.concat(x.filter(res =>
+                            const userApps = Object.keys(payload).map(id => ({ ...payload[id], id }))
+                            return userApps.length
+                                ? agg.concat(userApps.filter(res =>
                                     res.spaceId == application.spaceId
-                                    && this.isOverlapingTime(application.startDate, application.endDate, res.startDate, res.endDate)))
+                                    && isOverlapingTime(application.startDate, application.endDate, res.startDate, res.endDate)))
                                 : agg
                         }, [] as Reservation[])
                     })
@@ -377,14 +377,5 @@ export class AdminEffects {
         private dialog: MatDialog
 
     ) { }
-
-    isOverlapingTime(approvedStart, approvedEnd, compareStart, compareEnd) {
-        // Compare comes before Approved
-        if (compareEnd <= approvedStart) return false
-        // Approved comes before Compare
-        if (approvedEnd <= compareStart) return false
-
-        return true
-    }
 
 }

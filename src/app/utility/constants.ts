@@ -22,6 +22,15 @@ export function padLeadingZeros(number: number, size: number): string {
     return s
 }
 
+export function isOverlapingTime(approvedStart, approvedEnd, compareStart, compareEnd) {
+    // Compare comes before Approved
+    if (compareEnd <= approvedStart) return false
+    // Approved comes before Compare
+    if (approvedEnd <= compareStart) return false
+    
+    return true
+}
+
 export const TIMEFRAMES = [{
     value: 'month',
     label: 'Per Month'

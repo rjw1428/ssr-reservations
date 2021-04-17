@@ -11,7 +11,7 @@
 
   <mat-card-content *ngIf="applications$ | async as applications">
     <mat-accordion style="width: 100%;" multi *ngIf="applications.length; else noApps">
-      <app-reservation *ngFor="let application of applications | sortBy : 'createdTime' : 'desc'" 
+      <app-reservation *ngFor="let application of applications | sortBy : 'createdTime' : 'desc'; trackBy : identify" 
         [reservation]="application"
         [isAdmin]="showAdminButtons(user$ | async)"
         (accept)="onAccept(application)"

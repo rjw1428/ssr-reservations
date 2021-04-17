@@ -52,4 +52,8 @@ export class ApplicationHistoryComponent implements OnInit {
   onReject(application: Reservation) {
     this.store.dispatch(AdminActions.rejectApplicationFeedbackForm({ application }))
   }
+
+  identify(index: number, item: Reservation) {
+    return item.id
+  }
 }

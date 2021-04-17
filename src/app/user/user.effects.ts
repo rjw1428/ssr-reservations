@@ -9,7 +9,7 @@ import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
 import { cachedProductListSelector, userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
-import { getUsedTimes } from "../utility/constants";
+import { getUsedTimes, isOverlapingTime } from "../utility/constants";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 
@@ -39,7 +39,30 @@ export class UserAccountEffects {
                 this.db.list(`${status}-applications/${reservation.userId}/${reservation.id}`).remove()
                 const datesToRemove = getUsedTimes(reservation.startDate, reservation.endDate)
                 datesToRemove.forEach(time => this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
-            })
+                return { reservation, status }
+            }),
+            switchMap(({ reservation, status }) => {
+                // Search Pending Applications for duplicates
+                return status == 'accepted'
+                    ? this.db.list(`pending-applications`).snapshotChanges().pipe(
+                        first(),
+                        map((resp: SnapshotAction<{ [appId: string]: Reservation }>[]) => {
+                            return resp.reduce((agg, doc) => {
+                                const payload = doc.payload.val()
+                                const userApps = Object.keys(payload).map(id => ({ ...payload[id], id }))
+                                return userApps.length
+                                    ? agg.concat(userApps.filter(res =>
+                                        res.spaceId == reservation.spaceId
+                                        && isOverlapingTime(reservation.startDate, reservation.endDate, res.startDate, res.endDate)))
+                                    : agg
+                            }, [] as Reservation[])
+                        })
+                    )
+                    : of([])
+            }),
+            map(noLongerOverlappignReservations => noLongerOverlappignReservations.map(application =>
+                this.db.object(`pending-applications/${application.userId}/${application.id}`).update({ isAlreadyBooked: false })
+            ))
         ), { dispatch: false }
     )
 
