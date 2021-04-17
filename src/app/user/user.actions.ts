@@ -2,6 +2,9 @@ import { createAction, props } from "@ngrx/store";
 import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
 
+export const logout = createAction(
+    "[App Effect] Logout - Clear user data"
+)
 
 export const getReservations = createAction(
     "[Current Reservations Component] Fetch Current Reservations",
@@ -41,4 +44,13 @@ export const fetchPendingApplications = createAction(
 export const storePendingApplications = createAction(
     "[User Effect] Store User Pending Applications",
     props<{ pendingApplications: Reservation[] }>()
+)
+
+export const fetchRejectedApplications = createAction(
+    "[Application Status Component] Fetch User Rejected Applications"
+)
+
+export const storeRejectedApplications = createAction(
+    "[User Effect] Store User Rejected Applications",
+    props<{ rejectedApplications: Reservation[] }>()
 )

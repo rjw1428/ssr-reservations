@@ -1,11 +1,9 @@
-<!-- <div>{{reservation | json}}</div> -->
-
 <mat-expansion-panel (afterExpand)="onExpand()">
   <mat-expansion-panel-header
     style=" display: flex; justify-content: space-between; align-items: center; padding: .5em 2em;">
     <mat-panel-title style="display: flex; align-items: center; justify-content: space-around;">
       <h4 style="margin: 0">Start: {{reservation.startDate | date : 'MM/dd/yy'}}</h4>
-      <h4 style="margin: 0">End: {{reservation.startDate | date : 'MM/dd/yy'}}</h4>
+      <h4 style="margin: 0">End: {{reservation.endDate | date : 'MM/dd/yy'}}</h4>
     </mat-panel-title>
     <mat-panel-description style="display: flex; justify-content: space-between;">
       <div style="display: flex; align-items: center;">

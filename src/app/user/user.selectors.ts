@@ -41,3 +41,11 @@ export const userPendingApplicationsSelector = createSelector(
         : []
 
 )
+
+export const userRejectedApplicationsSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.rejectedApplications
+        ? Object.values(userAccount.rejectedApplications)
+        : []
+
+)

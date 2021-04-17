@@ -6,7 +6,7 @@ export function getUsedTimes(startDate: number, endDate: number): number[] {
     const startMonth = new Date(startDate).getMonth()
     const startYear = new Date(startDate).getFullYear()
     const endMonth = new Date(endDate).getMonth()
-    const delta = endMonth - startMonth < 0
+    const delta = endMonth - startMonth <= 0
         ? endMonth + 12 - startMonth
         : endMonth - startMonth
 
@@ -22,11 +22,10 @@ export function padLeadingZeros(number: number, size: number): string {
     return s
 }
 
-export const TIMEFRAMES = [
-    {
-        value: 'month',
-        label: 'By The Month'
-    }]
+export const TIMEFRAMES = [{
+    value: 'month',
+    label: 'Per Month'
+}]
 
 export const LEASETYPES = [{
     id: '3_month',

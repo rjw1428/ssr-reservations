@@ -39,34 +39,45 @@ export class ProductTileComponent implements OnInit {
   }
 
   onRemove() {
-    // CONFIRM
-    this.store.dispatch(AdminActions.removeProductType({ id: this.product.id }))
+    this.dialog.open(GenericPopupComponent, {
+      data: {
+        title: "Are you sure?",
+        content: '<p>Are you sure you want to remove your remove this office type?. Current leases for this office type will not be canceled.</p>',
+        actionLabel: 'Confirm',
+        action: () => this.store.dispatch(AdminActions.removeProductType({ id: this.product.id }))
+      }
+    }).afterClosed().subscribe(callback => callback)
   }
 
   onReserve() {
     this.user$.pipe(
       first(),
       map(user => {
-        !!user
-          ? this.dialog.open(AddReservationComponent, {
-            data: this.product
-          })
-          : this.dialog.open(GenericPopupComponent, {
-            width: '500px',
+        const popup = !!user
+          ? this.dialog.open(AddReservationComponent, { data: this.product })
+          : this.dialog.open(LoginComponent, {
             data: {
-              title: `Log In to Continue`,
-              content: `<p>In order to reserve a workspace, you will need to log in or create an account.`,
-              actionLabel: 'Continue',
-              action: () => {
-                this.dialog.open(LoginComponent, {
-                  // maxWidth: '300px',
-                  width: '300px'
-                })
-              }
+              action: () => this.dialog.open(AddReservationComponent, { data: this.product })
             }
           })
+
+        return popup.afterClosed()
+        // : this.dialog.open(GenericPopupComponent, {
+        //   width: '500px',
+        //   data: {
+        //     title: `Log In to Continue`,
+        //     content: `<p>In order to reserve a workspace, you will need to log in or create an account.`,
+        //     actionLabel: 'Continue',
+        //     action: () => {
+        //       this.dialog.open(LoginComponent, {
+        //         // maxWidth: '300px',
+        //         width: '300px'
+        //       })
+        //     }
+        //   }
+        // })
       })
-    ).subscribe(noop)
+    ).subscribe(callback => callback)
 
   }
 }

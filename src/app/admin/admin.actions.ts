@@ -4,6 +4,9 @@ import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
 import { User } from "../models/user";
 
+export const logout = createAction(
+    "[App Effect] Logout - Clear admin data"
+)
 
 export const getPoductList = createAction(
     "[Product Type Component] Fetch products"

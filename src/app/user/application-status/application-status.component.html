@@ -1,9 +1,38 @@
-<mat-card>
+<mat-card style="margin-bottom: 2em;">
   <mat-card-header style="display: flex; justify-content: space-between;">
     <mat-card-title>Pending Applications</mat-card-title>
   </mat-card-header>
 
-  <mat-card-content>
-    <app-pending-application *ngFor="let application of pendingApplications$ | async" [application]="application"></app-pending-application>
+  <mat-card-content *ngIf="(pendingApplications$ | async) as pendingApplications;">
+    <div *ngIf="pendingApplications.length; else noPending">
+      <app-pending-application *ngFor="let application of pendingApplications" 
+        [application]="application">
+      </app-pending-application>
+    </div>
+    <ng-template #noPending>
+      <div style="display: flex; justify-content: center;">
+        <h3>No Pending Applications</h3>
+      </div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>
+
+
+<mat-card>
+  <mat-card-header style="display: flex; justify-content: space-between;">
+    <mat-card-title>Rejected Applications</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content *ngIf="(rejectedApplications$ | async) as rejectedApplications;">
+    <div *ngIf="rejectedApplications.length; else noRejected">
+      <app-pending-application *ngFor="let application of rejectedApplications" 
+        [application]="application">
+      </app-pending-application>
+    </div>
+    <ng-template #noRejected>
+      <div style="display: flex; justify-content: center;">
+        <h3>No Rejected Applications</h3>
+      </div>
+    </ng-template>
   </mat-card-content>
 </mat-card>

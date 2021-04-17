@@ -19,7 +19,7 @@ export class ApplicationHistoryComponent implements OnInit {
   applications$ = this.store.select(submittedApplicationsSelector)
   user$ = this.store.select(userSelector)
   filterSelection$ = this.store.select(applicationFilterSelector)
-  filterOptions = { pending: "Pending", accepted: "Accepted", rejected: "Rejected", all: "All" }
+  filterOptions = { pending: "Pending", accepted: "Accepted", rejected: "Rejected" }
   constructor(
     private store: Store<AppState>
   ) { }

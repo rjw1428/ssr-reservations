@@ -5,11 +5,13 @@ import { UserAccountActions } from "./user.action-types"
 export const initialState: UserAccountState = {
     reservations: null,
     details: null,
-    pendingApplications: null
+    pendingApplications: null,
+    rejectedApplications: null
 }
 
 export const userAccountReducer = createReducer(
     initialState,
+    on(UserAccountActions.logout, (state) => initialState),
     on(UserAccountActions.getReservations, (state, action) => ({ ...state })),
     on(UserAccountActions.storeReservations, (state, action) => {
         const reservations = action.reservations
@@ -43,6 +45,17 @@ export const userAccountReducer = createReducer(
             ...state,
             pendingApplications
         }
-    })
+    }),
+    on(UserAccountActions.storeRejectedApplications, (state, action) => {
+        const rejectedApplications = action.rejectedApplications
+            ? action.rejectedApplications
+                .map(res => ({ [res.id]: res }))
+                .reduce((obj, res) => ({ ...obj, ...res }), {})
+            : initialState.rejectedApplications
+        return {
+            ...state,
+            rejectedApplications
+        }
+    }),
 )
 

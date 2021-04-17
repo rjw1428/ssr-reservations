@@ -30,7 +30,7 @@ export class ShoppingEffects {
     saveReservation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.saveReservation),
-            switchMap(async ({ reservation }) => this.db.database.ref(`submitted-applications/${reservation.userId}`).push(reservation)),
+            switchMap(async ({ reservation }) => this.db.database.ref(`pending-applications/${reservation.userId}`).push(reservation)),
             tap(() => this.dialog.open(GenericPopupComponent, {
                 width: '400px',
                 data: {

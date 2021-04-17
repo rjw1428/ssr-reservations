@@ -14,4 +14,5 @@ export interface Reservation {
     feedback?: string
     user?: User
     dateApproved?: number
+    isAlreadyBooked?: boolean
 }

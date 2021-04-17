@@ -31,7 +31,7 @@
       <mat-card-title>Cost Breakdown</mat-card-title>
       <section *ngFor="let timeframe of availableTimeframes; let i=index">
         <div style="display: flex; align-items: center;">
-          <p style="width: 150px;">{{timeframe.label}}:</p>
+          <p style="width: 100px;">{{timeframe.label}}:</p>
           <mat-form-field appearance="outline">
             <mat-label>Amount</mat-label>
             <input autocomplete="off" matInput type="number" [formControlName]="timeframe.value">

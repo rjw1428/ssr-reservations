@@ -9,9 +9,9 @@
     </mat-form-field>
   </mat-card-header>
 
-  <mat-card-content>
-    <mat-accordion style="width: 100%;" multi>
-      <app-pending-application *ngFor="let application of applications$ | async" 
+  <mat-card-content *ngIf="applications$ | async as applications">
+    <mat-accordion style="width: 100%;" multi *ngIf="applications.length; else noApps">
+      <app-pending-application *ngFor="let application of applications | sortBy : 'createdTime' : 'desc'" 
         [application]="application"
         [admin]="showAdminButtons(user$ | async)"
         (accept)="onAccept(application)"
@@ -19,6 +19,11 @@
       </app-pending-application>
     </mat-accordion>
 
+    <ng-template #noApps>
+      <div style="display: flex; justify-content: center;">
+        <h3>No Applications</h3>
+      </div>
+    </ng-template>
 
   </mat-card-content>
 </mat-card>

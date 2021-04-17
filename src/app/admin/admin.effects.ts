@@ -6,7 +6,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { forkJoin, from, of } from "rxjs";
-import { filter, find, first, flatMap, map, mergeMap, switchMap } from "rxjs/operators";
+import { filter, find, first, flatMap, map, mergeMap, reduce, switchMap } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
 import { cachedProductListSelector } from "../app.selectors";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
@@ -16,7 +16,7 @@ import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { User } from "../models/user";
-import { getUsedTimes, padLeadingZeros } from "../utility/constants";
+import { getUsedTimes } from "../utility/constants";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -130,7 +130,7 @@ export class AdminEffects {
     fetchUserReservations$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserReservation),
-            switchMap(({ userId }) => this.db.list(`reservations/${userId}`).snapshotChanges().pipe(
+            switchMap(({ userId }) => this.db.list(`accepted-applications/${userId}`).snapshotChanges().pipe(
                 map((resp) => ({
                     [userId]: resp
                         .map(doc => {
@@ -185,7 +185,7 @@ export class AdminEffects {
             }),
             switchMap(({ reservationId, product, userId, spaceName }) => {
                 //Get Space Name
-                return this.db.object(`reservations/${userId}/${reservationId}`).valueChanges()
+                return this.db.object(`accepted-applications/${userId}/${reservationId}`).valueChanges()
                     .pipe(map((data: Reservation) => {
                         const reservation = { id: reservationId, ...data }
                         return { spaceName, reservation, product }
@@ -227,8 +227,10 @@ export class AdminEffects {
     fetchPendingApplications$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.fetchSubmittedApplications),
-            switchMap(({ filter }) => this.db.list(`submitted-applications`).snapshotChanges().pipe(map(resp => ({ resp, filter })))),
-            map(({ resp, filter }: { resp: SnapshotAction<{ [userId: string]: { [applicationId: string]: Reservation[] } }>[], filter: string }) => {
+            switchMap(({ filter }) => {
+                return this.db.list(`${filter}-applications`).snapshotChanges()
+            }),
+            map((resp: SnapshotAction<{ [userId: string]: { [applicationId: string]: Reservation[] } }>[]) => {
                 return resp.length
                     ? resp
                         .map(res => ({ ...res.payload.val() }))
@@ -237,7 +239,6 @@ export class AdminEffects {
                                 .map(key => ({ ...userApplications[key], id: key }))
                             return totalList.concat(userApplicationsList)
                         }, [])
-                        .filter((application: Reservation) => filter == 'all' ? true : application.status == filter)
                     : []
             }),
             // Get Users as well and link with applications
@@ -255,8 +256,7 @@ export class AdminEffects {
                     map(users => applications.map(application => {
                         const user = users[application.userId]
                         return { ...application, user }
-                    })
-                    )
+                    }))
                 )),
             map(applications => AdminActions.storeSubmittedApplications({ applications }))
         )
@@ -291,10 +291,15 @@ export class AdminEffects {
     rejectApp$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.rejectApplication),
-            switchMap(({ application }) =>
-                this.db.object(`submitted-applications/${application.userId}/${application.id}`)
-                    .update({ status: "rejected", feedback: application.feedback })
-            )
+            switchMap(({ application }) => {
+                const { user, id, createdTime, ...reservation } = application
+                // Write application to Accepted
+                this.db.object(`rejected-applications/${application.userId}/${application.id}`)
+                    .set({ ...reservation, status: "rejected", feedback: application.feedback, lastModifiedTime: new Date().getTime() })
+
+                // Delete pending application
+                return this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
+            })
         ), { dispatch: false }
     )
 
@@ -311,13 +316,36 @@ export class AdminEffects {
                             reservation: application.id
                         }
                     }))
-                    .reduce((acc, cur) => ({ ...acc, ...cur }))
-                this.db.database.ref(`spaces/${application.productId}/${application.spaceId}/reserved`).update(payload)
-                this.db.object(`submitted-applications/${application.userId}/${application.id}`)
-                    .update({ status: "accepted", feedback: "Accepted" })
-                return this.db.list(`reservations/${application.userId}`).push({ ...reservation, dateApproved: new Date().getTime() })
+                    .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+                // Create Reserved Month list in the space
+                this.db.object(`spaces/${application.productId}/${application.spaceId}/reserved`).update(payload)
+
+                // Write application to Accepted
+                this.db.object(`accepted-applications/${application.userId}/${application.id}`)
+                    .set({ ...reservation, status: "accepted", feedback: "Accepted", lastModifiedTime: new Date().getTime() })
+
+                // Delete pending application
+                this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
+
+                // Search Pending Applications for duplicates
+                return this.db.list(`pending-applications`).snapshotChanges().pipe(
+                    first(),
+                    map((resp: SnapshotAction<{ [appId: string]: Reservation }>[]) => {
+                        return resp.reduce((agg, doc) => {
+                            const payload = doc.payload.val()
+                            const x = Object.keys(payload).map(id => ({ ...payload[id], id }))
+                            return x.length
+                                ? agg.concat(x.filter(res =>
+                                    res.spaceId == application.spaceId
+                                    && this.isOverlapingTime(application.startDate, application.endDate, res.startDate, res.endDate)))
+                                : agg
+                        }, [] as Reservation[])
+                    })
+                )
             }),
-            map(resp => console.log(resp))
+            map(duplicateReservations => duplicateReservations.map(application =>
+                this.db.object(`pending-applications/${application.userId}/${application.id}`).update({ isAlreadyBooked: true })
+            ))
         ), { dispatch: false }
     )
 
@@ -330,18 +358,14 @@ export class AdminEffects {
         private dialog: MatDialog
 
     ) { }
+
+    isOverlapingTime(approvedStart, approvedEnd, compareStart, compareEnd) {
+        // Compare comes before Approved
+        if (compareEnd <= approvedStart) return false
+        // Approved comes before Compare
+        if (approvedEnd <= compareStart) return false
+
+        return true
+    }
+
 }
-
-// switchMap(() => this.db.list('spaces').valueChanges()),
-// map((resp: ProductSummary[]) => {
-//     console.log(resp)
-//     const summary: AdminSummary = resp
-//         .map(product => {
-//             const firstSpace = Object.keys(product)[0]
-//             const productId = product[firstSpace].productId
-//             return { [productId]: product }
-//         })
-//         .reduce((acc, cur) => ({ ...acc, ...cur }))
-
-// }),
-// map(summary => AdminActions.storeAdminSummary({ summary }))

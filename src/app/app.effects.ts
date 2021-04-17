@@ -13,6 +13,8 @@ import { Router } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { DataSnapshot } from "@angular/fire/database/interfaces";
 import { Product } from "./models/product";
+import { UserAccountActions } from "./user/user.action-types";
+import { AdminActions } from "./admin/admin.action-types";
 
 
 @Injectable()
@@ -100,7 +102,7 @@ export class AppEffects {
                 // enrolledUser.user.sendEmailVerification({
                 //     url: environment.domain,
                 // })
-               
+
             }),
             map(() => this.router.navigate(['user', 'application']))
             // switchMap(() => this.dialog.open(GenericPopupComponent, {
@@ -146,8 +148,9 @@ export class AppEffects {
     logUserOut$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.logOut),
-            switchMap(() => this.firebaseAuth.signOut())
-        ), { dispatch: false }
+            switchMap(() => this.firebaseAuth.signOut()),
+            flatMap(() => [UserAccountActions.logout(), AdminActions.logout()])
+        )
     )
 
     getProductTyles$ = createEffect(() =>

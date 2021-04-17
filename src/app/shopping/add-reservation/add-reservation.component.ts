@@ -121,12 +121,9 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   createTempReservation() {
     const { space } = this.selectSpaceForm.value
     const user$ = this.store.select(userSelector)
-
-    this.total$.subscribe(console.log)
     this.reservation$ = combineLatest([user$, this.startDate$, this.endDate$, this.total$])
       .pipe(
         first(),
-        tap(console.log),
         map(([user, startDate, endDate, cost]) => {
           const now = new Date().getTime()
           const reservation: Reservation = {

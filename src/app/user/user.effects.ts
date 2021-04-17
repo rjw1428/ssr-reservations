@@ -22,7 +22,7 @@ export class UserAccountEffects {
             switchMap(() => this.store.select(userSelector)),
             switchMap((user) => {
                 if (!user) return of([])
-                return this.db.list(`reservations/${user.id}`).snapshotChanges()
+                return this.db.list(`accepted-applications/${user.id}`).snapshotChanges()
             }),
             map((resp: SnapshotAction<Reservation>[]) => {
                 if (!resp.length) return UserAccountActions.storeReservations({ reservations: null })
@@ -60,7 +60,7 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.deleteReservation),
             map(({ reservation }) => {
-                this.db.list(`reservations/${reservation.userId}/${reservation.id}`).remove()
+                this.db.list(`accepted-applications/${reservation.userId}/${reservation.id}`).remove()
                 const datesToRemove = getUsedTimes(reservation.startDate, reservation.endDate)
                 datesToRemove.forEach(time => this.db.list(`spaces/${reservation.productId}/${reservation.spaceId}/reserved/${time}`).remove())
             })
@@ -72,7 +72,7 @@ export class UserAccountEffects {
             ofType(UserAccountActions.fetchPendingApplications),
             switchMap(() => this.store.select(userSelector)),
             switchMap((user) => user
-                ? this.db.list(`submitted-applications/${user.id}`).snapshotChanges().pipe(
+                ? this.db.list(`pending-applications/${user.id}`).snapshotChanges().pipe(
                     map((resp: SnapshotAction<Reservation>[]) => resp.length
                         ? resp.map(res => ({ ...res.payload.val(), id: res.payload.key, user }))
                         : null
@@ -81,6 +81,23 @@ export class UserAccountEffects {
                 : of([])
             ),
             map(pendingApplications => UserAccountActions.storePendingApplications({ pendingApplications }))
+        )
+    )
+
+    fetchRejectedApplications$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.fetchRejectedApplications),
+            switchMap(() => this.store.select(userSelector)),
+            switchMap((user) => user
+                ? this.db.list(`rejected-applications/${user.id}`).snapshotChanges().pipe(
+                    map((resp: SnapshotAction<Reservation>[]) => resp.length
+                        ? resp.map(res => ({ ...res.payload.val(), id: res.payload.key, user }))
+                        : null
+                    )
+                )
+                : of([])
+            ),
+            map(rejectedApplications => UserAccountActions.storeRejectedApplications({ rejectedApplications }))
         )
     )
 

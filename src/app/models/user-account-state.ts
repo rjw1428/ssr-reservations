@@ -8,4 +8,5 @@ export interface UserAccountState {
         }
     }
     pendingApplications: { [id: string]: Reservation }
+    rejectedApplications: { [id: string]: Reservation }
 }

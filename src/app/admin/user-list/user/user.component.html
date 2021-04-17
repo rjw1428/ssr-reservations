@@ -22,25 +22,25 @@
     </div>
     <div>
       <div style="display: flex; justify-content: space-between;">
-        <h2>Last Reservations:</h2>
+        <h2>Last Lease:</h2>
       </div>
       <div *ngIf="getPreviousReservation(user) | async as reservation">
         <div style="display: flex; justify-content: space-between;">
-          <p style="margin: 0">{{ reservation.startTime | date : 'short'}} - {{ reservation.endTime | date : 'short'}}
+          <p style="margin: 0">{{ reservation.startDate | date : 'MM/dd/yy'}} - {{ reservation.endDate | date : 'MM/dd/yy'}}
           </p>
           <p>Reservation ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
-          <p style="font-style: italic;">Created: {{ reservation.createdTime | date : 'short'}}</p>
+          <p style="font-style: italic;">Created: {{ reservation.dateApproved | date : 'MM/dd/yy'}}</p>
         </div>
       </div>
       <div style="display: flex; justify-content: space-between;">
-        <h2>Current Reservations:</h2>
+        <h2>Current Leases:</h2>
       </div>
       <div *ngFor="let reservation of getNextReservations(user) | async">
         <div style="display: flex; justify-content: space-between;">
-          <p style="margin: 0">{{ reservation.startTime | date : 'short'}} - {{ reservation.endTime | date : 'short'}}
+          <p style="margin: 0">{{ reservation.startDate | date : 'MM/dd/yy'}} - {{ reservation.endDate | date : 'MM/dd/yy'}}
           </p>
           <p>Reservation ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
-          <p style="font-style: italic;">Created: {{ reservation.createdTime | date : 'short'}}</p>
+          <p style="font-style: italic;">Approved: {{ reservation.dateApproved | date : 'MM/dd/yy'}}</p>
         </div>
       </div>
     </div>
