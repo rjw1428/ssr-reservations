@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
 import { AdminActions } from 'src/app/admin/admin.action-types';
-import { cachedProductListSelector } from 'src/app/app.selectors';
+import { activeProductListSelector, cachedProductListSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { ShoppingActions } from '../shopping.action-types';
@@ -15,7 +15,7 @@ import { ShoppingActions } from '../shopping.action-types';
   styleUrls: ['./shop-product.component.scss']
 })
 export class ShopProductComponent implements OnInit {
-  productTypes$ = this.store.select(cachedProductListSelector)
+  productTypes$ = this.store.select(activeProductListSelector)
   constructor(
     private store: Store<AppState>,
     public dialog: MatDialog

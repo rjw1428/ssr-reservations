@@ -4,5 +4,6 @@ export interface Product {
     description: string;
     dateCreated: Date
     count: number;
-    month: number
+    month: number;
+    isActive: boolean;
 }

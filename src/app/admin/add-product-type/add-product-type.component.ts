@@ -54,7 +54,8 @@ export class AddProductTypeComponent implements OnInit {
     if (!this.inputProduct) {
       const product: Product = {
         ...this.productForm.value,
-        dateCreated: new Date().getTime()
+        dateCreated: new Date().getTime(),
+        isActive: true
       }
       this.store.dispatch(AdminActions.saveProduct({ product }))
     }

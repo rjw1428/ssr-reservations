@@ -27,11 +27,34 @@ export const cachedProductSelector = createSelector(
     }
 )
 
+export const activeProductListSelector = createSelector(
+    selectAppState,
+    app => {
+        return app.storedProducts
+            ? Object.values(app.storedProducts)
+                .filter(product => product.isActive)
+                .sort((a, b) => a.name.localeCompare(b.name))
+            : []
+    }
+)
+
+export const deactiveProductIdsSelector = createSelector(
+    selectAppState,
+    app => {
+        return app.storedProducts
+            ? Object.values(app.storedProducts)
+                .filter(product => !product.isActive)
+                .map(product => product.id)
+            : []
+    }
+)
+
 export const cachedProductListSelector = createSelector(
     selectAppState,
     app => {
         return app.storedProducts
-            ? Object.values(app.storedProducts).sort((a, b) => a.name.localeCompare(b.name))
+            ? Object.values(app.storedProducts)
+                .sort((a, b) => a.name.localeCompare(b.name))
             : []
     }
 )

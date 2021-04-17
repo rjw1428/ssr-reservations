@@ -16,7 +16,7 @@ import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { User } from "../models/user";
-import { getUsedTimes } from "../utility/constants";
+import { getUsedTimes, padLeadingZeros } from "../utility/constants";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -42,8 +42,8 @@ export class AdminEffects {
         this.actions$.pipe(
             ofType(AdminActions.removeProductType),
             switchMap(({ id }) => Promise.all([
-                this.afs.collection('products').doc(id).delete(),
-                this.db.list(`spaces/${id}`).remove()
+                this.afs.collection('products').doc(id).update({ isActive: false }),
+                // this.db.list(`spaces/${id}`).remove()
             ])),
             map(resp => AppActions.stopLoading())
         )
@@ -61,7 +61,7 @@ export class AdminEffects {
                 const spaceGroup = Array(resp.product.count).fill(templateSpace)
                 return forkJoin(spaceGroup.map((space, i) => this.db.list(`spaces/${resp.id}`).push({
                     ...space,
-                    name: `${resp.product.name}` // - ${padLeadingZeros(i + 1, 3)}
+                    name: `${resp.product.name} - ${padLeadingZeros(i + 1, 3)}`
                 })))
             }),
             flatMap(resp => {
@@ -284,7 +284,7 @@ export class AdminEffects {
                 }).afterClosed()
             }),
             filter(formResponse => !!formResponse),
-            map(({ action, spaceName }) => this.db.object(`spaces/${action.productId}/${action.spaceId}`).update({name: spaceName}))
+            map(({ action, spaceName }) => this.db.object(`spaces/${action.productId}/${action.spaceId}`).update({ name: spaceName }))
         ), { dispatch: false }
     )
 

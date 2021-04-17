@@ -1,13 +1,11 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { filter, first, map, shareReplay } from 'rxjs/operators';
-import { cachedProductListSelector, cachedProductSelector } from 'src/app/app.selectors';
+import { combineLatest, Observable, of, zip } from 'rxjs';
+import { filter, first, map, shareReplay, withLatestFrom } from 'rxjs/operators';
+import { cachedProductListSelector, cachedProductSelector, deactiveProductIdsSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
-import { ProductSummary } from 'src/app/models/product-summary';
-import { Reservation } from 'src/app/models/reservation';
 import { User } from 'src/app/models/user';
 import { AdminActions } from '../admin.action-types';
 import { adminSummarySelector, userListSelector, userSelector } from '../admin.selectors';
@@ -26,7 +24,34 @@ import { adminSummarySelector, userListSelector, userSelector } from '../admin.s
   ],
 })
 export class SummaryComponent implements OnInit {
-  adminSummary$ = this.store.select(adminSummarySelector).pipe(shareReplay())
+  /* 
+    Remove Deactive rooms from summary with no reservations,
+    If the room is deactiveated but has reservations remaining,
+    then show it on the summary
+  */
+  adminSummary$ = zip(
+    this.store.select(adminSummarySelector),
+    this.store.select(deactiveProductIdsSelector)
+  ).pipe(
+    map(([summary, deactiveProductTypeIds]) => 
+      summary
+        ? Object.keys(summary)
+          .map(key => {
+            const productSummary = summary[key]
+            const isDeactive = deactiveProductTypeIds.includes(key)
+            const reducedRooms = isDeactive
+              ? Object.keys(productSummary)
+                .map(key => ({ ...productSummary[key], id: key }))
+                .filter((productDetails: { name: string, productId: string, reserved: any, id: string }) => !!productDetails.reserved)
+                .reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
+              : summary[key]
+
+            return { [key]: reducedRooms }
+          })
+          .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+        : null
+    )
+  )
   productList$ = this.store.select(cachedProductListSelector)
   users$ = this.store.select(userListSelector)
   constructor(
