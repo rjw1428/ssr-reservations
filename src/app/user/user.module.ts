@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module';
 import { UserAccountEffects } from './user.effects';
 import { userAccountReducer } from './user.reducer';
 import { ApplicationStatusComponent } from './application-status/application-status.component';
+import { PaymentFormComponent } from './payment-form/payment-form.component';
 
 const routes: Routes = [
   {
@@ -19,6 +20,10 @@ const routes: Routes = [
   {
     path: 'application-status',
     component: ApplicationStatusComponent,
+  },
+  {
+    path: 'payments',
+    component: PaymentFormComponent,
   },
   {
     path: 'reservations/:type',
@@ -36,7 +41,8 @@ const routes: Routes = [
   declarations: [
     AccountInfoComponent,
     ReservationListComponent,
-    ApplicationStatusComponent
+    ApplicationStatusComponent,
+    PaymentFormComponent
   ],
   imports: [
     CommonModule,

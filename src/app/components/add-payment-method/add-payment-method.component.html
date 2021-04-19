@@ -1,0 +1,19 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Add Credit Card</mat-card-title>
+    <mat-card-subtitle>
+      Please add credit card information to keep card on file.
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div style="width: 400px;" #card></div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <div style="display: flex; justify-content: center;">
+      <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+    </div>
+  </mat-card-actions>
+</mat-card>

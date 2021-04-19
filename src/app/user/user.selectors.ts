@@ -40,5 +40,9 @@ export const userRejectedApplicationsSelector = createSelector(
     userAccount => userAccount.rejectedApplications
         ? Object.values(userAccount.rejectedApplications)
         : []
+)
 
+export const stripeDataProcessingSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.isLoading
 )

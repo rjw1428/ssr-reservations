@@ -43,3 +43,22 @@ export const storeRejectedApplications = createAction(
     "[User Effect] Store User Rejected Applications",
     props<{ rejectedApplications: Reservation[] }>()
 )
+
+export const addCreditCardToStripe = createAction(
+    "[Add Payment Method] Store payment source",
+    props<{ token: string }>()
+)
+
+export const creditCardAddResponse = createAction(
+    "[User Effect] Credit Card saved response",
+    props<{ response: any }>()
+)
+
+export const startLoading = createAction(
+    "[Any User Component] Data is being sent to stripe"
+)
+
+export const sendCharge = createAction(
+    "[Payment Form Component] Send Stripe Charge",
+    props<{ amount: number, sourceId: string }>()
+)

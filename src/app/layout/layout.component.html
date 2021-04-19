@@ -35,6 +35,10 @@
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
             Historic Leases
           </a>
+          <a *ngIf="user$ | async" mat-list-item routerLink="user/payments"
+            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+            Make Payment
+          </a>
           <!-- <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a> -->
           <!-- <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"

@@ -23,6 +23,7 @@ import { AppEffects } from './app.effects';
 import { NewUserComponent } from './login/new-user/new-user.component';
 import { GenericPopupComponent } from './components/generic-popup/generic-popup.component';
 import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
+import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -34,6 +35,7 @@ import { ForgotPasswordComponent } from './login/forgot-password/forgot-password
     NewUserComponent,
     GenericPopupComponent,
     ForgotPasswordComponent,
+    AddPaymentMethodComponent,
   ],
   imports: [
     BrowserModule,

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
+import { first, flatMap, map, mergeMap, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
@@ -12,6 +12,9 @@ import { Reservation } from "../models/reservation";
 import { getUsedTimes, isOverlapingTime } from "../utility/constants";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
+import { AngularFireFunctions } from "@angular/fire/functions";
+import { User } from "../models/user";
+import { AppActions } from "../app.action-types";
 
 @Injectable()
 export class UserAccountEffects {
@@ -100,10 +103,46 @@ export class UserAccountEffects {
         )
     )
 
+    addCardToStripe$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.addCreditCardToStripe),
+            withLatestFrom(this.store.select(userSelector)),
+            switchMap(([{ token }, user]: [any, User]) => {
+                const createCard = this.fns.httpsCallable('createStripeSource')
+                return createCard({ stripeId: user.stripeCustomerId, token, userId: user.id })
+            }),
+            map(({ err, resp }) => {
+                if (err) {
+                    console.log(err)
+                    throw "Unable to create stripe payment source"
+                }
+                // THIS DOESNT ACTUALLY GET THE ERROR/RESPONSE TO THE STATE/COMPONENT
+                return UserAccountActions.creditCardAddResponse({ response: { err, resp } })
+            })
+        )
+    )
+
+    addCharge$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.sendCharge),
+            withLatestFrom(this.store.select(userSelector)),
+            switchMap(([{ sourceId, amount }, user]: [any, User]) => {
+                const createCharge = this.fns.httpsCallable('createStripeCharge')
+                return createCharge({ customerId: user.stripeCustomerId, sourceId, amount: amount * 100 })
+            }),
+            map(({ err, resp }) => {
+                return err
+                    ? console.log(err)
+                    : console.log(resp)
+            })
+        ), { dispatch: false }
+    )
+
     constructor(
         private actions$: Actions,
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
+        private fns: AngularFireFunctions,
         private store: Store<AppState>,
         public dialog: MatDialog,
         private router: Router

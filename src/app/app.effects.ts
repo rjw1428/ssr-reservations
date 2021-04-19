@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { AngularFireFunctions } from '@angular/fire/functions';
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -96,18 +97,30 @@ export class AppEffects {
             )),
             map(enrolledUser => {
                 const { password, ...userData } = enrolledUser.userInput
+                const updatedUser = { ...userData, id: enrolledUser.user.uid }
                 this.db.database
                     .ref(`users/${enrolledUser.user.uid}`)
-                    .set({
-                        ...userData,
-                        id: enrolledUser.user.uid
-                    })
+                    .set(updatedUser)
                 // enrolledUser.user.sendEmailVerification({
                 //     url: environment.domain,
                 // })
+                return updatedUser
+            }),
+            switchMap((userData) => {
+                console.log("HERE")
+                //WITH FIREBASE USER ID, CREATE STRIPE ID
+                const createStripeCustomer = this.fns.httpsCallable("createStripeCustomer")
+                return createStripeCustomer(userData)
 
             }),
-            map(() => this.router.navigate(['user', 'application']))
+            map(({ err, resp }) => {
+                if (err) {
+                    console.log(err)
+                    throw "Unable to create stripe account"
+                }
+                this.router.navigate(['user', 'application'])
+            })
+
             // switchMap(() => this.dialog.open(GenericPopupComponent, {
             //     width: '300px',
             //     data: {
@@ -200,6 +213,7 @@ export class AppEffects {
         private actions$: Actions,
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
+        private fns: AngularFireFunctions,
         private firebaseAuth: AngularFireAuth,
         public dialog: MatDialog,
         private router: Router,

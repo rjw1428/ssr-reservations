@@ -1,0 +1,41 @@
+<mat-card>
+  <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
+    <mat-card-title>Make A Payment</mat-card-title>
+    <div>
+      <button mat-flat-button color="primary" (click)="onAddCard()">Add Card</button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="paymentForm" style="display: flex; flex-direction: column;">
+      <mat-form-field appearance="outline">
+        <mat-label>Payment Amount</mat-label>
+        <mat-icon matPrefix>attach_money</mat-icon>
+        <input name="paymentAmount" matInput type="number" formControlName="paymentAmount">
+        <span matSuffix>.00 &nbsp;</span>
+        <mat-error *ngIf="paymentForm.invalid">Payment amount required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Additional Amount</mat-label>
+        <mat-icon matPrefix>attach_money</mat-icon>
+        <input name="paymentAmount" matInput type="number" formControlName="additionalAmount">
+        <span matSuffix>.00 &nbsp;</span>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Payment Method</mat-label>
+        <mat-select formControlName="paymentMethod">
+          <mat-option *ngFor="let source of paymentSources$ | async;" 
+            [value]="source.id">
+            {{source.brand}} ***{{source.last4}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions style="display: flex;justify-content: center;">
+    <button mat-flat-button color="primary" [disabled]="paymentForm.invalid" (click)="onTirggerPayment()">Continue</button>
+  </mat-card-actions>
+</mat-card>
