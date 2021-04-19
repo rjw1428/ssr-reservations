@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import { db, stripe } from './config';
+import { db, stripe, increment } from './config';
 
 export const createStripeCustomer = functions.https.onCall(async (data) => {
     try {
@@ -26,16 +26,19 @@ export const createStripeSource = functions.https.onCall(async ({ stripeId, toke
 })
 
 
-export const createStripeCharge = functions.https.onCall(async ({ customerId, sourceId, amount }) => {
+export const createStripeCharge = functions.https.onCall(async ({ userId, customerId, sourceId, amount }) => {
     try {
+        const userRef = db.ref(`users/${userId}`)
         const charge = await stripe.charges.create({
-            amount: amount,
+            amount: amount * 100,
             currency: 'usd',
             description: 'Burwell Project',
             customer: customerId,
             statement_descriptor: 'Burwell Project',
             source: sourceId
         })
+        userRef.update({ revenue: increment(amount) })
+
         return { err: null, resp: charge }
     }
     catch (err) {

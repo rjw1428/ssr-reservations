@@ -23,19 +23,25 @@
         <span matSuffix>.00 &nbsp;</span>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" *ngIf="(paymentSources$ | async).length; else requestAddCard">
         <mat-label>Payment Method</mat-label>
         <mat-select formControlName="paymentMethod">
-          <mat-option *ngFor="let source of paymentSources$ | async;" 
-            [value]="source.id">
+          <mat-option *ngFor="let source of paymentSources$ | async;" [value]="source.id">
             {{source.brand}} ***{{source.last4}}
           </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <ng-template #requestAddCard>
+        <div style="display: flex; justify-content: center;">
+          <h3>Select "Add Card" button to add your credit card.</h3>
+        </div>
+      </ng-template>
     </form>
   </mat-card-content>
 
   <mat-card-actions style="display: flex;justify-content: center;">
-    <button mat-flat-button color="primary" [disabled]="paymentForm.invalid" (click)="onTirggerPayment()">Continue</button>
+    <button mat-flat-button color="primary" [disabled]="paymentForm.invalid"
+      (click)="onTirggerPayment()">Continue</button>
   </mat-card-actions>
 </mat-card>

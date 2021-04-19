@@ -9,6 +9,7 @@ export interface User {
     dateCreated: number;        //epoch
     lastLogIn?: number;         //epoch
     stripeCustomerId: string;   //from stripe
-    password?: string
-    paymentSources: PaymentSource[]
+    password?: string;
+    paymentSources: PaymentSource[];
+    revenue: number;
 }

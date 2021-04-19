@@ -128,7 +128,7 @@ export class UserAccountEffects {
             withLatestFrom(this.store.select(userSelector)),
             switchMap(([{ sourceId, amount }, user]: [any, User]) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
-                return createCharge({ customerId: user.stripeCustomerId, sourceId, amount: amount * 100 })
+                return createCharge({ userId: user.id, customerId: user.stripeCustomerId, sourceId, amount })
             }),
             map(({ err, resp }) => {
                 return err

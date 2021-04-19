@@ -4,6 +4,7 @@ import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 export const db = admin.database()
+export const increment = admin.database.ServerValue.increment
 // const settings = { timestampsInSnapshots: true };
 // db.settings(settings)
 

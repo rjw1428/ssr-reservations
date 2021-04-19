@@ -68,7 +68,7 @@ export const reservationDetailsSelector = createSelector(
 
 export const paymentSourceSelector = createSelector(
     selectAppState,
-    app =>  app.user
+    app =>  app.user && app.user.paymentSources
         ? Object.values(app.user.paymentSources)
-        : null
+        : []
 )

@@ -17,7 +17,7 @@
         <h3>Last Log In: {{ user.lastLogIn | date : 'MM/dd/yy - hh:mm a'}}</h3>
       </div>
       <div style="display: flex; justify-content: center; align-items: center;">
-        <h3>Total Revenu: $0.00</h3>
+        <h3>Total Revenue: {{user.revenue ? user.revenue : 0 | currency }}</h3>
       </div>
     </div>
     <div>
