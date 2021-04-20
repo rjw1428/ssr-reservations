@@ -51,7 +51,7 @@ export class ReservationListComponent implements OnInit {
         actionLabel: 'Confirm',
         action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation, status: 'accepted' }))
       }
-    }).afterClosed().subscribe(callback => callback)
+    })
   }
 
   identify(index: number, item: Product) {

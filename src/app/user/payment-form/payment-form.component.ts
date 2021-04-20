@@ -111,6 +111,6 @@ export class PaymentFormComponent implements OnInit {
           productId: lease.productId
         }))
       }
-    }).afterClosed().subscribe(callback => callback)
+    })
   }
 }

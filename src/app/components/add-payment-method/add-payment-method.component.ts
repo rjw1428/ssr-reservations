@@ -2,10 +2,10 @@ import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef } fro
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { skip, first, filter } from 'rxjs/operators';
-import { productTypeSubmissionSuccessSelector } from 'src/app/admin/admin.selectors';
+import { AppActions } from 'src/app/app.action-types';
+import { loadingSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { UserAccountActions } from 'src/app/user/user.action-types';
-import { stripeDataProcessingSelector } from 'src/app/user/user.selectors';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -41,11 +41,11 @@ export class AddPaymentMethodComponent implements OnInit {
 
   async onSave() {
     // Get user stripe id
+    this.store.dispatch(AppActions.startLoading())
     const { token } = await this.stripe.createToken(this.cardForm)
-    this.store.dispatch(UserAccountActions.startLoading())
     this.store.dispatch(UserAccountActions.addCreditCardToStripe({ token }))
 
-    this.store.select(stripeDataProcessingSelector).pipe(
+    this.store.select(loadingSelector).pipe(
       skip(1),
       first(),
       filter((resp) => !resp)

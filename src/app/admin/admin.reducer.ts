@@ -3,7 +3,6 @@ import { AdminState } from "../models/admin-state"
 import { AdminActions } from "./admin.action-types"
 
 export const initialState: AdminState = {
-    isSaving: false,
     summary: null,
     users: null,
     userReservations: null,
@@ -14,9 +13,6 @@ export const initialState: AdminState = {
 export const adminReducer = createReducer(
     initialState,
     on(AdminActions.logout, (state) => initialState),
-    on(AdminActions.saveProduct, (state) => ({ ...state, isSaving: true })),
-    on(AdminActions.editProduct, (state) => ({ ...state, isSaving: true })),
-    on(AdminActions.saveProductComplete, (state) => ({ ...state, isSaving: false })),
     on(AdminActions.storeAdminSummary, (state, action) => ({ ...state, summary: action.summary })),
     on(AdminActions.storeUserList, (state, action) => ({ ...state, users: action.users })),
     on(AdminActions.storeUserReservation, (state, action) => (

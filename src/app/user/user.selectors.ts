@@ -61,7 +61,3 @@ export const userRejectedApplicationsSelector = createSelector(
         : []
 )
 
-export const stripeDataProcessingSelector = createSelector(
-    selectUserAccountState,
-    userAccount => userAccount.isLoading
-)

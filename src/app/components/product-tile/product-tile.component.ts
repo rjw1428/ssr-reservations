@@ -46,7 +46,7 @@ export class ProductTileComponent implements OnInit {
         actionLabel: 'Confirm',
         action: () => this.store.dispatch(AdminActions.removeProductType({ id: this.product.id }))
       }
-    }).afterClosed().subscribe(callback => callback)
+    })
   }
 
   onReserve() {
@@ -61,22 +61,7 @@ export class ProductTileComponent implements OnInit {
               action: () => this.dialog.open(AddReservationComponent, { data: this.product })
             }
           })
-
         return popup.afterClosed()
-        // : this.dialog.open(GenericPopupComponent, {
-        //   width: '500px',
-        //   data: {
-        //     title: `Log In to Continue`,
-        //     content: `<p>In order to reserve a workspace, you will need to log in or create an account.`,
-        //     actionLabel: 'Continue',
-        //     action: () => {
-        //       this.dialog.open(LoginComponent, {
-        //         // maxWidth: '300px',
-        //         width: '300px'
-        //       })
-        //     }
-        //   }
-        // })
       })
     ).subscribe(callback => callback)
 

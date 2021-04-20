@@ -12,24 +12,29 @@ import { SharedModule } from '../shared/shared.module';
 import { UserListComponent } from './user-list/user-list.component';
 import { UserComponent } from './user-list/user/user.component';
 import { ApplicationHistoryComponent } from './application-history/application-history.component';
+import { AdminGuard } from '../admin.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: SummaryComponent,
     pathMatch: 'full',
+    canActivate: [AdminGuard]
   },
   {
     path: 'product-list',
     component: ProductTypeListComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: 'users',
     component: UserListComponent,
+    canActivate: [AdminGuard]
   },
   {
     path: 'applications',
     component: ApplicationHistoryComponent,
+    canActivate: [AdminGuard]
   },
 ]
 

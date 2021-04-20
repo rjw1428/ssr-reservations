@@ -114,8 +114,10 @@ export class UserAccountEffects {
                     console.log(err)
                     throw "Unable to create stripe payment source"
                 }
+                console.log(resp)
                 // THIS DOESNT ACTUALLY GET THE ERROR/RESPONSE TO THE STATE/COMPONENT
-                return UserAccountActions.creditCardAddResponse({ response: { err, resp } })
+                // return UserAccountActions.creditCardAddResponse({ response: { err, resp } })
+                return AppActions.stopLoading()
             })
         )
     )
@@ -138,11 +140,15 @@ export class UserAccountEffects {
                 })
             }),
             map(({ err, resp }) => {
-                return err
-                    ? console.log(err)
-                    : console.log(resp)
+                if (err) {
+                    console.log(err)
+                    throw "Unable to create stripe payment source"
+                }
+                console.log(resp)
+                // THIS DOESNT ACTUALLY GET THE ERROR/RESPONSE TO THE STATE/COMPONENT
+                return AppActions.stopLoading()
             })
-        ), { dispatch: false }
+        )
     )
 
     constructor(

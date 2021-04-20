@@ -3,11 +3,6 @@ import { AdminState } from "../models/admin-state";
 
 export const selectAdminState = createFeatureSelector<AdminState>("admin")
 
-export const productTypeSubmissionSuccessSelector = createSelector(
-    selectAdminState,
-    admin => admin.isSaving
-)
-
 export const adminSummarySelector = createSelector(
     selectAdminState,
     admin => admin.summary

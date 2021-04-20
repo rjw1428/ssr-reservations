@@ -17,6 +17,10 @@
         </mat-select>
       </mat-form-field>
 
+      <div *ngIf="paymentForm.get('reservation').value as lease" style="display: flex; justify-content: center;">
+        <h2>Amount Due: {{lease.cost | currency}} </h2>
+      </div>
+
       <mat-form-field appearance="outline">
         <mat-label>Payment Amount</mat-label>
         <mat-icon matPrefix>attach_money</mat-icon>

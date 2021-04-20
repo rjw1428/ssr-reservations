@@ -44,7 +44,7 @@ export class ApplicationStatusComponent implements OnInit {
         actionLabel: 'Confirm',
         action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation, status: 'pending' }))
       }
-    }).afterClosed().subscribe(callback => callback)
+    })
   }
 
   identify(index: number, item: Reservation) {

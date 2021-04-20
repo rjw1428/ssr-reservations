@@ -10,29 +10,33 @@ import { UserAccountEffects } from './user.effects';
 import { userAccountReducer } from './user.reducer';
 import { ApplicationStatusComponent } from './application-status/application-status.component';
 import { PaymentFormComponent } from './payment-form/payment-form.component';
+import { AuthGuard } from '../auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: AccountInfoComponent,
     pathMatch: 'full',
+    canActivate: [AuthGuard]
   },
   {
     path: 'application-status',
     component: ApplicationStatusComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'payments',
     component: PaymentFormComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'reservations/:type',
     component: ReservationListComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'reservations',
     redirectTo: 'reservations/current',
-    pathMatch: 'full',
   },
 ]
 

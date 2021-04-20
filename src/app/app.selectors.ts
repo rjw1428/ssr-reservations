@@ -18,6 +18,11 @@ export const userSelector = createSelector(
     app => app.user
 )
 
+export const isAdminSelector = createSelector(
+    selectAppState,
+    app => app.user && ['admin', 'master'].includes(app.user.role)
+)
+
 export const cachedProductSelector = createSelector(
     selectAppState,
     (app, id) => {

@@ -5,11 +5,11 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, first, skip } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
+import { loadingSelector } from 'src/app/app.selectors';
 import { AdminState } from 'src/app/models/admin-state';
 import { Product } from 'src/app/models/product';
 import { TIMEFRAMES } from 'src/app/utility/constants';
 import { AdminActions } from '../admin.action-types';
-import { productTypeSubmissionSuccessSelector } from '../admin.selectors';
 
 @Component({
   selector: 'app-add-product-type',
@@ -70,7 +70,7 @@ export class AddProductTypeComponent implements OnInit {
     }
 
     // LISTEN FOR WRITE SUCCESS (CLOSE FORM)
-    this.store.select(productTypeSubmissionSuccessSelector).pipe(
+    this.store.select(loadingSelector).pipe(
       skip(1),
       first(),
       filter((isSaving: boolean) => !isSaving)
