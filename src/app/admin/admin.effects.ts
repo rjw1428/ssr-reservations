@@ -22,22 +22,6 @@ import { AdminActions } from "./admin.action-types";
 @Injectable()
 export class AdminEffects {
 
-    getProducts$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(AdminActions.getPoductList),
-            switchMap(() => this.afs.collection('products').snapshotChanges()),
-            map((docs: DocumentChangeAction<Product>[]) => {
-                return docs
-                    .reduce((obj, doc) => {
-                        const id = doc.payload.doc.id
-                        const data = { id, ...doc.payload.doc.data() }
-                        return { ...obj, [id]: data }
-                    }, {})
-            }),
-            map(products => AppActions.storeProductsList({ products }))
-        )
-    )
-
     deleteProduct$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.removeProductType),
@@ -90,39 +74,37 @@ export class AdminEffects {
                     AdminActions.saveProductComplete()
                 ]
             })
-        )//, {dispatch: false}
+        )
     )
 
     fetchAdminSummary$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getAdminSummary),
-            switchMap(() => this.db.list('spaces').snapshotChanges().pipe(
-                map((resp) => resp
-                    .map(doc => {
-                        const id = doc.key
-                        const data = doc.payload.val() as ProductSummary
-                        return { [id]: data }
-                    })
-                    .reduce((acc, cur) => ({ ...acc, ...cur }))
-                ),
-            )),
+            switchMap(() => this.db.list('spaces').snapshotChanges()),
+            map((resp) => resp
+                .map(doc => {
+                    const id = doc.key
+                    const data = doc.payload.val() as ProductSummary
+                    return { [id]: data }
+                })
+                .reduce((acc, cur) => ({ ...acc, ...cur }))
+            ),
             map(summary => AdminActions.storeAdminSummary({ summary }))
-        )//, { dispatch: false }
+        )
     )
 
     fetchUserList$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserList),
-            switchMap(() => this.db.list('users').snapshotChanges().pipe(
-                map((resp) => resp
-                    .map(doc => {
-                        const id = doc.key
-                        const data = doc.payload.val() as User
-                        return { [id]: data }
-                    })
-                    .reduce((acc, cur) => ({ ...acc, ...cur }))
-                ),
-            )),
+            switchMap(() => this.db.list('users').snapshotChanges()),
+            map((resp) => resp
+                .map(doc => {
+                    const id = doc.key
+                    const data = doc.payload.val() as User
+                    return { [id]: data }
+                })
+                .reduce((acc, cur) => ({ ...acc, ...cur }))
+            ),
             map(users => AdminActions.storeUserList({ users }))
         )
     )
@@ -341,7 +323,16 @@ export class AdminEffects {
 
                 // Write application to Accepted
                 this.db.object(`accepted-applications/${application.userId}/${application.id}`)
-                    .set({ ...reservation, status: "accepted", feedback: "Accepted", lastModifiedTime: new Date().getTime() })
+                    .set({
+                        ...reservation,
+                        status: "accepted",
+                        feedback: "Accepted",
+                        lastModifiedTime: new Date().getTime(),
+                        unpaidTimes: getUsedTimes(application.startDate, application.endDate).reduce((acc, time) => {
+                            const val = { [time]: time }
+                            return { ...acc, ...val }
+                        }, {})
+                    })
 
                 // Delete pending application
                 this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()

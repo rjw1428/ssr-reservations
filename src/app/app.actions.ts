@@ -1,6 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 import { Product } from "./models/product";
 import { Reservation } from "./models/reservation";
+import { Space } from "./models/space";
 import { User } from "./models/user";
 
 export const startLoading = createAction(
@@ -67,5 +68,14 @@ export const fetchSpaceDetails = createAction(
 
 export const storedSpaceDetails = createAction(
     "[Any Effect] Store Expanded Reservation Info",
-    props<{ spaceName: string, reservationId: string, product: Product }>()
+    props<{ space: { [spaceId: string]: Space } }>()
+)
+
+export const fetchAllSpaceDetails = createAction(
+    "[Payment Form] Fetch all space details",
+)
+
+export const storeAllSpaceDetails = createAction(
+    "[App Effect] Store all space details",
+    props<{ spaces: { [spaceId: string]: Space } }>()
 )

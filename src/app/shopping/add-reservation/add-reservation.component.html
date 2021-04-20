@@ -55,13 +55,20 @@
           <h2>Start: {{startDate$ | async | date : 'MM/dd/yyyy'}}</h2>
           <h2>End: {{endDate$ | async | date : 'MM/dd/yyyy'}}</h2>
         </div>
-        <form [formGroup]="selectSpaceForm">
-          <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide">
+        <form [formGroup]="selectSpaceForm" *ngIf="availableSpaces$ | async as availableSpaces;">
+          <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide" *ngIf="availableSpaces.length; else noSpaces">
             <mat-label>Select an available {{inputProduct.name | lowercase}}</mat-label>
             <mat-select formControlName="space" style="min-width: 100%">
-              <mat-option *ngFor="let space of availableSpaces$ | async" [value]="space.id">{{space.name}}</mat-option>
+              <mat-option *ngFor="let space of availableSpaces" [value]="space.id">{{space.name}}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <ng-template #noSpaces>
+            <div style="display: flex; justify-content: center;">
+              <h3>No space of this type available during selected timeframe.</h3>
+            </div>
+          </ng-template>
+
           <div style="display: flex; justify-content: center;">
             <button mat-button matStepperPrevious>Previous</button>
             <button mat-button matStepperNext [disabled]="selectSpaceForm.invalid"

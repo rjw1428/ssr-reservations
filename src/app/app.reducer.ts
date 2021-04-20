@@ -1,3 +1,4 @@
+import { state } from "@angular/animations";
 import { createReducer, on } from "@ngrx/store";
 import { AppActions } from "./app.action-types";
 import { AppState } from "./models/app-state";
@@ -7,7 +8,8 @@ export const initialAppState: AppState = {
     isLoggingIn: false,
     user: null,
     storedProducts: null,
-    storedSpaceDetails: null
+    // storedSpaceDetails: null,
+    storedSpaces: null
 }
 
 const _appReducer = createReducer(
@@ -23,17 +25,8 @@ const _appReducer = createReducer(
             storedProducts: action.products
         }
     }),
-    on(AppActions.storedSpaceDetails, (state, action) => {
-        const newDetail = {
-            [action.reservationId]: {
-                spaceName: action.spaceName
-            }
-        }
-        return {
-            ...state,
-            storedSpaceDetails: { ...state.storedSpaceDetails, ...newDetail }
-        }
-    }),
+    on(AppActions.storedSpaceDetails, (state, { space }) => ({ ...state, storedSpaces: { ...state.storedSpaces, ...space } })),
+    on(AppActions.storeAllSpaceDetails, (state, { spaces }) => ({ ...state, storedSpaces: spaces }))
 )
 
 export function appReducer(state, action) {

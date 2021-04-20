@@ -59,16 +59,21 @@ export const cachedProductListSelector = createSelector(
     }
 )
 
+export const cachedSpaceSelector = createSelector(
+    selectAppState,
+    app => app.storedSpaces
+)
+
 export const reservationDetailsSelector = createSelector(
     selectAppState,
-    (app: AppState, reservationId: string) => app.storedSpaceDetails && app.storedSpaceDetails[reservationId]
-        ? app.storedSpaceDetails[reservationId].spaceName
+    (app: AppState, spaceId: string) => app.storedSpaces && app.storedSpaces[spaceId]
+        ? app.storedSpaces[spaceId].name
         : null
 )
 
 export const paymentSourceSelector = createSelector(
     selectAppState,
-    app =>  app.user && app.user.paymentSources
+    app => app.user && app.user.paymentSources
         ? Object.values(app.user.paymentSources)
         : []
 )

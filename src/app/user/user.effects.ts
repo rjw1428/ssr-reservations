@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { first, flatMap, map, mergeMap, switchMap, tap, withLatestFrom } from "rxjs/operators";
+import { filter, first, flatMap, map, mergeMap, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
@@ -23,10 +23,8 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.getReservations),
             switchMap(() => this.store.select(userSelector)),
-            switchMap((user) => {
-                if (!user) return of([])
-                return this.db.list(`accepted-applications/${user.id}`).snapshotChanges()
-            }),
+            filter(user => !!user),
+            switchMap((user) => this.db.list(`accepted-applications/${user.id}`).snapshotChanges()),
             map((resp: SnapshotAction<Reservation>[]) => {
                 if (!resp.length) return UserAccountActions.storeReservations({ reservations: null })
                 const reservations = resp.map(res => ({ ...res.payload.val(), id: res.payload.key }))
@@ -126,9 +124,18 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.sendCharge),
             withLatestFrom(this.store.select(userSelector)),
-            switchMap(([{ sourceId, amount }, user]: [any, User]) => {
+            switchMap(([{ sourceId, amount, reservationId, selectedTime, spaceId, productId }, user]: [any, User]) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
-                return createCharge({ userId: user.id, customerId: user.stripeCustomerId, sourceId, amount })
+                return createCharge({
+                    userId: user.id,
+                    customerId: user.stripeCustomerId,
+                    sourceId,
+                    amount,
+                    reservationId,
+                    selectedTime,
+                    spaceId,
+                    productId
+                })
             }),
             map(({ err, resp }) => {
                 return err

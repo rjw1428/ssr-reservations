@@ -60,5 +60,5 @@ export const startLoading = createAction(
 
 export const sendCharge = createAction(
     "[Payment Form Component] Send Stripe Charge",
-    props<{ amount: number, sourceId: string }>()
+    props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, spaceId: string, productId: string }>()
 )

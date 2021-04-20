@@ -9,10 +9,12 @@ export interface Reservation {
     endDate: number             //epoch
     createdTime: number;        //epoch
     lastModifiedTime: number;   //epoch
-    cost: number,
-    status: string,
-    feedback?: string
-    user?: User
-    dateApproved?: number
-    isAlreadyBooked?: boolean
+    totalCost: number;
+    cost: number;
+    status: string;
+    feedback?: string;
+    user?: User;
+    dateApproved?: number;
+    isAlreadyBooked?: boolean;
+    unpaidTimes?: { [time: string]: string };
 }

@@ -34,7 +34,7 @@ export class ReservationComponent implements OnInit {
 
   ngOnInit(): void {
     this.product$ = this.store.select(cachedProductSelector, this.reservation.productId)
-    this.spaceName$ = this.store.select(reservationDetailsSelector, this.reservation.id)
+    this.spaceName$ = this.store.select(reservationDetailsSelector, this.reservation.spaceId)
   }
 
   onExpand() {

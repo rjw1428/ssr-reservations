@@ -1,4 +1,5 @@
 import { Product } from "./product";
+import { Space } from "./space";
 import { User } from "./user";
 
 export interface AppState {
@@ -6,9 +7,10 @@ export interface AppState {
     isLoggingIn: boolean,
     user: User
     storedProducts: { [spaceId: string]: Product }
-    storedSpaceDetails: {
-        [reservationId: string]: {
-            spaceName: string
-        }
-    }
+    // storedSpaceDetails: {
+    //     [reservationId: string]: {
+    //         spaceName: string
+    //     }
+    // }
+    storedSpaces: { [spaceId: string]: Space }
 }

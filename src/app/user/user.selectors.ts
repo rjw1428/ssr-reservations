@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { Reservation } from "../models/reservation";
 import { UserAccountState } from "../models/user-account-state";
 
 export const selectUserAccountState = createFeatureSelector<UserAccountState>("userAccount")
@@ -23,6 +24,24 @@ export const userHistoricReservationsSelector = createSelector(
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
                 .filter(reservation => reservation.endDate < now)
+            : []
+    }
+)
+
+export const userUnpaidReservationSelector = createSelector(
+    selectUserAccountState,
+    userAccount => {
+        return userAccount.reservations
+            ? Object.keys(userAccount.reservations)
+                .map(key => ({ ...userAccount.reservations[key], id: key }))
+                .filter(reservation => reservation.unpaidTimes)
+                .reduce((acc, reservation) => {
+                    return acc.concat(Object.keys(reservation.unpaidTimes)
+                        .map(unpaidTime => {
+                            return { ...reservation, unpaidTime }
+                        })
+                    )
+                }, []) as Reservation[]
             : []
     }
 )

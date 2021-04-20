@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
 import { first, filter, find, map } from 'rxjs/operators';
+import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { User } from 'src/app/models/user';
@@ -31,7 +32,7 @@ export class UserListComponent implements OnInit {
     this.products$.pipe(
       first(),
       filter(products => !products.length)
-    ).subscribe(() => this.store.dispatch(AdminActions.getPoductList()))
+    ).subscribe(() => this.store.dispatch(AppActions.getProductTypes()))
   }
 
   onPromotion(userId: string) {

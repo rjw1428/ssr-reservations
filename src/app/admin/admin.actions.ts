@@ -8,10 +8,6 @@ export const logout = createAction(
     "[App Effect] Logout - Clear admin data"
 )
 
-export const getPoductList = createAction(
-    "[Product Type Component] Fetch products"
-)
-
 export const removeProductType = createAction(
     "[Product Tile Component] Delete Self",
     props<{ id: string }>()

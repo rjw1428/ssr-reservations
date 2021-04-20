@@ -56,6 +56,7 @@ export class ProductTileComponent implements OnInit {
         const popup = !!user
           ? this.dialog.open(AddReservationComponent, { data: this.product })
           : this.dialog.open(LoginComponent, {
+            width: '300px',
             data: {
               action: () => this.dialog.open(AddReservationComponent, { data: this.product })
             }

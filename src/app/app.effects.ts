@@ -12,13 +12,14 @@ import { MatDialog } from "@angular/material/dialog";
 import { GenericPopupComponent } from "./components/generic-popup/generic-popup.component";
 import { Router } from "@angular/router";
 import { environment } from "src/environments/environment";
-import { DataSnapshot } from "@angular/fire/database/interfaces";
+import { AngularFireObject, DataSnapshot, SnapshotAction } from "@angular/fire/database/interfaces";
 import { Product } from "./models/product";
 import { UserAccountActions } from "./user/user.action-types";
 import { AdminActions } from "./admin/admin.action-types";
 import { cachedProductListSelector } from "./app.selectors";
 import { AppState } from "./models/app-state";
 import { Store } from "@ngrx/store";
+import { Space } from "./models/space";
 
 
 @Injectable()
@@ -39,7 +40,7 @@ export class AppEffects {
         )
     )
     /*
-            Create User => Create User Space in Realtime DB => Send Verification Email => Trigger Popup => Redirect to login
+            Create User => Create User in Realtime DB => Send Verification Email => Trigger Popup => Redirect to login
             Notes: 
              - createUserWithEmailAndPassword will check for short passwords and already existing accounts
             and return an error, so once a valid response is returned from that switchMap, a NEW user is created
@@ -107,7 +108,6 @@ export class AppEffects {
                 return updatedUser
             }),
             switchMap((userData) => {
-                console.log("HERE")
                 //WITH FIREBASE USER ID, CREATE STRIPE ID
                 const createStripeCustomer = this.fns.httpsCallable("createStripeCustomer")
                 return createStripeCustomer(userData)
@@ -137,10 +137,6 @@ export class AppEffects {
         ), { dispatch: false }
     )
 
-    // AppActions.newUserCreated()
-    // () => AppActions.loginSuccess({ uid: enrolledUser.user.uid })
-
-
     resetPassword$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.resetPassword),
@@ -164,6 +160,7 @@ export class AppEffects {
     logUserOut$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.logOut),
+            map(() => this.router.navigate(['/'])),
             switchMap(() => this.firebaseAuth.signOut()),
             flatMap(() => [UserAccountActions.logout(), AdminActions.logout()])
         )
@@ -188,24 +185,26 @@ export class AppEffects {
     getProductDetails$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.fetchSpaceDetails),
-            switchMap(({ reservation }) => {
-                // Get Matching Product Type
-                return this.store.select(cachedProductListSelector).pipe(
-                    first(),
-                    map(products => {
-                        const matchingProduct = products.find(product => product.id == reservation.productId)
-                        return { reservation, product: matchingProduct }
-                    })
-                )
+            switchMap(({ reservation }) => this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}`).snapshotChanges()),
+            map((doc: SnapshotAction<Space>) => ({ [doc.key]: doc.payload.val() })),
+            map(space => AppActions.storedSpaceDetails({ space }))
+        )
+    )
+
+    getAllSpaceDetails$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.fetchAllSpaceDetails),
+            switchMap(() => this.db.list(`spaces`).snapshotChanges()),
+            map((docs: SnapshotAction<{ [spaceId: string]: Space }>[]) => {
+                return docs.reduce((acc, doc) => {
+                    const data = doc.payload.val()
+                    const dataWithId = Object.keys(data)
+                        .map(key => ({ [key]: { ...data[key], id: key } }))
+                        .reduce((acc, cur) => ({ ...acc, ...cur }), {})
+                    return { ...acc, ...dataWithId }
+                }, {})
             }),
-            switchMap(({ reservation, product }) => {
-                //Get Space Name
-                return reservation['spaceName']
-                    ? of({ spaceName: reservation['spaceName'], reservation, product })
-                    : this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}/name`).valueChanges()
-                        .pipe(map(name => ({ spaceName: name, reservation, product })))
-            }),
-            map(({ spaceName, reservation, product }) => AppActions.storedSpaceDetails({ spaceName, reservationId: reservation.id, product }))
+            map(spaces => AppActions.storeAllSpaceDetails({ spaces }))
         )
     )
 

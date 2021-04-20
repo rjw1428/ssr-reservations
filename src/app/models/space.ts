@@ -2,7 +2,11 @@ export interface Space {
     id?: string;
     name: string;
     productId: string;
-    reserved: number[]
-    reservedHours?: [];
-    reservedDays?: [];
+    reserved: {
+            [timestamp: number]: {
+                reservation: string,    //reservationId
+                user: string,           //userId
+                hasPaid: boolean        //Updated 
+            }
+        }
 }

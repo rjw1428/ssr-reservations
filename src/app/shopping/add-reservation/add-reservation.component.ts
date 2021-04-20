@@ -124,7 +124,7 @@ export class AddReservationComponent implements OnInit, OnDestroy {
     this.reservation$ = combineLatest([user$, this.startDate$, this.endDate$, this.total$])
       .pipe(
         first(),
-        map(([user, startDate, endDate, cost]) => {
+        map(([user, startDate, endDate, totalCost]) => {
           const now = new Date().getTime()
           const reservation: Reservation = {
             userId: user.id,
@@ -134,7 +134,8 @@ export class AddReservationComponent implements OnInit, OnDestroy {
             endDate,
             createdTime: now,
             lastModifiedTime: now,
-            cost,
+            totalCost,
+            cost: this.inputProduct.month,
             status: "pending"
           }
           return reservation

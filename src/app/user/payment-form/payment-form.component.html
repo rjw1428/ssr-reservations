@@ -9,6 +9,15 @@
   <mat-card-content>
     <form [formGroup]="paymentForm" style="display: flex; flex-direction: column;">
       <mat-form-field appearance="outline">
+        <mat-label>Select Lease Month</mat-label>
+        <mat-select formControlName="reservation">
+          <mat-option *ngFor="let lease of leases$ | async;" [value]="lease">
+            {{ lease.space.name }} - {{ lease.unpaidTime | date : 'MM/dd/yy'}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Payment Amount</mat-label>
         <mat-icon matPrefix>attach_money</mat-icon>
         <input name="paymentAmount" matInput type="number" formControlName="paymentAmount">

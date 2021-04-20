@@ -2,8 +2,9 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of, zip } from 'rxjs';
+import { combineLatest, interval, Observable, of, timer, zip } from 'rxjs';
 import { filter, first, map, shareReplay, withLatestFrom } from 'rxjs/operators';
+import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector, cachedProductSelector, deactiveProductIdsSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
@@ -57,6 +58,7 @@ export class SummaryComponent implements OnInit {
     )
   productList$ = this.store.select(cachedProductListSelector)
   users$ = this.store.select(userListSelector)
+  now$ = interval(1).pipe(map(count => new Date().getTime()))
   constructor(
     private store: Store<AppState>,
     private dialog: MatDialog
@@ -71,7 +73,7 @@ export class SummaryComponent implements OnInit {
     this.productList$.pipe(
       first(),
       filter(productList => !productList.length)
-    ).subscribe(() => this.store.dispatch(AdminActions.getPoductList()))
+    ).subscribe(() => this.store.dispatch(AppActions.getProductTypes()))
 
     this.adminSummary$.pipe(
       first(),
