@@ -20,6 +20,7 @@ import { cachedProductListSelector } from "./app.selectors";
 import { AppState } from "./models/app-state";
 import { Store } from "@ngrx/store";
 import { Space } from "./models/space";
+import { User } from "./models/user";
 
 
 @Injectable()
@@ -71,19 +72,11 @@ export class AppEffects {
             ),
             switchMap(uid => {
                 console.log("Logged In As: ", uid)
-                return new Promise((resolve, reject) => {
-                    this.db.database.ref(`users/${uid}`).get()
-                        .then(snapshot => resolve(snapshot))
-                        .catch(err => {
-                            console.log(err)
-                            resolve(null)
-                        })
-                })
+                return this.db.object(`users/${uid}`).snapshotChanges()
             }),
-            map((snapshot: null | DataSnapshot) => {
-                if (!snapshot)
-                    return AppActions.stopLoading()
-                const user = snapshot.val()
+            map((snapshot: SnapshotAction<User>) => {
+                if (!snapshot) return AppActions.stopLoading()
+                const user = snapshot.payload.val()
                 return AppActions.loginSuccess({ user })
             })
         )

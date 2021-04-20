@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Confirm Payment</mat-card-title>
+    <mat-card-subtitle>
+      Please verify the following payment details.
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div style="display:flex; flex-direction: column; align-items: center">
+      <p><span style="font-weight: bold">Lease Space: </span>{{lease['space'].name}}</p>
+      <p><span style="font-weight: bold">Month: </span>{{lease['unpaidTime'] | date : 'MM/dd/yy'}}</p>
+      <p><span style="font-weight: bold">Payment Amount: </span>{{paymentInfo.paymentAmount | currency}}</p>
+      <p><span style="font-weight: bold">Additional Amount: </span>{{paymentInfo.additionalAmount | currency}}</p>
+      <h3><span style="font-weight: bolder">Total:</span>{{total | currency}}</h3>
+      <p>By clicking "Submit" you will be charged the selected amount, which will be paid towards your outstanding
+        balance."
+    </div>`
+  </mat-card-content>
+
+  <mat-card-actions>
+    <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
+      <p style="color: red" *ngIf="feedback.error">{{ feedback.error?.raw?.message || "There was an error" }}</p>
+      <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+    </div>
+  </mat-card-actions>
+</mat-card>

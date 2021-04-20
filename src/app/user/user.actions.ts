@@ -53,3 +53,21 @@ export const sendCharge = createAction(
     "[Payment Form Component] Send Stripe Charge",
     props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, spaceId: string, productId: string }>()
 )
+
+export const creditCardSaved = createAction(
+    "[User Effect] Credit Card response",
+    props<{resp: any, error: any}>()
+)
+
+export const paymentSaved = createAction(
+    "[User Effect] Payment response",
+    props<{resp: any, error: any}>()
+)
+
+export const resetCreditCardFeedback = createAction(
+    "[Add Payment Method Component] (On Close) Reset credit card feedback",
+)
+
+export const resetPaymetFeedback = createAction(
+    "[Payment Form Component] (On Destroy) Reset payment feedback",
+)

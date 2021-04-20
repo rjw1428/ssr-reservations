@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
+import { AngularFirestore } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { filter, first, flatMap, map, mergeMap, switchMap, tap, withLatestFrom } from "rxjs/operators";
+import { filter, first, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
-import { cachedProductListSelector, userSelector } from "../app.selectors";
+import { userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
 import { getUsedTimes, isOverlapingTime } from "../utility/constants";
 import { Router } from "@angular/router";
@@ -19,12 +19,17 @@ import { AppActions } from "../app.action-types";
 @Injectable()
 export class UserAccountEffects {
 
+    // USE THIS WHEN YOU ONLY WANT THE USER ID
+    currentUserId$ = this.store.select(userSelector).pipe(
+        filter(user => !!user),
+        first(),
+        map(user => user.id)
+    )
     getCurrentReservations$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.getReservations),
-            switchMap(() => this.store.select(userSelector)),
-            filter(user => !!user),
-            switchMap((user) => this.db.list(`accepted-applications/${user.id}`).snapshotChanges()),
+            switchMap(() => this.currentUserId$),
+            switchMap((userId) => this.db.list(`accepted-applications/${userId}`).snapshotChanges()),
             map((resp: SnapshotAction<Reservation>[]) => {
                 if (!resp.length) return UserAccountActions.storeReservations({ reservations: null })
                 const reservations = resp.map(res => ({ ...res.payload.val(), id: res.payload.key }))
@@ -109,15 +114,11 @@ export class UserAccountEffects {
                 const createCard = this.fns.httpsCallable('createStripeSource')
                 return createCard({ stripeId: user.stripeCustomerId, token, userId: user.id })
             }),
-            map(({ err, resp }) => {
-                if (err) {
-                    console.log(err)
-                    throw "Unable to create stripe payment source"
-                }
-                console.log(resp)
-                // THIS DOESNT ACTUALLY GET THE ERROR/RESPONSE TO THE STATE/COMPONENT
-                // return UserAccountActions.creditCardAddResponse({ response: { err, resp } })
-                return AppActions.stopLoading()
+            switchMap(({ err, resp }) => {
+                return [
+                    AppActions.stopLoading(),
+                    UserAccountActions.creditCardSaved({ error: err, resp })
+                ]
             })
         )
     )
@@ -139,14 +140,11 @@ export class UserAccountEffects {
                     productId
                 })
             }),
-            map(({ err, resp }) => {
-                if (err) {
-                    console.log(err)
-                    throw "Unable to create stripe payment source"
-                }
-                console.log(resp)
-                // THIS DOESNT ACTUALLY GET THE ERROR/RESPONSE TO THE STATE/COMPONENT
-                return AppActions.stopLoading()
+            switchMap(({ err, resp }) => {
+                return [
+                    AppActions.stopLoading(),
+                    UserAccountActions.paymentSaved({ error: err, resp })
+                ]
             })
         )
     )

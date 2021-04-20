@@ -1,11 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { skip, first, filter } from 'rxjs/operators';
+import { skip, first, filter, takeWhile } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { loadingSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { UserAccountActions } from 'src/app/user/user.action-types';
+import { creditCardFeedbackSelector } from 'src/app/user/user.selectors';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -14,7 +15,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./add-payment-method.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddPaymentMethodComponent implements OnInit {
+export class AddPaymentMethodComponent implements OnInit, OnDestroy {
   cardForm: any
   stripe = Stripe(environment.stripe.apiKey)
   elementStyles = {
@@ -23,11 +24,16 @@ export class AddPaymentMethodComponent implements OnInit {
     },
   };
   elements = this.stripe.elements();
+  feedback$ = this.store.select(creditCardFeedbackSelector)
   @ViewChild('card') card: ElementRef
   constructor(
     private store: Store<AppState>,
     private dialogRef: MatDialogRef<AddPaymentMethodComponent>
   ) { }
+
+  ngOnDestroy() {
+    this.store.dispatch(UserAccountActions.resetCreditCardFeedback())
+  }
 
   ngOnInit(): void {
   }
@@ -45,13 +51,12 @@ export class AddPaymentMethodComponent implements OnInit {
     const { token } = await this.stripe.createToken(this.cardForm)
     this.store.dispatch(UserAccountActions.addCreditCardToStripe({ token }))
 
-    this.store.select(loadingSelector).pipe(
-      skip(1),
+    this.feedback$.pipe(
+      filter(resp => !!resp),
       first(),
-      filter((resp) => !resp)
-    ).subscribe((isStillSaving) => {
-      if (!isStillSaving)
-        this.dialogRef.close()
+    ).subscribe(({ resp, error }) => {
+      if (resp)
+        setTimeout(() => this.dialogRef.close(), 500)
     })
   }
 }

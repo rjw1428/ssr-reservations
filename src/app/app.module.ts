@@ -24,6 +24,7 @@ import { NewUserComponent } from './login/new-user/new-user.component';
 import { GenericPopupComponent } from './components/generic-popup/generic-popup.component';
 import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
 import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
+import { ConfirmPaymentFormComponent } from './components/confirm-payment-form/confirm-payment-form.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,6 +37,7 @@ import { AddPaymentMethodComponent } from './components/add-payment-method/add-p
     GenericPopupComponent,
     ForgotPasswordComponent,
     AddPaymentMethodComponent,
+    ConfirmPaymentFormComponent,
   ],
   imports: [
     BrowserModule,

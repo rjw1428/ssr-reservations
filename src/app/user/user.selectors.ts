@@ -61,3 +61,14 @@ export const userRejectedApplicationsSelector = createSelector(
         : []
 )
 
+export const creditCardFeedbackSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.creditCardResp
+)
+
+export const paymentFeedbackSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.paymentResponse
+)
+
+

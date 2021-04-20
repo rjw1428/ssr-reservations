@@ -23,9 +23,9 @@
             <div style="flex-basis: 20%;">
               <h3 style="margin: 0; color: green" *ngIf="reservation.value.hasPaid; else other">PAID</h3>
             </div>
-            <div style="flex-basis: 30%; display: flex;" *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
-              <p style="margin: 0; flex-basis: 50%;">{{user.firstName}} {{ user.lastName}}</p>
-              <p style="margin: 0; flex-basis: 50%; font-style: italic;">{{user.email}}</p>
+            <div style="flex-basis: 30%;" *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
+              <p style="margin: 0;">{{user.firstName}} {{ user.lastName}} <span style="font-style: italic; font-size: smaller
+              ;">{{user.email}}</span></p>
             </div>
             <p style="margin: 0; flex-basis: 40%;">Reservation Id: <a [routerLink]=""
                 (click)="onOpenReservation(reservation.value.reservation, product.key, reservation.value.user, space.value.name)">{{reservation.value.reservation}}</a>
