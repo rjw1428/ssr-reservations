@@ -2,11 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  height: calc(100% - 64px);
+  min-height: calc(100% - 128px);
 }
 
 .sidenav-container {
-  height: 100%;
   max-width: 1000px;
   width: 100%;
   display: flex;
@@ -42,6 +41,6 @@
 
 @media screen and (max-width: 599px) {
   .content-container {
-    height: calc(100% - 58px);
+    height: calc(100% - 112px);
   }
 }

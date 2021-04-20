@@ -32,9 +32,8 @@ export class SummaryComponent implements OnInit {
     If the room is deactiveated but has reservations remaining,
     then show it on the summary
   */
-  adminSummary$ = this.store.select(adminSummarySelector)
+  adminSummary$ = combineLatest([this.store.select(adminSummarySelector), this.store.select(deactiveProductIdsSelector)])
     .pipe(
-      withLatestFrom(this.store.select(deactiveProductIdsSelector)),
       map(([summary, deactiveProductTypeIds]) =>
         summary
           ? Object.keys(summary)

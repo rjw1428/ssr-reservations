@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { filter, first } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
+import { cachedProductListSelector } from 'src/app/app.selectors';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
 import { AppState } from 'src/app/models/app-state';
 import { Reservation } from 'src/app/models/reservation';
@@ -24,7 +25,11 @@ export class ApplicationStatusComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.store.dispatch(AppActions.getProductTypes())
+    this.store.select(cachedProductListSelector).pipe(
+      first(),
+      filter(product => !product.length)
+    ).subscribe(() => this.store.dispatch(AppActions.getProductTypes()))
+
     this.pendingApplications$.pipe(
       first(),
       filter(application => !application.length)
