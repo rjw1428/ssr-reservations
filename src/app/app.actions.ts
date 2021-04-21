@@ -16,6 +16,11 @@ export const login = createAction(
     props<{ username: string, password: string }>()
 )
 
+export const setLoginFeedback = createAction(
+    "[App Effect | Login Component] Set Login Feedback",
+    props<{ success: boolean, message: string }>()
+)
+
 export const checkUserPersistance = createAction(
     '[App Component] Check for persistant sser',
 )

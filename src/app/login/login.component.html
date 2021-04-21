@@ -21,8 +21,12 @@
   </mat-card-content>
 
   <mat-card-actions style="display: flex; flex-direction: column; padding: 0">
+    <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
+      <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
+      <p style="color: green" *ngIf="feedback.success">{{ "Success!" }}</p>
+    </div>
     <div style="display: flex; justify-content: space-around; margin-bottom: 1em;">
-      <span><a [routerLink]="" (click)="onForgotPassword($event)">Forgot Password</a></span>
+      <span><a [routerLink]="" (click)="onForgotPassword()">Forgot Password</a></span>
       <span><a routerLink="apply" mat-dialog-close>New User</a></span>
     </div>
     <div style="display: flex; justify-content: center;">

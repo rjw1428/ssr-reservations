@@ -8,9 +8,9 @@ export const loadingSelector = createSelector(
     app => app.isLoading
 )
 
-export const logginInSelector = createSelector(
+export const loginFeedbackSelector = createSelector(
     selectAppState,
-    app => app.isLoggingIn
+    app => app.loginFeedback
 )
 
 export const userSelector = createSelector(
