@@ -1,6 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 import { skip, first, filter, takeWhile } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { loadingSelector } from 'src/app/app.selectors';
@@ -25,6 +27,7 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
   };
   elements = this.stripe.elements();
   feedback$ = this.store.select(creditCardFeedbackSelector)
+  makeDefault = new FormControl(false)
   @ViewChild('card') card: ElementRef
   constructor(
     private store: Store<AppState>,
@@ -33,6 +36,7 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.store.dispatch(UserAccountActions.resetCreditCardFeedback())
+
   }
 
   ngOnInit(): void {
@@ -49,14 +53,14 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
     // Get user stripe id
     this.store.dispatch(AppActions.startLoading())
     const { token } = await this.stripe.createToken(this.cardForm)
-    this.store.dispatch(UserAccountActions.addCreditCardToStripe({ token }))
-
+    this.store.dispatch(UserAccountActions.addCreditCardToStripe({ token, isDefault: this.makeDefault.value }))
+    
     this.feedback$.pipe(
       filter(resp => !!resp),
-      first(),
-    ).subscribe(({ resp, error }) => {
-      if (resp)
-        setTimeout(() => this.dialogRef.close(), 500)
-    })
+      filter(({ resp, error }) => !!resp),
+      first()
+    ).subscribe(({ resp, error }) =>
+      setTimeout(() => this.dialogRef.close(), 500)
+    )
   }
 }

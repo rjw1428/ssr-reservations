@@ -6,7 +6,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { from, of } from "rxjs";
-import { catchError, first, flatMap, map, mergeMap, switchMap } from "rxjs/operators";
+import { catchError, first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { AppActions } from "./app.action-types";
 import { MatDialog } from "@angular/material/dialog";
 import { GenericPopupComponent } from "./components/generic-popup/generic-popup.component";
@@ -62,13 +62,14 @@ export class AppEffects {
             switchMap(({ uid }) => this.db.database.ref(`users/${uid}`).update({ lastLogIn: new Date().getTime() })
                 .then(() => uid)
             ),
+            tap(() => this.router.navigate(['/'])),
             switchMap(uid => {
                 console.log("Logged In As: ", uid)
-                return this.db.database.ref(`users/${uid}`).get() // Get only once
+                // return this.db.database.ref(`users/${uid}`).get() // Get only once
+                return this.db.object(`users/${uid}`).snapshotChanges()
             }),
-            flatMap((snapshot: DataSnapshot) => {
-                this.router.navigate(['/'])
-                const user = snapshot.val()
+            switchMap((snapshot: SnapshotAction<User>) => {
+                const user = snapshot.payload.val()
                 return [
                     AppActions.loginSuccess({ user }),
                     AppActions.setLoginFeedback({ success: true, message: null }),

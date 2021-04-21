@@ -60,7 +60,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
       this.store.dispatch(AppActions.fetchAllSpaceDetails())
     })
 
-    this.autoSetDefaultPaymentSub = this.user$.pipe(first(), shareReplay()).subscribe(user => {
+    this.autoSetDefaultPaymentSub = this.user$.pipe(shareReplay()).subscribe(user => {
       this.paymentForm = this.formBuilder.group({
         reservation: ['', Validators.required],
         paymentAmount: ['', Validators.required],
@@ -77,7 +77,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
 
   onAddCard() {
     this.dialog.open(AddPaymentMethodComponent, {
-      data: null
+      data: null,
+      disableClose: true
     });
   }
 

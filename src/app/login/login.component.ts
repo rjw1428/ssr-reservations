@@ -51,20 +51,21 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(AppActions.login({ ...this.login.value }))
     this.feedback$.pipe(
-      skip(1),
+      filter(resp => !!resp),
+      filter(({ error, success }) => !!success),
       first()
     ).subscribe(({ error, success }) => {
-      if (success)
-        this.input
-          ? this.dialogRef.close(this.input.action())
-          : this.dialogRef.close()
+      this.input
+        ? this.dialogRef.close(this.input.action())
+        : this.dialogRef.close()
     })
   }
 
   onForgotPassword() {
     this.dialog.open(ForgotPasswordComponent, {
       width: '300px',
-      data: this.login.get('username').value
+      data: this.login.get('username').value,
+      disableClose: true,
     })
     this.dialogRef.close()
   }

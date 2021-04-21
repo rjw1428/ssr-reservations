@@ -12,7 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductTileComponent } from '../components/product-tile/product-tile.component';
 import { MatDialogModule } from '@angular/material/dialog';
-// import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -45,6 +45,7 @@ import { UserDataComponent } from '../components/user-data/user-data.component';
     MatSelectModule,
     MatDialogModule,
     // MatRadioModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatStepperModule,
@@ -65,6 +66,7 @@ import { UserDataComponent } from '../components/user-data/user-data.component';
     MatSelectModule,
     MatDialogModule,
     // MatRadioModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatStepperModule,

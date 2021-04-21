@@ -94,7 +94,8 @@ export class SummaryComponent implements OnInit {
 
   onEditProductType(product: Product) {
     this.dialog.open(AddProductTypeComponent, {
-      data: product
+      data: product,
+      disableClose: true
     })
   }
 

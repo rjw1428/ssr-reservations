@@ -31,7 +31,8 @@ export class ProductTypeListComponent implements OnInit {
 
   onAdd() {
     this.dialog.open(AddProductTypeComponent, {
-      data: null
+      data: null,
+      disableClose: true
     });
 
   }

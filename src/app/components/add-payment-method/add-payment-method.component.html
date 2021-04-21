@@ -8,6 +8,9 @@
 
   <mat-card-content>
     <div style="width: 400px;" #card></div>
+    <div style="display: flex; justify-content: center; margin-top: 1em;">
+      <mat-checkbox color="primary" [formControl]="makeDefault">Make Default</mat-checkbox>
+    </div>
   </mat-card-content>
 
   <mat-card-actions>

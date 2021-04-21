@@ -34,7 +34,8 @@ export class ProductTileComponent implements OnInit {
 
   onEdit() {
     this.dialog.open(AddProductTypeComponent, {
-      data: this.product
+      data: this.product,
+      disableClose: true
     });
   }
 

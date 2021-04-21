@@ -25,6 +25,7 @@ export class UserAccountEffects {
         first(),
         map(user => user.id)
     )
+
     getCurrentReservations$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.getReservations),
@@ -110,15 +111,24 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.addCreditCardToStripe),
             withLatestFrom(this.store.select(userSelector)),
-            switchMap(([{ token }, user]: [any, User]) => {
+            switchMap(([{ token, isDefault }, user]: [any, User]) => {
                 const createCard = this.fns.httpsCallable('createStripeSource')
-                return createCard({ stripeId: user.stripeCustomerId, token, userId: user.id })
+                return createCard({ stripeId: user.stripeCustomerId, token, userId: user.id }).pipe(
+                    map(({ err, resp }) => ({ err, resp, isDefault }))
+                )
             }),
-            switchMap(({ err, resp }) => {
-                return [
+            switchMap(({ err, resp, isDefault }) => {
+                const actions = [
                     AppActions.stopLoading(),
+                    UserAccountActions.fetchLatestUserData(),
                     UserAccountActions.creditCardSaved({ error: err, resp })
                 ]
+                return !isDefault || err
+                    ? actions
+                    : [
+                        ...actions,
+                        UserAccountActions.setDefaultPaymentSource({ defaultPaymentSource: resp['id'] as string })
+                    ]
             })
         )
     )
@@ -168,6 +178,15 @@ export class UserAccountEffects {
                     AppActions.stopLoading()
                 ]
             )
+        )
+    )
+
+    setDefaultPaymentSource$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.setDefaultPaymentSource),
+            withLatestFrom(this.store.select(userSelector)),
+            switchMap(([{ defaultPaymentSource }, user]) => this.db.object(`users/${user.id}`).update({ defaultPaymentSource })),
+            map(() => AppActions.stopLoading())
         )
     )
 

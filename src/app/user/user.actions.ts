@@ -45,7 +45,7 @@ export const storeRejectedApplications = createAction(
 
 export const addCreditCardToStripe = createAction(
     "[Add Payment Method] Store payment source",
-    props<{ token: string }>()
+    props<{ token: string, isDefault: boolean }>()
 )
 
 export const sendCharge = createAction(
@@ -79,4 +79,13 @@ export const updateUserData = createAction(
 export const setFormFeedback = createAction(
     "[User Effect] Set Feedback",
     props<{ success: boolean, message: string }>()
+)
+
+export const fetchLatestUserData = createAction(
+    "[User Effect] Fetch Latest User Data"
+)
+
+export const setDefaultPaymentSource = createAction(
+    '[Account Info Component | Add payment Source Component] Set Default Payment Source',
+    props<{ defaultPaymentSource: string }>()
 )

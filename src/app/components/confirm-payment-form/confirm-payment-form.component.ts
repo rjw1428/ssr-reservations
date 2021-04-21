@@ -47,6 +47,7 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
 
     this.feedback$.pipe(
       filter(resp => !!resp),
+      filter(({ resp, error }) => !!resp),
       first(),
     ).subscribe(({ resp, error }) => {
       if (resp)
