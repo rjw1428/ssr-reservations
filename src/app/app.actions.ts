@@ -44,6 +44,22 @@ export const createUser = createAction(
     props<{ user: User }>()
 )
 
+export const firebaseAuthCreated = createAction(
+    '[App Effect] Firebase Auth Account Created',
+    props<{ user: User }>()
+)
+
+export const userAccountWrittenToDb = createAction(
+    '[App Effect] Account Stored to DB',
+    props<{ user: User }>()
+)
+
+export const stripeAccountCreated = createAction(
+    '[App Effect] Stripe Account Created',
+    props<{ user: User }>()
+)
+
+
 export const newUserCreated = createAction(
     '[App Effect] User Created & Stored'
 )

@@ -42,7 +42,7 @@ export class ReservationListComponent implements OnInit {
           this.isHistoric = false
           return this.store.select(userCurrentReservationsSelector)
         }
-        if (params['type'] == 'historic') {
+        if (params['type'] == 'history') {
           this.isHistoric = true
           return this.store.select(userHistoricReservationsSelector)
         }

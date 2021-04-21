@@ -29,7 +29,7 @@
       <mat-step label="Select Timeframe" state="single">
         <form [formGroup]="timeFrameForm" style="display: flex; flex-direction: column;">
           <mat-form-field appearance="outline">
-            <mat-label>Select Lease Lenght</mat-label>
+            <mat-label>Select Lease Length</mat-label>
             <mat-select formControlName="leaseType">
               <mat-option *ngFor="let type of leaseTypes" [value]="type.id">{{type.label}}</mat-option>
             </mat-select>
@@ -83,7 +83,7 @@
           <p>{{ (selectedSpace$ | async).name}}</p>
           <p>{{reservation.startDate | date : 'MM/dd/y'}}</p>
           <p>{{reservation.endDate | date : 'MM/dd/yy'}}</p>
-          <p>By clicking 'Complete Reservation' you application will be submitted for review.</p>
+          <p>By clicking 'Complete Reservation' your application will be submitted for review.</p>
           <div style="display: flex; justify-content: center;">
             <button mat-button matStepperPrevious>Previous</button>
             <button mat-button matStepperNext (click)="submitApplication(reservation)">Submit Application</button>

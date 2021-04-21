@@ -42,7 +42,13 @@
     </form>
   </mat-card-content>
 
-  <mat-card-actions style="display: flex;justify-content: center;">
-    <button mat-flat-button color="primary" [disabled]="createAccount.invalid" (click)="onSave()">Save</button>
+  <mat-card-actions>
+    <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
+      <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
+      <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <button mat-flat-button color="primary" [disabled]="createAccount.invalid" (click)="onSave()">Save</button>
+    </div>
   </mat-card-actions>
 </mat-card>

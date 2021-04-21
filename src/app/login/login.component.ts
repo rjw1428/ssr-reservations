@@ -43,12 +43,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.login.invalid) return this.store.dispatch(
-      AppActions.setLoginFeedback({ 
-        message: "Please enter both Username and Password", 
-        success: false 
+      AppActions.setLoginFeedback({
+        message: "Please enter both Username and Password",
+        success: false
       })
     )
-
+    this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(AppActions.login({ ...this.login.value }))
     this.feedback$.pipe(
       skip(1),

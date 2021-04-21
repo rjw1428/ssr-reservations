@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppActions } from 'src/app/app.action-types';
+import { loginFeedbackSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 
 @Component({
@@ -11,6 +12,7 @@ import { AppState } from 'src/app/models/app-state';
 })
 export class NewUserComponent implements OnInit {
   createAccount: FormGroup
+  feedback$ = this.store.select(loginFeedbackSelector)
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder
@@ -30,7 +32,7 @@ export class NewUserComponent implements OnInit {
   onSave() {
     if (this.createAccount.invalid) return
     if (this.createAccount.get('password').value != this.createAccount.get('passwordConfirm').value) return
-
+    this.store.dispatch(AppActions.startLoading())
     const { passwordConfirm, ...userInfo } = this.createAccount.value
     const user = {
       ...userInfo,

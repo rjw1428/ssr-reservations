@@ -3,11 +3,13 @@
     *ngIf="isHandset$ | async">
     <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
   </button>
-  <span>Burwell Project</span>
-  <span *ngIf="!(user$ | async)" (click)="onLogIn()">Login</span>
-  <span *ngIf="(user$ | async) as user" mat-button [matMenuTriggerFor]="menu">{{user.firstName}}
+  <span style="cursor: default;">Burwell Project</span>
+  <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
+  <span *ngIf="(user$ | async) as user" mat-button [matMenuTriggerFor]="menu"
+    style="cursor: pointer;">{{user.firstName}}
     {{user.lastName}}</span>
   <mat-menu #menu="matMenu">
+    <button mat-menu-item>Edit Account Info</button>
     <button mat-menu-item (click)="onLogOut()">Log Out</button>
   </mat-menu>
 </mat-toolbar>
@@ -23,22 +25,24 @@
             routerLinkActive="router-link-active">Home</a>
           <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }"
             routerLinkActive="router-link-active">Find A Space</a>
-          <a *ngIf="user$ | async" mat-list-item routerLink="user/application-status"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-            Pending Applications
-          </a>
-          <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/current"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-            Current Leases
-          </a>
-          <a *ngIf="user$ | async" mat-list-item routerLink="user/reservations/historic"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-            Historic Leases
-          </a>
-          <a *ngIf="user$ | async" mat-list-item routerLink="user/payments"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-            Make Payment
-          </a>
+          <div *ngIf="user$ | async as user">
+            <a *ngIf="user" mat-list-item routerLink="user/application-status"
+              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+              Pending Applications
+            </a>
+            <a *ngIf="user" mat-list-item routerLink="user/reservations/current"
+              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+              Current Leases
+            </a>
+            <a *ngIf="user" mat-list-item routerLink="user/reservations/history"
+              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+              Leases History
+            </a>
+            <a *ngIf="user" mat-list-item routerLink="user/payments" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="router-link-active">
+              Make Payment
+            </a>
+          </div>
           <!-- <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
             [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a> -->
           <!-- <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"
@@ -47,7 +51,9 @@
       </div>
       <div *ngIf="showAdminPanel() | async">
         <mat-toolbar>Admin</mat-toolbar>
-        <mat-nav-list>
+        <mat-nav-list *ngIf="user$ | async as user">
+          <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"
+            routerLinkActive="router-link-active" *ngIf="user.role != 'master'">Home</a>
           <a mat-list-item routerLink="admin" [routerLinkActiveOptions]="{ exact: true }"
             routerLinkActive="router-link-active">Admin Summary</a>
           <a mat-list-item [routerLink]="['admin','applications']" routerLinkActive="router-link-active">

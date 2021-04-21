@@ -33,24 +33,17 @@ export class AppEffects {
                 .then(authUser => ({ error: null, resp: authUser }))
                 .catch(error => ({ error, resp: null }))
             ),
-            map(({ error, resp }) => {
-                return error
-                    ? AppActions.setLoginFeedback({ success: false, message: error.message })
-                    : AppActions.getUserAccount({ uid: resp.user.uid })
+            map(({ error, resp }) => error
+                ? AppActions.setLoginFeedback({ success: false, message: error.message })
+                : AppActions.getUserAccount({ uid: resp.user.uid })
                 // if (!resp.user.emailVerified) console.log("NOT VERIFIED")
                 // return resp.user.emailVerified
                 //     ? AppActions.getUserAccount({ uid: resp.user.uid })//User Session has persisted
                 //     : AppActions.noAction()
-            })
+            )
         )
     )
-    /*
-            Create User => Create User in Realtime DB => Send Verification Email => Trigger Popup => Redirect to login
-            Notes: 
-             - createUserWithEmailAndPassword will check for short passwords and already existing accounts
-            and return an error, so once a valid response is returned from that switchMap, a NEW user is created
-             - DB shouldnt be created until verification occurs (future fix)
-    */
+
     checkUserPersistance$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.checkUserPersistance),
@@ -76,63 +69,80 @@ export class AppEffects {
                 return this.db.object(`users/${uid}`).snapshotChanges()
             }),
             flatMap((snapshot: SnapshotAction<User>) => {
-                // if (!snapshot) return AppActions.stopLoading()
+                this.router.navigate(['/'])
                 const user = snapshot.payload.val()
                 return [
                     AppActions.loginSuccess({ user }),
-                    AppActions.setLoginFeedback({ success: true, message: null })
+                    AppActions.setLoginFeedback({ success: true, message: null }),
+                    AppActions.stopLoading()
                 ]
             })
         )
     )
 
+    // ----- START ACCOUNT CREATION ----
 
     createUser$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.createUser),
-            switchMap(({ user }) => from(this.firebaseAuth.createUserWithEmailAndPassword(user.email, user.password)).pipe(
-                map(resp => ({ ...resp, userInput: user }))
-            )),
-            map(enrolledUser => {
-                const { password, ...userData } = enrolledUser.userInput
-                const updatedUser = { ...userData, id: enrolledUser.user.uid }
-                this.db.database
-                    .ref(`users/${enrolledUser.user.uid}`)
+            switchMap(({ user }) => this.firebaseAuth.createUserWithEmailAndPassword(user.email, user.password)
+                .then(resp => ({ resp: { ...user, id: resp.user.uid }, error: null }))
+                .catch(error => ({ error, resp: null }))
+            ),
+            map(({ resp, error }) => {
+                return error
+                    ? AppActions.setLoginFeedback({ success: false, message: error.message })
+                    : AppActions.firebaseAuthCreated({ user: resp })
+            })
+        )
+    )
+
+    afterFirebaseAuthCreated$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.firebaseAuthCreated),
+            switchMap(({ user }) => {
+                debugger
+                const { password, ...userData } = user
+                const updatedUser = { ...userData, id: user.id }
+                return this.db.database
+                    .ref(`users/${user.id}`)
                     .set(updatedUser)
-                // enrolledUser.user.sendEmailVerification({
-                //     url: environment.domain,
-                // })
-                return updatedUser
+                    .then(() => ({ error: null, updatedUser: { ...updatedUser, password } })) // ADD PASSWORD BACK IN FOR AUTO LOGIN
+                    .catch(error => ({ error, updatedUser }))
             }),
-            switchMap((userData) => {
+            map(({ error, updatedUser }) => {
+                debugger
+                return error
+                    ? AppActions.setLoginFeedback({ success: false, message: error })
+                    : AppActions.userAccountWrittenToDb({ user: updatedUser })
+            })
+        )
+    )
+
+    afterUserAccountWrittenToDb$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.userAccountWrittenToDb),
+            switchMap(({ user }) => {
                 //WITH FIREBASE USER ID, CREATE STRIPE ID
                 const createStripeCustomer = this.fns.httpsCallable("createStripeCustomer")
-                return createStripeCustomer(userData)
-
+                return createStripeCustomer(user)
             }),
             map(({ err, resp }) => {
-                if (err) {
-                    console.log(err)
-                    throw "Unable to create stripe account"
-                }
-                this.router.navigate(['user', 'application'])
+                return err
+                    ? AppActions.setLoginFeedback({ success: false, message: JSON.stringify(err) })
+                    : AppActions.stripeAccountCreated({ user: resp })
             })
-
-            // switchMap(() => this.dialog.open(GenericPopupComponent, {
-            //     width: '300px',
-            //     data: {
-            //         title: 'Almost done...',
-            //         content:
-            //             `<p>
-            //         A verification email has been sent to you. 
-            //         Please verify your email address to log in and get started.
-            //         </p>`
-            //     }
-            // }).afterClosed().pipe(
-            //     map(() => this.router.navigate(['/']))
-            // ))
-        ), { dispatch: false }
+        )
     )
+
+    autoLoginAfterAccountCreation$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.stripeAccountCreated),
+            map(({ user }) => AppActions.login({ username: user.email, password: user.password }))
+        )
+    )
+
+    // ----- END ACCOUNT CREATION ----
 
     resetPassword$ = createEffect(() =>
         this.actions$.pipe(
