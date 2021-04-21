@@ -52,7 +52,7 @@ export class AppEffects {
             })),
             map(authData => {
                 return authData
-                    ? AppActions.getUserAccount({ uid: authData['uid'] })//User Session has persisted
+                    ? AppActions.getUserAccount({ uid: authData['uid'] }) // User Session has persisted
                     : AppActions.noAction()
             })
         )
@@ -66,11 +66,11 @@ export class AppEffects {
             ),
             switchMap(uid => {
                 console.log("Logged In As: ", uid)
-                return this.db.object(`users/${uid}`).snapshotChanges()
+                return this.db.database.ref(`users/${uid}`).get() // Get only once
             }),
-            flatMap((snapshot: SnapshotAction<User>) => {
+            flatMap((snapshot: DataSnapshot) => {
                 this.router.navigate(['/'])
-                const user = snapshot.payload.val()
+                const user = snapshot.val()
                 return [
                     AppActions.loginSuccess({ user }),
                     AppActions.setLoginFeedback({ success: true, message: null }),

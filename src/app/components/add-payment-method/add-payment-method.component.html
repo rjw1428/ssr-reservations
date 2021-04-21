@@ -15,9 +15,9 @@
       <p style="color: red" *ngIf="feedback.error">{{ feedback.error?.raw?.message || "There was an error" }}</p>
       <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
     </div>
-    <div style="display: flex; justify-content: center;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <button style="margin-bottom: 1em;" mat-raised-button color="primary" (click)="onSave()">Save</button>
       <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
   </mat-card-actions>
 </mat-card>

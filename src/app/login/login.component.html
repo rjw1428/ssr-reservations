@@ -29,8 +29,9 @@
       <span><a [routerLink]="" (click)="onForgotPassword()">Forgot Password</a></span>
       <span><a routerLink="apply" mat-dialog-close>New User</a></span>
     </div>
-    <div style="display: flex; justify-content: center;">
-      <button mat-raised-button color="primary" (click)="onSubmit()">Login</button>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <button style="margin-bottom: 1em;" mat-raised-button color="primary" (click)="onSubmit()">Login</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
     </div>
   </mat-card-actions>
 </mat-card>

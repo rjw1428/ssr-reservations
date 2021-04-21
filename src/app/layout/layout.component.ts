@@ -9,6 +9,7 @@ import { LoginComponent } from '../login/login.component';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../models/user';
 import { AppActions } from '../app.action-types';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -31,7 +32,8 @@ export class LayoutComponent implements OnInit {
   constructor(
     private breakpointObserver: BreakpointObserver,
     private store: Store<AppState>,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -42,6 +44,10 @@ export class LayoutComponent implements OnInit {
       // maxWidth: '300px',
       width: '300px'
     })
+  }
+
+  onAccountInfo() {
+    this.router.navigate(['user', 'account'])
   }
 
   showAdminPanel(): Observable<boolean> {

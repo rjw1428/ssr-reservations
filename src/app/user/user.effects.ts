@@ -9,7 +9,7 @@ import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
 import { userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
-import { getUsedTimes, isOverlapingTime } from "../utility/constants";
+import { getUsedTimes, isOverlapingTime } from "../utility/utility";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { AngularFireFunctions } from "@angular/fire/functions";

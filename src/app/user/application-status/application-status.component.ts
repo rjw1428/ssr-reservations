@@ -45,7 +45,7 @@ export class ApplicationStatusComponent implements OnInit {
     this.dialog.open(GenericPopupComponent, {
       data: {
         title: "Are you sure?",
-        content: '<p>Are you sure you want to cancel your reservation?. Click Confirm to Cancel</p>',
+        content: '<p>Are you sure you want to cancel your application?. Click Confirm to Cancel</p>',
         actionLabel: 'Confirm',
         action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation, status: 'pending' }))
       }

@@ -13,6 +13,7 @@ import { UserListComponent } from './user-list/user-list.component';
 import { UserComponent } from './user-list/user/user.component';
 import { ApplicationHistoryComponent } from './application-history/application-history.component';
 import { AdminGuard } from '../admin.guard';
+import { TransactionHistoryComponent } from '../component/transaction-history/transaction-history.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,11 @@ const routes: Routes = [
   {
     path: 'users',
     component: UserListComponent,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'transactions',
+    component: TransactionHistoryComponent,
     canActivate: [AdminGuard]
   },
   {

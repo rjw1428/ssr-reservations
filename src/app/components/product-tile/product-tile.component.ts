@@ -54,11 +54,11 @@ export class ProductTileComponent implements OnInit {
       first(),
       map(user => {
         const popup = !!user
-          ? this.dialog.open(AddReservationComponent, { data: this.product })
+          ? this.dialog.open(AddReservationComponent, { data: this.product, disableClose: true })
           : this.dialog.open(LoginComponent, {
             width: '300px',
             data: {
-              action: () => this.dialog.open(AddReservationComponent, { data: this.product })
+              action: () => this.dialog.open(AddReservationComponent, { data: this.product, disableClose: true })
             }
           })
         return popup.afterClosed()

@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
 import { MatStep } from '@angular/material/stepper';
 import { Store } from '@ngrx/store';
-import { combineLatest, iif, Observable, of, Subscription, zip } from 'rxjs';
+import { combineLatest, iif, noop, Observable, of, Subscription, zip } from 'rxjs';
 import { filter, find, first, map, mergeMap, shareReplay, skip, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { userSelector } from 'src/app/app.selectors';
 import { CalendarHeaderComponent } from 'src/app/components/calendar-header/calendar-header.component';
@@ -28,8 +28,10 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   datePickerHeader = CalendarHeaderComponent
 
   timeFrameForm: FormGroup
-  months = MONTHS
+  currentYearsMonths: {}
+  nextYearsMonths: {}
   leaseTypes = LEASETYPES
+  years: number[]
   startDate$: Observable<number>
   endDate$: Observable<number>
 
@@ -47,6 +49,7 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   availableSpaces$ = this.store.select(availableSpacesSelector)
   reservation$: Observable<Reservation>
 
+  singleRoomOptionSubscription: Subscription
   readonly feePercent = 0.02
   readonly taxRate = 0.05
 
@@ -59,9 +62,19 @@ export class AddReservationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     console.log("DESTROY")
+    if (this.singleRoomOptionSubscription)
+      this.singleRoomOptionSubscription.unsubscribe()
   }
 
   ngOnInit(): void {
+    const now = new Date()
+    this.years = [now.getFullYear(), now.getFullYear() + 1]
+    Object.keys(MONTHS).forEach(monthNum => {
+      +monthNum <= now.getMonth()
+        ? this.nextYearsMonths = { ...this.nextYearsMonths, [monthNum]: MONTHS[monthNum] }
+        : this.currentYearsMonths = { ...this.currentYearsMonths, [monthNum]: MONTHS[monthNum] }
+    })
+
     this.timeFrameForm = this.formBuilder.group({
       leaseType: ['', Validators.required],
       startMonth: ['', Validators.required]
@@ -71,23 +84,38 @@ export class AddReservationComponent implements OnInit, OnDestroy {
       space: ['', Validators.required],
     })
 
-    this.selectedSpace$ = this.availableSpaces$.pipe(map(spaces => spaces.find(space => space.id == this.selectSpaceForm.value['space'])))
+    this.selectedSpace$ = this.availableSpaces$.pipe(
+      map(spaces => spaces.find(space => space.id == this.selectSpaceForm.value['space']))
+    )
 
-    this.startDate$ = this.timeFrameForm.get('startMonth').valueChanges.pipe(
-      map(monthNum => {
+    this.singleRoomOptionSubscription = this.availableSpaces$.pipe(
+      tap(spaces => {
+        console.log(spaces)
+        if (spaces.length == 1)
+          this.selectSpaceForm.setValue({ space: spaces[0].id })
+      }),
+      shareReplay()
+    ).subscribe(noop)
+
+    this.startDate$ = this.timeFrameForm.valueChanges.pipe(
+      map(({ leaseType, startMonth }) => {
         const now = new Date()
-        const tempDate = new Date(now.getFullYear(), +monthNum, 1).getTime()
+        const tempDate = new Date(now.getFullYear(), +startMonth, 1).getTime()
         return tempDate < now.getTime()
-          ? new Date(now.getFullYear(), (+monthNum + 12), 1).getTime()
+          ? new Date(now.getFullYear(), (+startMonth + 12), 1).getTime()
           : tempDate
       }),
       shareReplay()
     )
-    this.endDate$ = this.startDate$.pipe(map(startDate => {
-      const delta = this.leaseTypes.find(lease => lease.id == this.timeFrameForm.get('leaseType').value).number
-      const start = new Date(startDate)
-      return new Date(start.getFullYear(), start.getMonth() + delta, 1).getTime()
-    }), shareReplay())
+    this.endDate$ = this.startDate$.pipe(
+      map(startDate => {
+        if (!this.timeFrameForm.get('leaseType').value) return null
+        const delta = this.leaseTypes.find(lease => lease.id == this.timeFrameForm.get('leaseType').value).number
+        const start = new Date(startDate)
+        return new Date(start.getFullYear(), start.getMonth() + delta, 1).getTime()
+      }),
+      shareReplay()
+    )
 
     this.selectedLeaseType$ = this.timeFrameForm.get('leaseType').valueChanges.pipe(
       map(leaseId => this.leaseTypes.find(lease => lease.id == leaseId))

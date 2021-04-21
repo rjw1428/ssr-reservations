@@ -13,6 +13,20 @@ export class SortByPipe implements PipeTransform {
       else { return value.sort().reverse(); }
     }
 
+    if (column == 'month') {
+      const now = new Date()
+      return value.sort((a, b) => {
+        const aMonth = a['key'] <= now.getMonth()
+          ? a['key'] + 12
+          : a['key']
+        const bMonth = b['key'] <= now.getMonth()
+          ? b['key'] + 12
+          : b['key']
+        const aDate = new Date(now.getFullYear(), aMonth, 1)
+        const bDate = new Date(now.getFullYear(), bMonth, 1)
+        return aDate.getTime() - bDate.getTime()
+      })
+    }
     return order == 'asc'
       ? value.sort((a, b) => a[column] - b[column])
       : value.sort((a, b) => b[column] - a[column])

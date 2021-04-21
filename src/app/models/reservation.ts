@@ -14,7 +14,7 @@ export interface Reservation {
     status: string;
     feedback?: string;
     user?: User;
-    dateApproved?: number;
+    decisionDate?: number;
     isAlreadyBooked?: boolean;
     unpaidTimes?: { [time: string]: string };
 }

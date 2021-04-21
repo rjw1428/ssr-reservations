@@ -11,12 +11,12 @@ import { userAccountReducer } from './user.reducer';
 import { ApplicationStatusComponent } from './application-status/application-status.component';
 import { PaymentFormComponent } from './payment-form/payment-form.component';
 import { AuthGuard } from '../auth.guard';
+import { TransactionHistoryComponent } from '../component/transaction-history/transaction-history.component';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'account',
     component: AccountInfoComponent,
-    pathMatch: 'full',
     canActivate: [AuthGuard]
   },
   {
@@ -27,6 +27,11 @@ const routes: Routes = [
   {
     path: 'payments',
     component: PaymentFormComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'transactions',
+    component: TransactionHistoryComponent,
     canActivate: [AuthGuard]
   },
   {

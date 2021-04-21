@@ -12,7 +12,7 @@
         <mat-label>Select Lease Month</mat-label>
         <mat-select formControlName="reservation">
           <mat-option *ngFor="let lease of leases$ | async;  trackBy : identify" [value]="lease">
-            {{ lease.space.name }} - {{ lease.unpaidTime | date : 'MM/dd/yy'}}
+            {{ lease?.space.name }} - {{ lease.unpaidTime | date : 'MM/dd/yy'}}
           </mat-option>
         </mat-select>
       </mat-form-field>

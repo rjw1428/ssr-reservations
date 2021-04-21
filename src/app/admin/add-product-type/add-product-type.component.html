@@ -42,8 +42,8 @@
     </form>
   </mat-card-content>
 
-  <mat-card-actions style="display: flex;justify-content: center;">
-    <button mat-flat-button color="primary" [disabled]="productForm.invalid" (click)="onSave()">Save</button>
+  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+    <button style="margin-bottom: 1em;" mat-flat-button color="primary" [disabled]="productForm.invalid" (click)="onSave()">Save</button>
     <button mat-flat-button color="warn" (click)="onCancel()">Cancel</button>
   </mat-card-actions>
 </mat-card>

@@ -8,8 +8,6 @@ import { cachedProductSelector, reservationDetailsSelector } from 'src/app/app.s
 import { AppState } from 'src/app/models/app-state';
 import { Product } from 'src/app/models/product';
 import { Reservation } from 'src/app/models/reservation';
-import { UserAccountActions } from 'src/app/user/user.action-types';
-import { GenericPopupComponent } from '../generic-popup/generic-popup.component';
 
 @Component({
   selector: 'app-reservation',

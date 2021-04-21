@@ -5,12 +5,19 @@
       <h4 style="margin: 0">{{reservation.startDate | date : 'MM/dd/yy'}} - {{reservation.endDate | date : 'MM/dd/yy'}}</h4>
     </mat-panel-title>
     <mat-panel-description style="display: flex; justify-content: space-between; width: 60%">
-      <div style="display: flex; align-items: center; flex-basis: 40%; white-space: nowrap;">ID: {{reservation.id}}</div>
-      <div style="display: flex; align-items: center; font-style: italic; flex-basis: 30%; white-space: nowrap;" *ngIf="isAdmin">
-        {{reservation.user.firstName}} {{reservation.user.lastName}}
+      <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; white-space: nowrap;">
+          {{reservation.status == 'accepted' ? 'Lease' : 'Application'}} ID: 
+          <span style="font-style: italic; white-space: nowrap;">{{reservation.id}}</span>
+        </div>
+        <div style="display: flex; align-items: center;" *ngIf="isAdmin">
+          User: <span style="font-style: italic; white-space: nowrap;">{{reservation.user.firstName}} {{reservation.user.lastName}}</span>
+        </div>
       </div>
+
       <div style="display: flex; align-items: center; font-style: italic; flex-basis: 30%;">
-        Status: {{reservation.status | titlecase}}
+        Status: {{reservation.status | titlecase}} 
+        ({{ (reservation.status == 'pending' ? reservation.lastModifiedTime : reservation.decisionDate) | date : 'MM/dd/yy'}})
       </div>
     </mat-panel-description>
   </mat-expansion-panel-header>
@@ -24,19 +31,22 @@
     </div>
     <div style="display: flex; flex-direction: column; align-items: space-between;">
       <h2 style="margin: 0; text-align: center;">Space: {{ spaceName$ | async}}</h2>
-      <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="color: red;">Accepted Application has made this date range invalid</h3>
+      <h3  style="text-align: center;" *ngIf="reservation.status == 'rejected'"><span style="font-weight: bolder">Rejection Feedback:</span> {{reservation.feedback}}</h3>
+      <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="text-align: center; color: red;">Accepted Application has made this date range invalid</h3>
       <app-product-tile style="flex-basis: 75%;" [product]="product" [infoOnly]="true"></app-product-tile>
       <div style="display: flex; justify-content: center; align-items: center;">
         <h3 style="flex-basis: 25%;">Cost: {{ reservation.cost| currency }}</h3>
       </div>
     </div>
     <div style="display: flex; justify-content: space-between;">
-      <p>Date Approved: {{ reservation.dateApproved | date : 'MM/dd/yy' }}</p>
-      <div *ngIf="!isHistoric && !isAdmin && reservation.status != 'rejected'">
+      <p *ngIf="reservation.status == 'accepted' ">Date Approved: {{ reservation.decisionDate | date : 'short' }}</p>
+      <p *ngIf="reservation.status == 'pending' ">Date Submitted: {{ reservation.lastModifiedTime | date : 'short' }}</p>
+      <p *ngIf="reservation.status == 'rejected' ">Date Rejected: {{ reservation.decisionDate | date : 'short' }}</p>
+      <div *ngIf="!isHistoric && !isAdmin && reservation.status == 'pending'">
         <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
         <button mat-flat-button color="accent" (click)="onRemove()">Cancel</button>
       </div>
-      <div *ngIf="isAdmin">
+      <div *ngIf="isAdmin && reservation.status == 'pending'">
         <button mat-flat-button color="warn" (click)="onReject()">Reject</button>
         <button mat-flat-button color="primary" (click)="onAccept()">Accept</button>
       </div>

@@ -11,12 +11,11 @@ import { AppActions } from "../app.action-types";
 import { cachedProductListSelector } from "../app.selectors";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
 import { AppState } from "../models/app-state";
-import { Product } from "../models/product";
 import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { User } from "../models/user";
-import { getUsedTimes, isOverlapingTime, padLeadingZeros } from "../utility/constants";
+import { getUsedTimes, isOverlapingTime, padLeadingZeros } from "../utility/utility";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -296,7 +295,7 @@ export class AdminEffects {
                 const { user, id, createdTime, ...reservation } = application
                 // Write application to Accepted
                 this.db.object(`rejected-applications/${application.userId}/${application.id}`)
-                    .set({ ...reservation, status: "rejected", feedback: application.feedback, lastModifiedTime: new Date().getTime() })
+                    .set({ ...reservation, status: "rejected", feedback: application.feedback, decisionDate: new Date().getTime() })
 
                 // Delete pending application
                 return this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
@@ -327,7 +326,7 @@ export class AdminEffects {
                         ...reservation,
                         status: "accepted",
                         feedback: "Accepted",
-                        lastModifiedTime: new Date().getTime(),
+                        decisionDate: new Date().getTime(),
                         unpaidTimes: getUsedTimes(application.startDate, application.endDate).reduce((acc, time) => {
                             const val = { [time]: time }
                             return { ...acc, ...val }

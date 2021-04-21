@@ -3,7 +3,7 @@ import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { filter, first, map, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedSpaceSelector, paymentSourceSelector, } from 'src/app/app.selectors';
@@ -21,7 +21,7 @@ import { paymentFeedbackSelector, userUnpaidReservationSelector } from '../user.
   styleUrls: ['./payment-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PaymentFormComponent implements OnInit {
+export class PaymentFormComponent implements OnInit, OnDestroy {
   paymentForm: FormGroup
   paymentSources$ = this.store.select(paymentSourceSelector)
   reservations$ = this.store.select(userUnpaidReservationSelector)
@@ -34,14 +34,19 @@ export class PaymentFormComponent implements OnInit {
         const space = spaces[reservation.spaceId]
         return { ...reservation, space }
       })
-    ),
+    )
   )
-
+  autoSetPaymentAmountSub: Subscription
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
     public dialog: MatDialog
   ) { }
+
+  ngOnDestroy() {
+    if (this.autoSetPaymentAmountSub)
+      this.autoSetPaymentAmountSub.unsubscribe()
+  }
 
   ngOnInit(): void {
     this.reservations$.pipe(
@@ -58,6 +63,10 @@ export class PaymentFormComponent implements OnInit {
       paymentAmount: ['', Validators.required],
       additionalAmount: [''],
       paymentMethod: ['', Validators.required]
+    })
+
+    this.autoSetPaymentAmountSub = this.paymentForm.get('reservation').valueChanges.subscribe(reservation => {
+      this.paymentForm.patchValue({ paymentAmount: reservation.cost })
     })
   }
 

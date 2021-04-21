@@ -26,7 +26,7 @@
       </ng-template> -->
 
 
-      <mat-step label="Select Timeframe" state="single">
+      <mat-step label="Select Timeframe" state="single" [optional]="false" [stepControl]="timeFrameForm">
         <form [formGroup]="timeFrameForm" style="display: flex; flex-direction: column;">
           <mat-form-field appearance="outline">
             <mat-label>Select Lease Length</mat-label>
@@ -38,8 +38,18 @@
           <mat-form-field appearance="outline">
             <mat-label>Select Lease Start Month</mat-label>
             <mat-select formControlName="startMonth">
-              <mat-option *ngFor="let month of months | keyvalue | sortBy : 'key'" [value]="month.key">{{month.value}}
-              </mat-option>
+              <!-- <mat-option *ngFor="let month of months | keyvalue | sortBy : 'month'" [value]="month.key">{{month.value}}
+              </mat-option> -->
+              <mat-optgroup [label]="years[0]">
+                <mat-option *ngFor="let month of currentYearsMonths | keyvalue | sortBy : 'month'" [value]="month.key">
+                  {{month.value}}
+                </mat-option>
+              </mat-optgroup>
+              <mat-optgroup [label]="years[1]">
+                <mat-option *ngFor="let month of nextYearsMonths | keyvalue | sortBy : 'month'" [value]="month.key">
+                  {{month.value}}
+                </mat-option>
+              </mat-optgroup>
             </mat-select>
           </mat-form-field>
         </form>
@@ -50,7 +60,7 @@
         </div>
       </mat-step>
 
-      <mat-step label="Availability" state="availability">
+      <mat-step label="Availability" state="availability" [optional]="false" [stepControl]="selectSpaceForm" >
         <div style="display: flex; flex-direction: column; align-items: center;">
           <h2>Start: {{startDate$ | async | date : 'MM/dd/yyyy'}}</h2>
           <h2>End: {{endDate$ | async | date : 'MM/dd/yyyy'}}</h2>
@@ -77,16 +87,18 @@
         </form>
       </mat-step>
 
-      <mat-step label="Payment" state="confirm">
-        <div *ngIf="reservation$ | async as reservation">
+      <mat-step label="Payment" state="confirm" [optional]="false">
+        <div *ngIf="reservation$ | async as reservation"
+          style="display: flex; flex-direction: column; align-items: center;">
           <h1>Reservation Summary</h1>
-          <p>{{ (selectedSpace$ | async).name}}</p>
-          <p>{{reservation.startDate | date : 'MM/dd/y'}}</p>
-          <p>{{reservation.endDate | date : 'MM/dd/yy'}}</p>
+          <p><span style="font-weight: bold;">Space Name: </span>{{ (selectedSpace$ | async).name}}</p>
+          <p><span style="font-weight: bold;">Start Date: </span>{{reservation.startDate | date : 'MM/dd/y'}}</p>
+          <p><span style="font-weight: bold;">End Date: </span>{{reservation.endDate | date : 'MM/dd/yy'}}</p>
           <p>By clicking 'Complete Reservation' your application will be submitted for review.</p>
           <div style="display: flex; justify-content: center;">
             <button mat-button matStepperPrevious>Previous</button>
-            <button mat-button matStepperNext (click)="submitApplication(reservation)">Submit Application</button>
+            <button mat-flat-button matStepperNext color="primary" (click)="submitApplication(reservation)">Submit
+              Application</button>
           </div>
         </div>
       </mat-step>
@@ -116,10 +128,9 @@
 
 
 
-  <!-- <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
+  <mat-card-actions style="display: flex; flex-direction: column; align-items: center;">
     <div>
       <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
-      <button mat-flat-button color="primary" (click)="onContinue()">Continue</button>
     </div>
-  </mat-card-actions> -->
+  </mat-card-actions>
 </mat-card>

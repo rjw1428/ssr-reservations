@@ -7,7 +7,7 @@ import { Product } from "../models/product";
 import { ShoppingActions } from "./shopping.action-types";
 import { AngularFireDatabase } from '@angular/fire/database'
 import { Space } from "../models/space";
-import { getUsedTimes } from "../utility/constants";
+import { getUsedTimes } from "../utility/utility";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
