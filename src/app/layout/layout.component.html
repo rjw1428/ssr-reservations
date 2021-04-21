@@ -63,14 +63,14 @@
           <a mat-list-item [routerLink]="['admin','applications']" routerLinkActive="router-link-active">
             Submitted Applications
           </a>
+          <a *ngIf="user" mat-list-item [routerLink]="['admin','transactions']" routerLinkActive="router-link-active">
+            Payment History
+          </a>
           <a mat-list-item [routerLink]="['admin','product-list']" routerLinkActive="router-link-active">
             Office List
           </a>
           <a mat-list-item [routerLink]="['admin','users']" routerLinkActive="router-link-active">
             Users
-          </a>
-          <a *ngIf="user" mat-list-item [routerLink]="['admin','transactions']" routerLinkActive="router-link-active">
-            Payment History
           </a>
         </mat-nav-list>
       </div>

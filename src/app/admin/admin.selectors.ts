@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { environment } from "src/environments/environment";
 import { AdminState } from "../models/admin-state";
 
 export const selectAdminState = createFeatureSelector<AdminState>("admin")
@@ -13,6 +14,9 @@ export const userListSelector = createSelector(
     admin => admin.users
         ? Object.keys(admin.users)
             .map(key => ({ id: key, ...admin.users[key] }))
+            .filter(user => environment.production
+                ? user.role != 'master'
+                : true)
         : []
 )
 

@@ -6,7 +6,7 @@ export const createStripeCustomer = functions.https.onCall(async (data) => {
         const userRef = db.ref(`users/${data.id}`)
         const customer = await createCustomer(data)
         userRef.update({ stripeCustomerId: customer.id })
-        return { err: null, resp: customer.id }
+        return { err: null, resp: { ...data, stripeCustomerId: customer.id } }
     }
     catch (err) {
         return { err, resp: null }
