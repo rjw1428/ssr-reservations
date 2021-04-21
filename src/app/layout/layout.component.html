@@ -5,9 +5,23 @@
   </button>
   <span style="cursor: default;">Burwell Project</span>
   <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
-  <span *ngIf="(user$ | async) as user" mat-button [matMenuTriggerFor]="menu"
-    style="cursor: pointer;">{{user.firstName}}
-    {{user.lastName}}</span>
+  <span style="display: flex;" *ngIf="(user$ | async) as user">
+    <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;">
+      <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;"
+        matBadge="0" matBadgeColor="warn" [matBadgeHidden]="true">
+        notifications
+      </mat-icon>
+    </span>
+    <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;" [matMenuTriggerFor]="menu">
+      <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
+        account_circle
+      </mat-icon>
+    </span>
+    <span mat-button style="cursor: default; font-size: .8em;">
+      {{user.firstName}}
+      {{user.lastName}}
+    </span>
+  </span>
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="onAccountInfo()">Account Info</button>
     <button mat-menu-item (click)="onLogOut()">Log Out</button>
@@ -47,10 +61,6 @@
               Transaction History
             </a>
           </div>
-          <!-- <a *ngIf="user$ | async" mat-list-item routerLink="user/application"
-            [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">Appy Now</a> -->
-          <!-- <a *ngIf="!(user$ | async)" mat-list-item routerLink="newuser" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active">Create Account</a> -->
         </mat-nav-list>
       </div>
       <div *ngIf="showAdminPanel() | async">

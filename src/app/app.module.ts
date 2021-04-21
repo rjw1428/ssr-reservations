@@ -25,7 +25,8 @@ import { GenericPopupComponent } from './components/generic-popup/generic-popup.
 import { ForgotPasswordComponent } from './login/forgot-password/forgot-password.component';
 import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
 import { ConfirmPaymentFormComponent } from './components/confirm-payment-form/confirm-payment-form.component';
-import { TransactionHistoryComponent } from './component/transaction-history/transaction-history.component';
+import { TransactionHistoryComponent } from './components/transaction-history/transaction-history.component';
+import { MatBadgeModule } from '@angular/material/badge';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,6 +47,7 @@ import { TransactionHistoryComponent } from './component/transaction-history/tra
     AppRoutingModule,
     BrowserAnimationsModule,
     SharedModule,
+    MatBadgeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,

@@ -11,12 +11,10 @@ import { AppActions } from "./app.action-types";
 import { MatDialog } from "@angular/material/dialog";
 import { GenericPopupComponent } from "./components/generic-popup/generic-popup.component";
 import { Router } from "@angular/router";
-import { environment } from "src/environments/environment";
-import { AngularFireObject, DataSnapshot, SnapshotAction } from "@angular/fire/database/interfaces";
+import { DataSnapshot, SnapshotAction } from "@angular/fire/database/interfaces";
 import { Product } from "./models/product";
 import { UserAccountActions } from "./user/user.action-types";
 import { AdminActions } from "./admin/admin.action-types";
-import { cachedProductListSelector } from "./app.selectors";
 import { AppState } from "./models/app-state";
 import { Store } from "@ngrx/store";
 import { Space } from "./models/space";
@@ -101,7 +99,6 @@ export class AppEffects {
         this.actions$.pipe(
             ofType(AppActions.firebaseAuthCreated),
             switchMap(({ user }) => {
-                debugger
                 const { password, ...userData } = user
                 const updatedUser = { ...userData, id: user.id }
                 return this.db.database
@@ -111,9 +108,8 @@ export class AppEffects {
                     .catch(error => ({ error, updatedUser }))
             }),
             map(({ error, updatedUser }) => {
-                debugger
                 return error
-                    ? AppActions.setLoginFeedback({ success: false, message: error })
+                    ? AppActions.setLoginFeedback({ success: false, message: JSON.stringify(error) })
                     : AppActions.userAccountWrittenToDb({ user: updatedUser })
             })
         )

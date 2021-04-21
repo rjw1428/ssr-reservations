@@ -1,1 +1,39 @@
-<p>account-info works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Account Info</mat-card-title>
+    <!-- <mat-card-subtitle>
+      Please fill out the below information to create your account and allow you to reserve a work space.
+    </mat-card-subtitle> -->
+  </mat-card-header>
+
+  <mat-card-content *ngIf="user$ | async as user">
+    <app-user-data [user]="user" [editable]="true"></app-user-data>
+
+
+
+    <h3 style="font-weight: bolder;">Payment Source</h3>
+    <form style="display: flex; justify-content: space-between;" [formGroup]="paymentForm">
+      <mat-form-field appearance="outline" style="flex-basis: 100%;">
+        <mat-label>Cards On File</mat-label>
+        <mat-select formControlName="selectedSource">
+          <mat-option *ngFor="let source of (paymentSources$ | async);" [value]="source.id">
+            {{source.brand}} ***{{source.last4}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="paymentForm.invalid">Please select a payment source.</mat-error>
+      </mat-form-field>
+
+      <div style="flex-shrink: 0; padding: 1em">
+        <button style="margin-right: 1em;" mat-flat-button color="warn" (click)="onRemove(user)">Remove</button>
+        <button mat-flat-button color="accent" (click)="onSetDefault(user)">Set as default</button>
+      </div>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <!-- <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
+      <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
+      <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
+    </div> -->
+  </mat-card-actions>
+</mat-card>

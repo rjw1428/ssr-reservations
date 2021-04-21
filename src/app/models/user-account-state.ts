@@ -6,4 +6,5 @@ export interface UserAccountState {
     rejectedApplications: { [id: string]: Reservation }
     creditCardResp: { resp: any, error: any }
     paymentResponse: { resp: any, error: any }
+    formFeeback: { success: any, message: any }
 }

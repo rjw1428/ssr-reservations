@@ -10,6 +10,7 @@ export interface User {
     lastLogIn?: number;         //epoch
     stripeCustomerId: string;   //from stripe
     password?: string;
-    paymentSources: PaymentSource[];
+    paymentSources: { [sourceId: string]: PaymentSource };
+    defaultPaymentSource: string
     revenue: number;
 }

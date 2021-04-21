@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { filter, first, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
+import { filter, first, flatMap, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
@@ -127,7 +127,7 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.sendCharge),
             withLatestFrom(this.store.select(userSelector)),
-            switchMap(([{ sourceId, amount, reservationId, selectedTime, spaceId, productId }, user]: [any, User]) => {
+            switchMap(([{ sourceId, amount, reservationId, selectedTime, spaceId, productId }, user]) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
                 return createCharge({
                     userId: user.id,
@@ -146,6 +146,28 @@ export class UserAccountEffects {
                     UserAccountActions.paymentSaved({ error: err, resp })
                 ]
             })
+        )
+    )
+
+    updateUserData$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.updateUserData),
+            withLatestFrom(this.store.select(userSelector)),
+            switchMap(([{ userData }, user]) => this.db.object(`users/${userData.id}`).update(userData)
+                .then(() => ({ error: null, resp: { ...user, ...userData } }))
+                .catch(error => ({ error, resp: false }))
+            ),
+            flatMap(({ resp, error }) => error
+                ? [
+                    UserAccountActions.setFormFeedback({ success: false, message: JSON.stringify(error) }),
+                    AppActions.stopLoading()
+                ]
+                : [
+                    AppActions.loginSuccess({ user: resp }),
+                    UserAccountActions.setFormFeedback({ success: true, message: null }),
+                    AppActions.stopLoading()
+                ]
+            )
         )
     )
 

@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Subscription } from 'rxjs';
 import { filter, first, map, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
-import { cachedSpaceSelector, paymentSourceSelector, } from 'src/app/app.selectors';
+import { cachedSpaceSelector, paymentSourceSelector, userSelector, } from 'src/app/app.selectors';
 import { AddPaymentMethodComponent } from 'src/app/components/add-payment-method/add-payment-method.component';
 import { ConfirmPaymentFormComponent } from 'src/app/components/confirm-payment-form/confirm-payment-form.component';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
@@ -26,7 +26,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
   paymentSources$ = this.store.select(paymentSourceSelector)
   reservations$ = this.store.select(userUnpaidReservationSelector)
   spaceDetails$ = this.store.select(cachedSpaceSelector)
-
+  user$ = this.store.select(userSelector)
   leases$ = combineLatest([this.reservations$, this.spaceDetails$]).pipe(
     filter(([reservations, spaces]) => !!reservations.length && !!spaces),
     map(([reservations, spaces]) =>
@@ -37,6 +37,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     )
   )
   autoSetPaymentAmountSub: Subscription
+  autoSetDefaultPaymentSub: Subscription
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
@@ -46,6 +47,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.autoSetPaymentAmountSub)
       this.autoSetPaymentAmountSub.unsubscribe()
+    if (this.autoSetDefaultPaymentSub)
+      this.autoSetDefaultPaymentSub.unsubscribe()
   }
 
   ngOnInit(): void {
@@ -57,12 +60,13 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
       this.store.dispatch(AppActions.fetchAllSpaceDetails())
     })
 
-
-    this.paymentForm = this.formBuilder.group({
-      reservation: ['', Validators.required],
-      paymentAmount: ['', Validators.required],
-      additionalAmount: [''],
-      paymentMethod: ['', Validators.required]
+    this.autoSetDefaultPaymentSub = this.user$.pipe(first(), shareReplay()).subscribe(user => {
+      this.paymentForm = this.formBuilder.group({
+        reservation: ['', Validators.required],
+        paymentAmount: ['', Validators.required],
+        additionalAmount: [''],
+        paymentMethod: [user ? user.defaultPaymentSource : '', Validators.required]
+      })
     })
 
     this.autoSetPaymentAmountSub = this.paymentForm.get('reservation').valueChanges.subscribe(reservation => {

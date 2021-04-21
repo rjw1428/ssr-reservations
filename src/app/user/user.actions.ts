@@ -8,7 +8,6 @@ export const logout = createAction(
 
 export const getReservations = createAction(
     "[Current Reservations Component] Fetch Current Reservations",
-    // props<{ userId: string }>()
 )
 
 export const storeReservations = createAction(
@@ -56,12 +55,12 @@ export const sendCharge = createAction(
 
 export const creditCardSaved = createAction(
     "[User Effect] Credit Card response",
-    props<{resp: any, error: any}>()
+    props<{ resp: any, error: any }>()
 )
 
 export const paymentSaved = createAction(
     "[User Effect] Payment response",
-    props<{resp: any, error: any}>()
+    props<{ resp: any, error: any }>()
 )
 
 export const resetCreditCardFeedback = createAction(
@@ -70,4 +69,14 @@ export const resetCreditCardFeedback = createAction(
 
 export const resetPaymetFeedback = createAction(
     "[Payment Form Component] (On Destroy) Reset payment feedback",
+)
+
+export const updateUserData = createAction(
+    "[User Data Component | Account Info Component] Update user data",
+    props<{ userData: any }>()
+)
+
+export const setFormFeedback = createAction(
+    "[User Effect] Set Feedback",
+    props<{ success: boolean, message: string }>()
 )

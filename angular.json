@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "f140127f-2a38-4b0f-bd5f-d96ed8a901db"
+  },
   "schematics": {
     "@schematics/angular": {
       "component": {

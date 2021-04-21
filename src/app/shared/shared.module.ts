@@ -21,11 +21,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { SortByPipe } from './sort-by.pipe';
 import { ReservationComponent } from '../components/reservation/reservation.component';
+import { UserDataComponent } from '../components/user-data/user-data.component';
+
 @NgModule({
 
   declarations: [
     ProductTileComponent,
     ReservationComponent,
+    UserDataComponent,
     SortByPipe
   ],
   imports: [
@@ -71,6 +74,7 @@ import { ReservationComponent } from '../components/reservation/reservation.comp
 
     ProductTileComponent,
     ReservationComponent,
+    UserDataComponent,
     SortByPipe
   ],
   providers: [

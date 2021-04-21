@@ -1,0 +1,29 @@
+<h3 style="font-weight: bolder;">User Information:</h3>
+<form [formGroup]="userAccount" style="display: flex; flex-direction: column;">
+  <mat-form-field appearance="outline">
+    <mat-label>First Name</mat-label>
+    <input name="spacetype" matInput formControlName="firstName">
+    <mat-error *ngIf="userAccount.invalid">First Name is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Last Name</mat-label>
+    <input name="spacetype" matInput formControlName="lastName">
+    <mat-error *ngIf="userAccount.invalid">Last name is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input name="spacetype" matInput formControlName="email">
+    <mat-error *ngIf="userAccount.invalid">Email address is required</mat-error>
+  </mat-form-field>
+</form>
+
+<div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
+  <p style="color: red" *ngIf="feedback.message">{{ feedback.message || "There was an error" }}</p>
+  <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center;" *ngIf="editable">
+  <button style="margin-bottom: 1em;" mat-flat-button color="primary" (click)="onSave()">Update</button>
+  <button mat-flat-button color="warn" (click)="onCancel()">Cancel</button>
+</div>

@@ -7,38 +7,20 @@
   </mat-card-header>
 
   <mat-card-content>
-    <form [formGroup]="createAccount">
-      <div style="display: flex; flex-direction: column;">
-        <mat-form-field appearance="outline">
-          <mat-label>First Name</mat-label>
-          <input name="spacetype" matInput formControlName="firstName">
-          <mat-error *ngIf="createAccount.invalid">First Name is required</mat-error>
-        </mat-form-field>
+    <app-user-data [tirggerEmit]="triggerEmit" (value)="onResponse($event)"></app-user-data>
+    <h3 style="font-weight: bolder;">Password:</h3>
+    <form [formGroup]="createAccount" style="display: flex; flex-direction: column;">
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input name="spacetype" matInput type="password" formControlName="password">
+        <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Last Name</mat-label>
-          <input name="spacetype" matInput formControlName="lastName">
-          <mat-error *ngIf="createAccount.invalid">Last name is required</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input name="spacetype" matInput formControlName="email">
-          <mat-error *ngIf="createAccount.invalid">Email address is required</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
-          <input name="spacetype" matInput type="password" formControlName="password">
-          <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Confirm Password</mat-label>
-          <input name="spacetype" matInput type="password" formControlName="passwordConfirm">
-          <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+        <input name="spacetype" matInput type="password" formControlName="passwordConfirm">
+        <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
+      </mat-form-field>
     </form>
   </mat-card-content>
 

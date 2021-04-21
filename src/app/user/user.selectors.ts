@@ -69,4 +69,9 @@ export const paymentFeedbackSelector = createSelector(
     userAccount => userAccount.paymentResponse
 )
 
+export const formFeedbackSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.formFeeback
+)
+
 
