@@ -10,7 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../models/user';
 import { AppActions } from '../app.action-types';
 import { Router } from '@angular/router';
-
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',

@@ -15,7 +15,7 @@
       </mat-form-field> -->
 
       <!-- <pre *ngFor="let col of displayedColumns | keyvalue">{{col | json}}</pre> -->
-      <table mat-table [dataSource]="transactions | formatTable" style="width: 100%;">
+      <table mat-table [dataSource]="transactions | sortBy : 'dateCreated' : 'desc' | formatTable" style="width: 100%;">
         <ng-container [matColumnDef]="col.key" *ngFor="let col of displayedColumns | keyvalue">
           <th mat-header-cell *matHeaderCellDef> {{col.value}} </th>
           <td mat-cell *matCellDef="let element">

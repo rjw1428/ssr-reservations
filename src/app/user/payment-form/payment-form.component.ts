@@ -14,6 +14,9 @@ import { AppState } from 'src/app/models/app-state';
 import { Reservation } from 'src/app/models/reservation';
 import { UserAccountActions } from '../user.action-types';
 import { paymentFeedbackSelector, userUnpaidReservationSelector } from '../user.selectors';
+import * as confetti from 'canvas-confetti';
+import { confet } from 'src/app/utility/utility';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-payment-form',
@@ -41,7 +44,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
-    public dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnDestroy() {
@@ -71,6 +75,20 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
 
     this.autoSetPaymentAmountSub = this.paymentForm.get('reservation').valueChanges.subscribe(reservation => {
       this.paymentForm.patchValue({ paymentAmount: reservation.cost })
+    })
+
+    this.store.select(paymentFeedbackSelector).pipe(
+      filter(resp => !!resp),
+      filter(({ resp, error }) => !!resp),
+      first(),
+    ).subscribe(({ resp, error }) => {
+      if (resp) {
+        this.router.navigate(['user','transactions'])
+        const interval = setInterval(() => confet(), 250)
+        setTimeout(() => {
+          clearInterval(interval)
+        }, 1000 * 2)
+      }
     })
   }
 

@@ -1,3 +1,5 @@
+import * as confetti from 'canvas-confetti';
+
 export function getUsedTimes(startDate: number, endDate: number): number[] {
     let usedTimes = []
     const startMonth = new Date(startDate).getMonth()
@@ -26,4 +28,22 @@ export function isOverlapingTime(approvedStart, approvedEnd, compareStart, compa
     if (approvedEnd <= compareStart) return false
 
     return true
+}
+
+export function confet() {
+    const myConf = confetti.create(null, { resize: true })
+    requestAnimationFrame(() => {
+        myConf({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 1 },
+        });
+        myConf({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 1 },
+        });
+    })
 }
