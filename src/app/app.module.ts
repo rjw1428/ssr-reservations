@@ -26,6 +26,7 @@ import { ForgotPasswordComponent } from './login/forgot-password/forgot-password
 import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
 import { ConfirmPaymentFormComponent } from './components/confirm-payment-form/confirm-payment-form.component';
 import { MatBadgeModule } from '@angular/material/badge';
+import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/performance'
 @NgModule({
   declarations: [
     AppComponent,
@@ -49,6 +50,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    AngularFirePerformanceModule,
     StoreModule.forRoot({ app: appReducer }, {
       runtimeChecks: {
         strictStateImmutability: true,
@@ -59,7 +61,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     EffectsModule.forRoot([AppEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ],
-  providers: [],
+  providers: [PerformanceMonitoringService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

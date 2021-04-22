@@ -30,7 +30,12 @@ export class ShoppingEffects {
     saveReservation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ShoppingActions.saveReservation),
-            switchMap(async ({ reservation }) => this.db.database.ref(`pending-applications/${reservation.userId}`).push(reservation)),
+            switchMap(({ reservation }) => {
+                const { user, ...application } = reservation
+                return this.db.database.ref(`pending-applications/${application.userId}`)
+                    .push(application)
+                    .then(resp => ({ ...reservation, id: resp.key }))
+            }),
             tap(() => this.dialog.open(GenericPopupComponent, {
                 width: '400px',
                 data: {
@@ -45,7 +50,17 @@ export class ShoppingEffects {
                     action: () => this.router.navigate(['/user', 'application-status'])
                 }
             })),
-            map((resp) => ShoppingActions.saveReservationComplete())
+            tap(reservation => this.afs.collection('mail').add({
+                to: reservation.user.email,
+                template: {
+                    name: 'applicationSubmitted',
+                    data: {
+                        applicationId: reservation.id,
+                        username: `${reservation.user.firstName} ${reservation.user.lastName}`
+                    }
+                }
+            })),
+            map(reservation => ShoppingActions.saveReservationComplete())
         )
     )
 

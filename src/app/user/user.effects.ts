@@ -141,8 +141,7 @@ export class UserAccountEffects {
             switchMap(([{ sourceId, amount, reservationId, selectedTime, space }, user]) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
                 return createCharge({
-                    userId: user.id,
-                    customerId: user.stripeCustomerId,
+                    user,
                     sourceId,
                     amount,
                     reservationId,

@@ -25,18 +25,18 @@ export const createStripeSource = functions.https.onCall(async ({ stripeId, toke
     }
 })
 
-export const createStripeCharge = functions.https.onCall(async ({ userId, customerId, sourceId, amount, reservationId, selectedTime, space }) => {
+export const createStripeCharge = functions.https.onCall(async ({ user, sourceId, amount, reservationId, selectedTime, space }) => {
     try {
         const dueDateStr = new Date(selectedTime).toLocaleDateString("en-US")
         const charge = await stripe.charges.create({
             amount: amount * 100,
             currency: 'usd',
             description: `Burwell Project - ${space.name} - ${dueDateStr}`,
-            customer: customerId,
+            customer: user.stripeCustomerId,
             statement_descriptor: `Burwell Project`,
             source: sourceId
         })
-        await updateDataBasePaymentInfo(userId, amount, reservationId, selectedTime, space)
+        await updateDataBasePaymentInfo(user, amount, reservationId, selectedTime, space)
         return { err: null, resp: charge }
     }
     catch (err) {
@@ -44,19 +44,41 @@ export const createStripeCharge = functions.https.onCall(async ({ userId, custom
     }
 })
 
-export const updateDataBasePaymentInfo = (userId: string, amount: number, reservationId: string, selectedTime: string, space: { name: string, id: string, productId: string }) => {
-    const userRef = db.ref(`users/${userId}`)
-    const timeRef = db.ref(`accepted-applications/${userId}/${reservationId}/unpaidTimes/${selectedTime}`)
+const updateDataBasePaymentInfo = (user: any, amount: number, reservationId: string, selectedTime: string, space: { name: string, id: string, productId: string }) => {
+    const userRef = db.ref(`users/${user.id}`)
+    const timeRef = db.ref(`accepted-applications/${user.id}/${reservationId}/unpaidTimes/${selectedTime}`)
     const spaceRef = db.ref(`spaces/${space.productId}/${space.id}/reserved/${selectedTime}`)
-    userRef.update({ revenue: increment(amount) })
-    timeRef.remove()
-    spaceRef.update({ hasPaid: true })
 
-    // Add Transaction to transaction-history
-    return afs.collection('transactions').add({ userId, spaceName: space.name, reservationId, amount, dateCreated: new Date().getTime(), dateDue: selectedTime })
+    return Promise.all([
+        userRef.update({ revenue: increment(amount) }),
+        timeRef.remove(),
+        spaceRef.update({ hasPaid: true }),
+        // Add email confirmation record
+        afs.collection('mail').add({
+            to: user.email,
+            template: {
+                name: 'paymentReceived',
+                data: {
+                    applicationId: reservationId,
+                    username: `${user.firstName} ${user.lastName}`,
+                    amount: `$${amount}.00`
+                }
+            }
+        }),
+        // Add Transaction to transaction-history
+        afs.collection('transactions').add({
+            userId: user.id,
+            spaceName: space.name,
+            reservationId,
+            amount,
+            dateCreated: new Date().getTime(),
+            dateDue: selectedTime
+        })
+    ])
 }
 
-export const createCustomer = async (user: any) => {
+
+const createCustomer = async (user: any) => {
     const customer = await stripe.customers.create({
         email: user.email,
         name: `${user.firstName} ${user.lastName}`,

@@ -8,6 +8,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { skip, first, filter, tap } from 'rxjs/operators';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { setLoginFeedback } from '../app.actions';
+import { AngularFirePerformance } from '@angular/fire/performance';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -17,6 +18,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   login: FormGroup
   feedback$ = this.store.select(loginFeedbackSelector)
   constructor(
+    private performance: AngularFirePerformance,
     public dialogRef: MatDialogRef<LoginComponent>,
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
@@ -41,13 +43,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     })
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.login.invalid) return this.store.dispatch(
       AppActions.setLoginFeedback({
         message: "Please enter both Username and Password",
         success: false
       })
     )
+    const trace = await this.performance.trace('userLogin')
+    trace.start()
     this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(AppActions.login({ ...this.login.value }))
     this.feedback$.pipe(
@@ -55,6 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       filter(({ error, success }) => !!success),
       first()
     ).subscribe(({ error, success }) => {
+      trace.stop()
       this.input
         ? this.dialogRef.close(this.input.action())
         : this.dialogRef.close()

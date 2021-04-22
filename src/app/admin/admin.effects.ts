@@ -6,7 +6,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { forkJoin, from, of } from "rxjs";
-import { filter, find, first, flatMap, map, mergeMap, reduce, switchMap } from "rxjs/operators";
+import { filter, find, first, flatMap, map, mergeMap, reduce, switchMap, tap } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
 import { cachedProductListSelector } from "../app.selectors";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
@@ -93,7 +93,7 @@ export class AdminEffects {
         )
     )
 
-    // EMITS TOO MANY TIMES ON SELECTING USER LIST
+    // EMITS TOO MANY TIMES ON SELECTING USER
     fetchUserList$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserList),
@@ -293,21 +293,47 @@ export class AdminEffects {
     rejectApp$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.rejectApplication),
-            switchMap(({ application }) => {
+            map(({ application }) => {
                 const { user, id, createdTime, ...reservation } = application
                 // Write application to Accepted
                 this.db.object(`rejected-applications/${application.userId}/${application.id}`)
                     .set({ ...reservation, status: "rejected", feedback: application.feedback, decisionDate: new Date().getTime() })
 
                 // Delete pending application
-                return this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
-            })
+                this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
+                return application
+            }),
+            switchMap(application => this.afs.collection('mail').add({
+                to: application.user.email,
+                template: {
+                    name: 'applicationRejected',
+                    data: {
+                        applicationId: application.id,
+                        username: `${application.user.firstName} ${application.user.lastName}`,
+                        feedback: application.feedback
+                    }
+                }
+            })),
         ), { dispatch: false }
     )
 
     acceptApplicatoin$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.acceptApplication),
+            tap(({ application }) => {
+                this.afs.collection('mail').add({
+                    to: application.user.email,
+                    template: {
+                        name: 'applicationApproved',
+                        data: {
+                            applicationId: application.id,
+                            username: `${application.user.firstName} ${application.user.lastName}`,
+                            spaceName: "INSERT SPACE NAME",
+                            startDate: new Date(application.startDate).toLocaleDateString()
+                        }
+                    }
+                })
+            }),
             switchMap(({ application }) => {
                 const { user, id, createdTime, ...reservation } = application
                 const usedTimes = getUsedTimes(application.startDate, application.endDate)

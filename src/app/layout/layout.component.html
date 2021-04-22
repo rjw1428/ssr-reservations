@@ -6,13 +6,13 @@
     <span style="cursor: default;">Burwell Project</span>
     <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
     <span style="display: flex;" *ngIf="(user$ | async) as user">
-      <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;">
+      <!-- <span style="display: flex; align-items: center; margin-right: 1em; cursor: pointer;">
         <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;"
           matBadge="0" matBadgeColor="warn" [matBadgeHidden]="true">
           notifications
         </mat-icon>
-      </span>
-      <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;"
+      </span> -->
+      <span style="display: flex; align-items: center; margin-right: 1em; cursor: pointer;"
         [matMenuTriggerFor]="menu">
         <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
           account_circle

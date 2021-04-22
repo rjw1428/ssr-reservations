@@ -156,6 +156,7 @@ export class AddReservationComponent implements OnInit, OnDestroy {
           const now = new Date().getTime()
           const reservation: Reservation = {
             userId: user.id,
+            user: user,
             productId: this.inputProduct.id,
             spaceId: space,
             startDate,

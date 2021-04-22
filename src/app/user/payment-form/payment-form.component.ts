@@ -77,13 +77,14 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
       this.paymentForm.patchValue({ paymentAmount: reservation.cost })
     })
 
+    // Listen for payment success
     this.store.select(paymentFeedbackSelector).pipe(
       filter(resp => !!resp),
       filter(({ resp, error }) => !!resp),
       first(),
     ).subscribe(({ resp, error }) => {
       if (resp) {
-        this.router.navigate(['user','transactions'])
+        setTimeout(() => this.router.navigate(['user', 'transactions']), 500)
         const interval = setInterval(() => confet(), 250)
         setTimeout(() => {
           clearInterval(interval)

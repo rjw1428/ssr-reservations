@@ -1,8 +1,10 @@
 import { Component, OnInit, ChangeDetectionStrategy, Inject, OnDestroy } from '@angular/core';
+import { AngularFirePerformance } from '@angular/fire/performance';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { filter, first } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
+import { userSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Reservation } from 'src/app/models/reservation';
 import { UserAccountActions } from 'src/app/user/user.action-types';
@@ -19,6 +21,7 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
   lease: Reservation
   total: number
   constructor(
+    private performance: AngularFirePerformance,
     private store: Store<AppState>,
     private dialogRef: MatDialogRef<ConfirmPaymentFormComponent>,
     @Inject(MAT_DIALOG_DATA) public paymentInfo: {
@@ -38,7 +41,9 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
     this.lease = this.paymentInfo.reservation
   }
 
-  onSave() {
+  async onSave() {
+    const trace = await this.performance.trace('paymentCompletion')
+    trace.start()
     this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(UserAccountActions.sendCharge({
       sourceId: this.paymentInfo.paymentMethod,
@@ -53,6 +58,7 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
       filter(({ resp, error }) => !!resp),
       first(),
     ).subscribe(({ resp, error }) => {
+      trace.stop()
       if (resp)
         setTimeout(() => this.dialogRef.close(), 500)
     })
