@@ -14,6 +14,7 @@ import { AppState } from "../models/app-state";
 import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
+import { Transaction } from "../models/transaction";
 import { User } from "../models/user";
 import { getUsedTimes, isOverlapingTime, padLeadingZeros } from "../utility/utility";
 import { AdminActions } from "./admin.action-types";
@@ -92,6 +93,7 @@ export class AdminEffects {
         )
     )
 
+    // EMITS TOO MANY TIMES ON SELECTING USER LIST
     fetchUserList$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserList),
@@ -356,6 +358,21 @@ export class AdminEffects {
                 this.db.object(`pending-applications/${application.userId}/${application.id}`).update({ isAlreadyBooked: true })
             ))
         ), { dispatch: false }
+    )
+
+    fetchUserTransactions$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.fetchTransactions),
+            switchMap(() => this.afs.collection(`transactions`,).snapshotChanges()),
+            map((docs: DocumentChangeAction<Transaction>[]) => {
+                const transactions = docs.map(data => {
+                    const id = data.payload.doc.id
+                    const doc = data.payload.doc.data()
+                    return { id, ...doc }
+                })
+                return AdminActions.storeTransactions({ transactions })
+            })
+        )
     )
 
 

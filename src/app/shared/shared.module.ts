@@ -22,6 +22,8 @@ import { MatTableModule } from '@angular/material/table';
 import { SortByPipe } from './sort-by.pipe';
 import { ReservationComponent } from '../components/reservation/reservation.component';
 import { UserDataComponent } from '../components/user-data/user-data.component';
+import { KeyPipe } from './key.pipe';
+import { FormatTablePipe } from './format-table.pipe';
 
 @NgModule({
 
@@ -29,7 +31,9 @@ import { UserDataComponent } from '../components/user-data/user-data.component';
     ProductTileComponent,
     ReservationComponent,
     UserDataComponent,
-    SortByPipe
+    SortByPipe,
+    KeyPipe,
+    FormatTablePipe
   ],
   imports: [
     MatMenuModule,
@@ -77,7 +81,9 @@ import { UserDataComponent } from '../components/user-data/user-data.component';
     ProductTileComponent,
     ReservationComponent,
     UserDataComponent,
-    SortByPipe
+    SortByPipe,
+    KeyPipe,
+    FormatTablePipe
   ],
   providers: [
     MatDatepickerModule

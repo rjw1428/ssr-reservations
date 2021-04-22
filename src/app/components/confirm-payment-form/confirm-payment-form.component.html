@@ -20,7 +20,7 @@
 
   <mat-card-actions>
     <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
-      <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
+      <p style="color: red" *ngIf="feedback.error">{{ feedback.error?.raw?.message || "There was an error" }}</p>
       <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
     </div>
     <div style="display: flex; justify-content: center;">

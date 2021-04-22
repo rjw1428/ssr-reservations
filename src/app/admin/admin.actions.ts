@@ -2,6 +2,7 @@ import { createAction, props } from "@ngrx/store";
 import { AdminSummary } from "../models/admin-summary";
 import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
+import { Transaction } from "../models/transaction";
 import { User } from "../models/user";
 
 export const logout = createAction(
@@ -113,4 +114,13 @@ export const acceptApplication = createAction(
 export const updatedSubmittedApplicationFilter = createAction(
     '[Application History Component] Update Applicatoin Filter',
     props<{ filter: string }>()
+)
+
+export const fetchTransactions = createAction(
+    '[Transaction History Component] Fetch All Transactions',
+)
+
+export const storeTransactions = createAction(
+    '[Admin Effect] Store User Transactions',
+    props<{ transactions: Transaction[] }>()
 )

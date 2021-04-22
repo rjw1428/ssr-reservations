@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatAccordion } from '@angular/material/expansion';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -22,6 +23,7 @@ import { userCurrentReservationsSelector, userHistoricReservationsSelector } fro
 export class ReservationListComponent implements OnInit {
   reservations$: Observable<Reservation[]>
   isHistoric = false
+  @ViewChild(MatAccordion) accordion: MatAccordion;
   constructor(
     private route: ActivatedRoute,
     private store: Store<AppState>,
@@ -30,7 +32,7 @@ export class ReservationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(UserAccountActions.getReservations())
-    
+
     this.store.select(cachedProductListSelector).pipe(
       first(),
       filter(product => !product.length)
@@ -58,6 +60,16 @@ export class ReservationListComponent implements OnInit {
         action: () => this.store.dispatch(UserAccountActions.deleteReservation({ reservation, status: 'accepted' }))
       }
     })
+  }
+
+  openAll() {
+    if (this.accordion)
+      this.accordion.openAll()
+  }
+
+  closeAll() {
+    if (this.accordion)
+      this.accordion.closeAll()
   }
 
   identify(index: number, item: Product) {

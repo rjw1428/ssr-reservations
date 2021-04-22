@@ -1,5 +1,5 @@
 import * as functions from "firebase-functions";
-import { db, stripe, increment } from './config';
+import { db, afs, stripe, increment } from './config';
 
 export const createStripeCustomer = functions.https.onCall(async (data) => {
     try {
@@ -25,17 +25,18 @@ export const createStripeSource = functions.https.onCall(async ({ stripeId, toke
     }
 })
 
-export const createStripeCharge = functions.https.onCall(async ({ userId, customerId, sourceId, amount, reservationId, selectedTime, productId, spaceId }) => {
+export const createStripeCharge = functions.https.onCall(async ({ userId, customerId, sourceId, amount, reservationId, selectedTime, space }) => {
     try {
+        const dueDateStr = new Date(selectedTime).toLocaleDateString("en-US")
         const charge = await stripe.charges.create({
             amount: amount * 100,
             currency: 'usd',
-            description: 'Burwell Project',
+            description: `Burwell Project - ${space.name} - ${dueDateStr}`,
             customer: customerId,
-            statement_descriptor: 'Burwell Project',
+            statement_descriptor: `Burwell Project`,
             source: sourceId
         })
-        updateDataBasePaymentInfo(userId, amount, reservationId, selectedTime, productId, spaceId)
+        await updateDataBasePaymentInfo(userId, amount, reservationId, selectedTime, space)
         return { err: null, resp: charge }
     }
     catch (err) {
@@ -43,13 +44,16 @@ export const createStripeCharge = functions.https.onCall(async ({ userId, custom
     }
 })
 
-export const updateDataBasePaymentInfo = (userId: string, amount: number, reservationId: string, selectedTime: string, productId: string, spaceId: string) => {
+export const updateDataBasePaymentInfo = (userId: string, amount: number, reservationId: string, selectedTime: string, space: { name: string, id: string, productId: string }) => {
     const userRef = db.ref(`users/${userId}`)
     const timeRef = db.ref(`accepted-applications/${userId}/${reservationId}/unpaidTimes/${selectedTime}`)
-    const spaceRef = db.ref(`spaces/${productId}/${spaceId}/reserved/${selectedTime}`)
+    const spaceRef = db.ref(`spaces/${space.productId}/${space.id}/reserved/${selectedTime}`)
     userRef.update({ revenue: increment(amount) })
     timeRef.remove()
     spaceRef.update({ hasPaid: true })
+
+    // Add Transaction to transaction-history
+    return afs.collection('transactions').add({ userId, spaceName: space.name, reservationId, amount, dateCreated: new Date().getTime(), dateDue: selectedTime })
 }
 
 export const createCustomer = async (user: any) => {

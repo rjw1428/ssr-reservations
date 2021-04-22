@@ -71,3 +71,18 @@ export const applicationFilterSelector = createSelector(
     selectAdminState,
     admin => admin.submittedApplicationFilter
 )
+
+export const adminAllTransactionsSelector = createSelector(
+    selectAdminState,
+    admin => admin.transactions && admin.users
+        ? Object.values(admin.transactions)
+            .map(transaction => {
+                const matchingUser = admin.users[transaction.userId]
+                return {
+                    ...transaction,
+                    userId: `${matchingUser?.firstName} ${matchingUser?.lastName}`
+            }
+            })
+        : []
+)
+

@@ -21,7 +21,12 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private dialogRef: MatDialogRef<ConfirmPaymentFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public paymentInfo: { reservation: Reservation, paymentAmount: number, additionalAmount: number, paymentMethod: string }
+    @Inject(MAT_DIALOG_DATA) public paymentInfo: {
+      reservation: Reservation,
+      paymentAmount: number,
+      additionalAmount: number,
+      paymentMethod: string
+    }
   ) { }
 
   ngOnDestroy() {
@@ -35,14 +40,12 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
 
   onSave() {
     this.store.dispatch(AppActions.startLoading())
-
     this.store.dispatch(UserAccountActions.sendCharge({
       sourceId: this.paymentInfo.paymentMethod,
       amount: this.total,
       reservationId: this.lease.id,
-      selectedTime: this.lease['unpaidTime'],
-      spaceId: this.lease.spaceId,
-      productId: this.lease.productId
+      selectedTime: +this.lease['unpaidTime'],
+      space: this.lease['space'],
     }))
 
     this.feedback$.pipe(

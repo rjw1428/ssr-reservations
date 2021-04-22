@@ -1,4 +1,20 @@
 {
-  "indexes": [],
+  "indexes": [{
+    "collectionGroup": "transactions",
+    "queryScope": "COLLECTION",
+    "fields": [{
+        "fieldPath": "userId",
+        "order": "ASCENDING"
+      },
+      {
+        "fieldPath": "dateCreated",
+        "order": "DESCENDING"
+      },
+      {
+        "fieldPath": "spaceName",
+        "order": "ASCENDING"
+      }
+    ]
+  }],
   "fieldOverrides": []
 }

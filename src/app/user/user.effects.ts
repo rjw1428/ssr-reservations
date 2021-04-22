@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore } from "@angular/fire/firestore";
+import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { filter, first, flatMap, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
+import { filter, first, flatMap, map, switchMap, takeWhile, tap, withLatestFrom } from "rxjs/operators";
 import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database'
 import { UserAccountActions } from "./user.action-types";
 import { AppState } from "../models/app-state";
@@ -15,6 +15,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { AngularFireFunctions } from "@angular/fire/functions";
 import { User } from "../models/user";
 import { AppActions } from "../app.action-types";
+import { Transaction } from "../models/transaction";
 
 @Injectable()
 export class UserAccountEffects {
@@ -137,7 +138,7 @@ export class UserAccountEffects {
         this.actions$.pipe(
             ofType(UserAccountActions.sendCharge),
             withLatestFrom(this.store.select(userSelector)),
-            switchMap(([{ sourceId, amount, reservationId, selectedTime, spaceId, productId }, user]) => {
+            switchMap(([{ sourceId, amount, reservationId, selectedTime, space }, user]) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
                 return createCharge({
                     userId: user.id,
@@ -146,8 +147,7 @@ export class UserAccountEffects {
                     amount,
                     reservationId,
                     selectedTime,
-                    spaceId,
-                    productId
+                    space,
                 })
             }),
             switchMap(({ err, resp }) => {
@@ -187,6 +187,29 @@ export class UserAccountEffects {
             withLatestFrom(this.store.select(userSelector)),
             switchMap(([{ defaultPaymentSource }, user]) => this.db.object(`users/${user.id}`).update({ defaultPaymentSource })),
             map(() => AppActions.stopLoading())
+        )
+    )
+
+    fetchUserTransactions$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.fetchUserTransactions),
+            withLatestFrom(this.currentUserId$),
+            takeWhile(([{ }, userId]) => !!userId),
+            switchMap(([{ }, userId]) => {
+                return this.afs.collection(
+                    `transactions`,
+                    ref => ref.where('userId', '==', userId)
+                ).snapshotChanges()
+            })
+            ,
+            map((docs: DocumentChangeAction<Transaction>[]) => {
+                return docs.map(data => {
+                    const id = data.payload.doc.id
+                    const doc = data.payload.doc.data()
+                    return { id, ...doc }
+                })
+            }),
+            map(transactions => UserAccountActions.storeUserTransactions({ transactions }))
         )
     )
 

@@ -6,6 +6,7 @@ export const initialState: UserAccountState = {
     reservations: null,
     pendingApplications: null,
     rejectedApplications: null,
+    transactions: null,
     creditCardResp: null,
     paymentResponse: null,
     formFeeback: null
@@ -52,6 +53,14 @@ export const userAccountReducer = createReducer(
     on(UserAccountActions.paymentSaved, (state, action) => ({ ...state, paymentResponse: action })),
     on(UserAccountActions.resetCreditCardFeedback, (state) => ({ ...state, creditCardResp: initialState.creditCardResp })),
     on(UserAccountActions.resetPaymetFeedback, (state) => ({ ...state, paymentResponse: initialState.creditCardResp })),
-    on(UserAccountActions.setFormFeedback, (state, { success, message }) => ({ ...state, formFeeback: { success, message } }))
+    on(UserAccountActions.setFormFeedback, (state, { success, message }) => ({ ...state, formFeeback: { success, message } })),
+    on(UserAccountActions.storeUserTransactions, (state, { transactions }) => {
+        return {
+            ...state,
+            transactions: transactions.reduce((acc, cur) => {
+                return { ...acc, [cur.id]: cur }
+            }, {})
+        }
+    })
 )
 

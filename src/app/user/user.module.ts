@@ -11,7 +11,7 @@ import { userAccountReducer } from './user.reducer';
 import { ApplicationStatusComponent } from './application-status/application-status.component';
 import { PaymentFormComponent } from './payment-form/payment-form.component';
 import { AuthGuard } from '../auth.guard';
-import { TransactionHistoryComponent } from '../components/transaction-history/transaction-history.component';
+import { TransactionHistoryComponent } from './transaction-history/transaction-history.component';
 
 const routes: Routes = [
   {
@@ -51,7 +51,8 @@ const routes: Routes = [
     AccountInfoComponent,
     ReservationListComponent,
     ApplicationStatusComponent,
-    PaymentFormComponent
+    PaymentFormComponent,
+    TransactionHistoryComponent
   ],
   imports: [
     CommonModule,

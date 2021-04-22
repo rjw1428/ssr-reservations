@@ -1,99 +1,102 @@
-<mat-toolbar color="primary" class="title-bar">
-  <button type=" button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
-    *ngIf="isHandset$ | async">
-    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-  </button>
-  <span style="cursor: default;">Burwell Project</span>
-  <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
-  <span style="display: flex;" *ngIf="(user$ | async) as user">
-    <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;">
-      <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;"
-        matBadge="0" matBadgeColor="warn" [matBadgeHidden]="true">
-        notifications
-      </mat-icon>
+  <mat-toolbar color="primary" class="title-bar">
+    <button type=" button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+      *ngIf="isHandset$ | async">
+      <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+    </button>
+    <span style="cursor: default;">Burwell Project</span>
+    <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
+    <span style="display: flex;" *ngIf="(user$ | async) as user">
+      <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;">
+        <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;"
+          matBadge="0" matBadgeColor="warn" [matBadgeHidden]="true">
+          notifications
+        </mat-icon>
+      </span>
+      <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;"
+        [matMenuTriggerFor]="menu">
+        <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
+          account_circle
+        </mat-icon>
+      </span>
+      <span mat-button style="cursor: default; font-size: .8em;">
+        {{user.firstName}}
+        {{user.lastName}}
+      </span>
     </span>
-    <span style="display: flex; align-items: flex-end; margin-right: 1em; cursor: pointer;" [matMenuTriggerFor]="menu">
-      <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
-        account_circle
-      </mat-icon>
-    </span>
-    <span mat-button style="cursor: default; font-size: .8em;">
-      {{user.firstName}}
-      {{user.lastName}}
-    </span>
-  </span>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="onAccountInfo()">Account Info</button>
-    <button mat-menu-item (click)="onLogOut()">Log Out</button>
-  </mat-menu>
-</mat-toolbar>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="onAccountInfo()">Account Info</button>
+      <button mat-menu-item (click)="onLogOut()">Log Out</button>
+    </mat-menu>
+  </mat-toolbar>
 
-<div class="content-container">
-  <mat-sidenav-container class="sidenav-container">
+  <div class="content-container">
+    <mat-sidenav-container class="sidenav-container">
 
-    <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
-      <div *ngIf="showUserPanel() | async">
-        <mat-nav-list>
-          <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active">Home</a>
-          <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active">Find A Space</a>
-          <div *ngIf="user$ | async as user">
-            <a *ngIf="user" mat-list-item routerLink="user/application-status"
-              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-              Pending Applications
+      <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+        [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+        <div *ngIf="showUserPanel() | async">
+          <mat-nav-list>
+            <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="router-link-active">Home</a>
+            <a mat-list-item routerLink="shop" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="router-link-active">Find A Space</a>
+            <div *ngIf="user$ | async as user">
+              <a *ngIf="user" mat-list-item routerLink="user/application-status"
+                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                Pending Applications
+              </a>
+              <a *ngIf="user" mat-list-item routerLink="user/reservations/current"
+                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                Current Leases
+              </a>
+              <a *ngIf="user" mat-list-item routerLink="user/reservations/history"
+                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                Leases History
+              </a>
+              <a *ngIf="user" mat-list-item routerLink="user/payments" [routerLinkActiveOptions]="{ exact: true }"
+                routerLinkActive="router-link-active">
+                Make a Payment
+              </a>
+              <a *ngIf="user" mat-list-item routerLink="user/transactions" [routerLinkActiveOptions]="{ exact: true }"
+                routerLinkActive="router-link-active">
+                Payment History
+              </a>
+            </div>
+          </mat-nav-list>
+        </div>
+        <div *ngIf="showAdminPanel() | async">
+          <mat-toolbar>Admin</mat-toolbar>
+          <mat-nav-list *ngIf="user$ | async as user">
+            <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="router-link-active" *ngIf="user.role != 'master'">Home</a>
+            <a mat-list-item routerLink="admin" [routerLinkActiveOptions]="{ exact: true }"
+              routerLinkActive="router-link-active">Admin Summary</a>
+            <a mat-list-item [routerLink]="['admin','applications']" routerLinkActive="router-link-active">
+              Submitted Applications
             </a>
-            <a *ngIf="user" mat-list-item routerLink="user/reservations/current"
-              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-              Current Leases
+            <a *ngIf="user" mat-list-item [routerLink]="['admin','transactions']" routerLinkActive="router-link-active">
+              Payment History
             </a>
-            <a *ngIf="user" mat-list-item routerLink="user/reservations/history"
-              [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
-              Leases History
+            <a mat-list-item [routerLink]="['admin','product-list']" routerLinkActive="router-link-active">
+              Office List
             </a>
-            <a *ngIf="user" mat-list-item routerLink="user/payments" [routerLinkActiveOptions]="{ exact: true }"
-              routerLinkActive="router-link-active">
-              Make Payment
+            <a mat-list-item [routerLink]="['admin','users']" routerLinkActive="router-link-active">
+              Users
             </a>
-            <a *ngIf="user" mat-list-item routerLink="user/transactions" [routerLinkActiveOptions]="{ exact: true }"
-              routerLinkActive="router-link-active">
-              Transaction History
-            </a>
-          </div>
-        </mat-nav-list>
-      </div>
-      <div *ngIf="showAdminPanel() | async">
-        <mat-toolbar>Admin</mat-toolbar>
-        <mat-nav-list *ngIf="user$ | async as user">
-          <a mat-list-item routerLink="/" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active" *ngIf="user.role != 'master'">Home</a>
-          <a mat-list-item routerLink="admin" [routerLinkActiveOptions]="{ exact: true }"
-            routerLinkActive="router-link-active">Admin Summary</a>
-          <a mat-list-item [routerLink]="['admin','applications']" routerLinkActive="router-link-active">
-            Submitted Applications
-          </a>
-          <a *ngIf="user" mat-list-item [routerLink]="['admin','transactions']" routerLinkActive="router-link-active">
-            Payment History
-          </a>
-          <a mat-list-item [routerLink]="['admin','product-list']" routerLinkActive="router-link-active">
-            Office List
-          </a>
-          <a mat-list-item [routerLink]="['admin','users']" routerLinkActive="router-link-active">
-            Users
-          </a>
-        </mat-nav-list>
-      </div>
-    </mat-sidenav>
+          </mat-nav-list>
+        </div>
+      </mat-sidenav>
 
-    <mat-sidenav-content>
-      <router-outlet></router-outlet>
-      <h1 style="position: absolute; top: 0; right: 100px; color: red;" *ngIf="isLoading$ | async">LOADING...</h1>
-    </mat-sidenav-content>
+      <mat-sidenav-content>
+        <router-outlet></router-outlet>
+        <h1 style="position: absolute; top: 0; right: 100px; color: red;" *ngIf="isLoading$ | async">LOADING...</h1>
+      </mat-sidenav-content>
 
-  </mat-sidenav-container>
-</div>
+    </mat-sidenav-container>
+  </div>
 
-<mat-toolbar color="primary" class="footer">
-  <span>Footer</span>
-</mat-toolbar>
+  <mat-toolbar color="primary" class="footer">
+    <div style="margin-top: 1em; display: flex; flex-direction: column; align-items: center;">
+      <img src="../../assets/logo_md.png" width=200 height=200>
+    </div>
+  </mat-toolbar>

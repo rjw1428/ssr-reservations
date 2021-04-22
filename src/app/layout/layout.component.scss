@@ -1,3 +1,7 @@
+* {
+  --content-max-width: 1000px;
+}
+
 .content-container {
   display: flex;
   justify-content: center;
@@ -6,7 +10,7 @@
 }
 
 .sidenav-container {
-  max-width: 1000px;
+  max-width: var(--content-max-width);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -26,6 +30,10 @@
   display: flex;
   justify-content: space-between;
   background-color: #1f693f;
+  max-width: var(--content-max-width);
+  transform: translate(-50%);
+  position: relative;
+  left: 50%;
 }
 
 .router-link-active {
@@ -35,7 +43,12 @@
 .footer {
   display: flex;
   justify-content: center;
+  height: fit-content;
   background-color: #1f693f;
+  max-width: var(--content-max-width);
+  transform: translate(-50%);
+  position: relative;
+  left: 50%;
 }
 
 

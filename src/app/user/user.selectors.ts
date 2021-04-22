@@ -74,4 +74,10 @@ export const formFeedbackSelector = createSelector(
     userAccount => userAccount.formFeeback
 )
 
+export const userTransactionSelector = createSelector(
+    selectUserAccountState,
+    userAccount => userAccount.transactions
+        ? Object.values(userAccount.transactions)
+        : []
+)
 

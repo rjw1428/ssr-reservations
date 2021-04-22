@@ -1,6 +1,8 @@
 import { createAction, props } from "@ngrx/store";
 import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
+import { Space } from "../models/space";
+import { Transaction } from "../models/transaction";
 
 export const logout = createAction(
     "[App Effect] Logout - Clear user data"
@@ -50,7 +52,7 @@ export const addCreditCardToStripe = createAction(
 
 export const sendCharge = createAction(
     "[Payment Form Component] Send Stripe Charge",
-    props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, spaceId: string, productId: string }>()
+    props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, space: Space }>()
 )
 
 export const creditCardSaved = createAction(
@@ -88,4 +90,13 @@ export const fetchLatestUserData = createAction(
 export const setDefaultPaymentSource = createAction(
     '[Account Info Component | Add payment Source Component] Set Default Payment Source',
     props<{ defaultPaymentSource: string }>()
+)
+
+export const fetchUserTransactions = createAction(
+    '[Transaction History Component] Fetch User Transactions',
+)
+
+export const storeUserTransactions = createAction(
+    '[User Effect] Store User Transactions',
+    props<{ transactions: Transaction[] }>()
 )
