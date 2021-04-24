@@ -43,7 +43,6 @@ export const createStripeCharge = functions.https.onCall(async ({ user, sourceId
             statement_descriptor: `Burwell Project`,
             source: sourceId
         })
-        console.log("HERE")
         await updateDataBasePaymentInfo(user, amount, reservationId, selectedTime, space)
         await emailUserPaymentConfirmation(user, amount, reservationId, selectedTime, space)
         return { err: null, resp: charge }

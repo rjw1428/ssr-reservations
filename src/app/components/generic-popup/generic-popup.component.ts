@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -22,6 +22,14 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
     },
   ) { }
 
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key == 'Enter')
+      this.input.action()
+        ? this.triggerAction()
+        : this.dialogRef.close()
+  }
+
   ngOnInit(): void {
     if (this.input.form) {
       const fg = this.input.form
@@ -38,8 +46,8 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
 
   triggerAction() {
     this.dataForm
-      ? this.dialogRef.close({action: this.input.action(), ...this.dataForm.value})
+      ? this.dialogRef.close({ action: this.input.action(), ...this.dataForm.value })
       : this.dialogRef.close(this.input.action())
-    
+
   }
 }

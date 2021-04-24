@@ -3,10 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { AppActions } from 'src/app/app.action-types';
+import { loginFeedbackSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { User } from 'src/app/models/user';
 import { UserAccountActions } from 'src/app/user/user.action-types';
-import { formFeedbackSelector } from 'src/app/user/user.selectors';
 
 @Component({
   selector: 'app-user-data',
@@ -20,24 +20,21 @@ export class UserDataComponent implements OnInit, OnChanges, OnDestroy {
   @Input() editable = false
   @Input() tirggerEmit: boolean
   @Output() value = new EventEmitter<{ error: string, resp: {} }>()
-  // !IF USER ISNT LOGGED IN, THROWS ERROR
-
-  
-  feedback$ = of(null)//this.store.select(formFeedbackSelector)
+  feedback$ = this.store.select(loginFeedbackSelector)
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder
   ) { }
 
   ngOnDestroy() {
-    this.store.dispatch(UserAccountActions.setFormFeedback(null))
+    this.store.dispatch(AppActions.setLoginFeedback(null))
   }
 
   ngOnInit(): void {
     this.userAccount = this.formBuilder.group({
       firstName: [this.user ? this.user.firstName : '', Validators.required],
       lastName: [this.user ? this.user.lastName : '', Validators.required],
-      email: [this.user ? this.user.email : '', Validators.required],
+      email: [this.user ? this.user.email : '', [Validators.required, Validators.email]],
     })
   }
 
@@ -59,7 +56,7 @@ export class UserDataComponent implements OnInit, OnChanges, OnDestroy {
 
   onSave() {
     if (this.userAccount.invalid)
-      return this.store.dispatch(UserAccountActions.setFormFeedback({ success: false, message: 'Please complete all user information.' }))
+      return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: 'Please complete all user information.' }))
 
     this.store.dispatch(AppActions.startLoading())
     const userData = { ...this.userAccount.value, id: this.user.id }

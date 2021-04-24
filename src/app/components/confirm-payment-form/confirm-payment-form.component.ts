@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Inject, OnDestroy, HostListener } from '@angular/core';
 import { AngularFirePerformance } from '@angular/fire/performance';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -31,6 +31,13 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
       paymentMethod: string
     }
   ) { }
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key == 'Enter')
+      this.onSave()
+  }
+
 
   ngOnDestroy() {
     this.store.dispatch(UserAccountActions.resetPaymetFeedback())

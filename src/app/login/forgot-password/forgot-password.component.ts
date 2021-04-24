@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -19,17 +19,21 @@ export class ForgotPasswordComponent implements OnInit {
     private formBuilder: FormBuilder
   ) { }
 
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key == 'Enter' && this.resetPassword && this.resetPassword.valid)
+      this.onReset()
+  }
+
   ngOnInit(): void {
     this.resetPassword = this.formBuilder.group({
-      email: [this.previousFormEmail ? this.previousFormEmail : '', Validators.required]
+      email: [this.previousFormEmail ? this.previousFormEmail : '', [Validators.required, Validators.email]]
     })
   }
 
   onReset() {
-    if (this.resetPassword.invalid) {
-      console.log("FORM INVALID")
-      return
-    }
+    if (this.resetPassword.invalid) return
+
     const email = this.resetPassword.get('email').value
     this.store.dispatch(AppActions.resetPassword({ email }))
     this.dialogRef.close()

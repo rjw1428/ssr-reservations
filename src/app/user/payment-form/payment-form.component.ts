@@ -1,5 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -127,7 +127,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
 
     this.dialog.open(ConfirmPaymentFormComponent, {
       width: '400px',
-      data: this.paymentForm.value
+      data: this.paymentForm.value,
+      disableClose: true
     })
   }
 

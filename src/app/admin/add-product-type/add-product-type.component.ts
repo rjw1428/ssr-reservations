@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -27,6 +27,12 @@ export class AddProductTypeComponent implements OnInit {
     private formBuilder: FormBuilder,
     private store: Store<AdminState>,
   ) { }
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key == 'Enter' && this.productForm && this.productForm.valid)
+      this.onSave()
+  }
 
   ngOnInit(): void {
     this.productForm = this.formBuilder.group({

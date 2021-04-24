@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, OnDestroy, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -28,15 +28,21 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
   elements = this.stripe.elements();
   feedback$ = this.store.select(creditCardFeedbackSelector)
   makeDefault = new FormControl(false)
+  cardError: { code: string, type: string, message: string } | undefined
   @ViewChild('card') card: ElementRef
   constructor(
     private store: Store<AppState>,
     private dialogRef: MatDialogRef<AddPaymentMethodComponent>
   ) { }
 
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key == 'Enter')
+      this.onSave()
+  }
+
   ngOnDestroy() {
     this.store.dispatch(UserAccountActions.resetCreditCardFeedback())
-
   }
 
   ngOnInit(): void {
@@ -47,14 +53,23 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
       style: this.elementStyles
     })
     this.cardForm.mount(this.card.nativeElement)
+    this.cardError = { code: null, type: null, message: "Your card number is incomplete." }
+    this.cardForm.on('change', event => {
+      this.cardError = event.error
+    })
   }
 
   async onSave() {
+    this.store.dispatch(UserAccountActions.resetCreditCardFeedback())
+
+    if (this.cardError)
+      return this.store.dispatch(UserAccountActions.creditCardSaved({ resp: null, error: { raw: { message: this.cardError.message } } }))
+
     // Get user stripe id
     this.store.dispatch(AppActions.startLoading())
     const { token } = await this.stripe.createToken(this.cardForm)
     this.store.dispatch(UserAccountActions.addCreditCardToStripe({ token, isDefault: this.makeDefault.value }))
-    
+
     this.feedback$.pipe(
       filter(resp => !!resp),
       filter(({ resp, error }) => !!resp),

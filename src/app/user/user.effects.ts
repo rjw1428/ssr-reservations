@@ -168,12 +168,12 @@ export class UserAccountEffects {
             ),
             flatMap(({ resp, error }) => error
                 ? [
-                    UserAccountActions.setFormFeedback({ success: false, message: JSON.stringify(error) }),
+                    AppActions.setLoginFeedback({ success: false, message: JSON.stringify(error) }),
                     AppActions.stopLoading()
                 ]
                 : [
                     AppActions.loginSuccess({ user: resp }),
-                    UserAccountActions.setFormFeedback({ success: true, message: null }),
+                    AppActions.setLoginFeedback({ success: true, message: null }),
                     AppActions.stopLoading()
                 ]
             )
