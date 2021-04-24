@@ -24,10 +24,12 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
 
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (event.key == 'Enter')
-      this.input.action()
-        ? this.triggerAction()
-        : this.dialogRef.close()
+    if (event.key == 'Enter') {
+      !this.input.action
+        ? this.dialogRef.close()
+        : this.triggerAction()
+
+    }
   }
 
   ngOnInit(): void {
