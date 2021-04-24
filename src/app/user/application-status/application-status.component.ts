@@ -1,7 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, map, startWith } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector } from 'src/app/app.selectors';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
@@ -19,9 +20,15 @@ import { userPendingApplicationsSelector, userRejectedApplicationsSelector } fro
 export class ApplicationStatusComponent implements OnInit {
   pendingApplications$ = this.store.select(userPendingApplicationsSelector)
   rejectedApplications$ = this.store.select(userRejectedApplicationsSelector)
+  selectedReservation$ = this.route.queryParams.pipe(
+    startWith({ application: '_' }),
+    filter(params => !!params.application),
+    map(params => params.application)
+  )
   constructor(
     private store: Store<AppState>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {

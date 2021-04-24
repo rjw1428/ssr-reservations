@@ -19,6 +19,7 @@ export class ReservationComponent implements OnInit {
   @Input() reservation: Reservation
   @Input() isHistoric: boolean = false
   @Input() isAdmin: boolean = false
+  @Input() isExpanded: boolean = false
   @Output() accept = new EventEmitter()
   @Output() reject = new EventEmitter()
   @Output() remove = new EventEmitter()
@@ -33,6 +34,8 @@ export class ReservationComponent implements OnInit {
   ngOnInit(): void {
     this.product$ = this.store.select(cachedProductSelector, this.reservation.productId)
     this.spaceName$ = this.store.select(reservationDetailsSelector, this.reservation.spaceId)
+    if (this.isExpanded)
+      this.onExpand()
   }
 
   onExpand() {

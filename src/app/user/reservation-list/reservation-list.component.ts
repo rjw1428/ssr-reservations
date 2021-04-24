@@ -4,7 +4,7 @@ import { MatAccordion } from '@angular/material/expansion';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { filter, first, map, switchMap } from 'rxjs/operators';
+import { filter, first, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector } from 'src/app/app.selectors';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
@@ -23,11 +23,17 @@ import { userCurrentReservationsSelector, userHistoricReservationsSelector } fro
 export class ReservationListComponent implements OnInit {
   reservations$: Observable<Reservation[]>
   isHistoric = false
+  selectedReservation$ = this.route.queryParams.pipe(
+    startWith({ lease: '_' }),
+    filter(params=>!!params.lease),
+    map(params => params.lease),
+    tap(console.log)
+  )
   @ViewChild(MatAccordion) accordion: MatAccordion;
   constructor(
     private route: ActivatedRoute,
     private store: Store<AppState>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -48,7 +54,10 @@ export class ReservationListComponent implements OnInit {
           this.isHistoric = true
           return this.store.select(userHistoricReservationsSelector)
         }
-      }));
+      })
+    );
+
+
   }
 
   onRemove(reservation: Reservation) {

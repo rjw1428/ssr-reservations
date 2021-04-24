@@ -1,4 +1,4 @@
-<mat-card style="margin-bottom: 2em;">
+<mat-card style="margin-bottom: 2em;" *ngIf="selectedReservation$ | async as expanded">
   <mat-card-header style="display: flex; justify-content: space-between;">
     <mat-card-title>Pending Applications</mat-card-title>
   </mat-card-header>
@@ -7,6 +7,7 @@
     <div *ngIf="pendingApplications.length; else noPending">
       <app-reservation *ngFor="let application of pendingApplications; trackBy: identify" 
         [reservation]="application"
+        [isExpanded]="expanded == application.id"
         (remove)="onRemove(application)">
       </app-reservation>
     </div>
@@ -19,7 +20,7 @@
 </mat-card>
 
 
-<mat-card>
+<mat-card *ngIf="selectedReservation$ | async as expanded">
   <mat-card-header style="display: flex; justify-content: space-between;">
     <mat-card-title>Rejected Applications</mat-card-title>
   </mat-card-header>
@@ -27,7 +28,9 @@
   <mat-card-content *ngIf="(rejectedApplications$ | async) as rejectedApplications;">
     <div *ngIf="rejectedApplications.length; else noRejected">
       <app-reservation *ngFor="let application of rejectedApplications; trackBy: identify" 
-        [reservation]="application">
+        [reservation]="application"
+        [isExpanded]="expanded == application.id"
+        >
       </app-reservation>
     </div>
     <ng-template #noRejected>

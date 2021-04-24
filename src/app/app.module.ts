@@ -67,10 +67,10 @@ import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@ang
   ],
   providers: [
     PerformanceMonitoringService,
-    { provide: USE_AUTH_EMULATOR, useValue: !environment.production ? ['localhost', 9099] : undefined },
-    { provide: USE_DATABASE_EMULATOR, useValue: !environment.production ? ['localhost', 9000] : undefined },
-    { provide: USE_FIRESTORE_EMULATOR, useValue: !environment.production ? ['localhost', 8080] : undefined },
-    { provide: USE_FUNCTIONS_EMULATOR, useValue: !environment.production ? ['localhost', 5001] : undefined },
+    { provide: USE_AUTH_EMULATOR, useValue: environment.useEmulator ? ['localhost', 9099] : undefined },
+    { provide: USE_DATABASE_EMULATOR, useValue: environment.useEmulator ? ['localhost', 9000] : undefined },
+    { provide: USE_FIRESTORE_EMULATOR, useValue: environment.useEmulator ? ['localhost', 8080] : undefined },
+    { provide: USE_FUNCTIONS_EMULATOR, useValue: environment.useEmulator ? ['localhost', 5001] : undefined },
   ],
   bootstrap: [AppComponent]
 })

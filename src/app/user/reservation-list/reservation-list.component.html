@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="reservations$ | async as reservations;">
   <mat-card-header style="display: flex; justify-content: space-between;">
     <mat-card-title>{{isHistoric ? "Historic" : "Current"}} Leases</mat-card-title>
     <div>
@@ -7,12 +7,12 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content *ngIf="reservations$ | async as reservations;">
-
+  <mat-card-content *ngIf="selectedReservation$ | async as expandedId;">
     <mat-accordion style="width: 100%;" multi  *ngIf="reservations.length; else noRes">
       <app-reservation *ngFor="let reservation of reservations; trackBy: identify;" 
         [reservation]="reservation"
         [isHistoric]="isHistoric"
+        [isExpanded]="expandedId == reservation.id"
         (remove)="onRemove(reservation)">
       </app-reservation>
     </mat-accordion>
