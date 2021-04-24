@@ -5,20 +5,19 @@
     </button>
     <span style="cursor: default;">Burwell Project</span>
     <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
-    <span style="display: flex;" *ngIf="(user$ | async) as user">
+    <span style="display: flex; cursor: pointer;" *ngIf="(user$ | async) as user" [matMenuTriggerFor]="menu">
       <!-- <span style="display: flex; align-items: center; margin-right: 1em; cursor: pointer;">
         <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;"
           matBadge="0" matBadgeColor="warn" [matBadgeHidden]="true">
           notifications
         </mat-icon>
       </span> -->
-      <span style="display: flex; align-items: center; margin-right: 1em; cursor: pointer;"
-        [matMenuTriggerFor]="menu">
+      <span style="display: flex; align-items: center; margin-right: 1em;">
         <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
           account_circle
         </mat-icon>
       </span>
-      <span mat-button style="cursor: default; font-size: .8em;">
+      <span mat-button style="font-size: .8em;">
         {{user.firstName}}
         {{user.lastName}}
       </span>

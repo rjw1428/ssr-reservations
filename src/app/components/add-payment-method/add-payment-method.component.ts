@@ -35,7 +35,7 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<AddPaymentMethodComponent>
   ) { }
 
-  @HostListener('document:keypress', ['$event'])
+  @HostListener('window:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key == 'Enter')
       this.onSave()
@@ -43,6 +43,7 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.store.dispatch(UserAccountActions.resetCreditCardFeedback())
+    this.cardForm.unmount()
   }
 
   ngOnInit(): void {
@@ -54,9 +55,10 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
     })
     this.cardForm.mount(this.card.nativeElement)
     this.cardError = { code: null, type: null, message: "Your card number is incomplete." }
-    this.cardForm.on('change', event => {
-      this.cardError = event.error
-    })
+    // Stripe Events
+    this.cardForm.on('change', event => this.cardError = event.error)
+    this.cardForm.on('escape', () => this.dialogRef.close())
+    this.cardForm.on('submit', () => this.onSave())
   }
 
   async onSave() {

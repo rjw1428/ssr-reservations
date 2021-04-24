@@ -39,7 +39,7 @@
       <mat-form-field appearance="outline" *ngIf="(paymentSources$ | async).length; else requestAddCard">
         <mat-label>Payment Method</mat-label>
         <mat-select formControlName="paymentMethod">
-          <mat-option *ngFor="let source of paymentSources$ | async;" [value]="source.id">
+          <mat-option *ngFor="let source of paymentSources$ | async; trackBy : identify" [value]="source.id">
             {{source.brand}} ***{{source.last4}}
           </mat-option>
         </mat-select>

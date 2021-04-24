@@ -132,7 +132,7 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     })
   }
 
-  identify(index: number, item: Reservation) {
+  identify(index: number, item: any) {
     return item.id
   }
 }

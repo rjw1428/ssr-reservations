@@ -27,7 +27,7 @@
               <p style="margin: 0;">{{user.firstName}} {{ user.lastName}} <span style="font-style: italic; font-size: smaller
               ;">{{user.email}}</span></p>
             </div>
-            <p style="margin: 0; flex-basis: 40%;">Reservation Id: <a [routerLink]=""
+            <p style="margin: 0; flex-basis: 40%;">Lease Id: <a [routerLink]=""
                 (click)="onOpenReservation(reservation.value.reservation, product.key, reservation.value.user, space.value.name)">{{reservation.value.reservation}}</a>
             </p>
             <ng-template #other>

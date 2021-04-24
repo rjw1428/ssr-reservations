@@ -18,7 +18,7 @@ export class TransactionHistoryComponent implements OnInit {
   transactions$ = this.store.select(userTransactionSelector)
   displayedColumns = {
     dateCreated: 'Date',
-    reservationId: 'Reservation ID',
+    reservationId: 'Lease ID',
     spaceName: 'Space',
     dateDue: 'Date Due',
     amount: "Amount"
