@@ -42,6 +42,7 @@ export class ApplicationHistoryComponent implements OnInit {
   }
 
   onFilterChanged(event: MatSelectChange) {
+    this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(AdminActions.updatedSubmittedApplicationFilter({ filter: event.value }))
   }
 

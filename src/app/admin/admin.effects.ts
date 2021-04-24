@@ -245,6 +245,13 @@ export class AdminEffects {
         )
     )
 
+    stopLoadingOnFilter$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.storeSubmittedApplications),
+            map(({ applications }) => AppActions.stopLoading())
+        )
+    )
+
     updateFilter$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.updatedSubmittedApplicationFilter),
