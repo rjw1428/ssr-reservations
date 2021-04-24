@@ -50,16 +50,6 @@ export class ShoppingEffects {
                     action: () => this.router.navigate(['/user', 'application-status'])
                 }
             })),
-            tap(reservation => this.afs.collection('mail').add({
-                to: reservation.user.email,
-                template: {
-                    name: 'applicationSubmitted',
-                    data: {
-                        applicationId: reservation.id,
-                        username: `${reservation.user.firstName} ${reservation.user.lastName}`
-                    }
-                }
-            })),
             map(reservation => ShoppingActions.saveReservationComplete())
         )
     )

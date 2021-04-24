@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
 import { AppActions } from 'src/app/app.action-types';
 import { AppState } from 'src/app/models/app-state';
 import { User } from 'src/app/models/user';
@@ -19,7 +20,10 @@ export class UserDataComponent implements OnInit, OnChanges, OnDestroy {
   @Input() editable = false
   @Input() tirggerEmit: boolean
   @Output() value = new EventEmitter<{ error: string, resp: {} }>()
-  feedback$ = this.store.select(formFeedbackSelector)
+  // !IF USER ISNT LOGGED IN, THROWS ERROR
+
+  
+  feedback$ = of(null)//this.store.select(formFeedbackSelector)
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder

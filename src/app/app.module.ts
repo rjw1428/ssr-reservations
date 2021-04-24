@@ -17,6 +17,10 @@ import { environment } from 'src/environments/environment';
 import { appReducer } from './app.reducer';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { USE_EMULATOR as USE_AUTH_EMULATOR } from '@angular/fire/auth';
+import { USE_EMULATOR as USE_DATABASE_EMULATOR } from '@angular/fire/database';
+import { USE_EMULATOR as USE_FIRESTORE_EMULATOR } from '@angular/fire/firestore';
+import { USE_EMULATOR as USE_FUNCTIONS_EMULATOR } from '@angular/fire/functions';
 import { AngularFireModule } from '@angular/fire';
 import { CalendarHeaderComponent } from './components/calendar-header/calendar-header.component';
 import { AppEffects } from './app.effects';
@@ -61,7 +65,13 @@ import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@ang
     EffectsModule.forRoot([AppEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ],
-  providers: [PerformanceMonitoringService],
+  providers: [
+    PerformanceMonitoringService,
+    { provide: USE_AUTH_EMULATOR, useValue: !environment.production ? ['localhost', 9099] : undefined },
+    { provide: USE_DATABASE_EMULATOR, useValue: !environment.production ? ['localhost', 9000] : undefined },
+    { provide: USE_FIRESTORE_EMULATOR, useValue: !environment.production ? ['localhost', 8080] : undefined },
+    { provide: USE_FUNCTIONS_EMULATOR, useValue: !environment.production ? ['localhost', 5001] : undefined },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

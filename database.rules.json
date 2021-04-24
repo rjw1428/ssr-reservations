@@ -1,6 +1,35 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false
+   "users": {
+     ".write": "auth.uid != null",
+      ".read": "auth.uid != null",
+
+     ".indexOn": ".value"
+    },
+      
+   "reservations": {
+        ".write": "auth.uid != null",
+        ".read": "auth.uid != null"
+    },
+    
+   "spaces": {
+        ".write": "auth.uid != null",
+        ".read": "auth.uid != null"
+    },
+      
+    "pending-applications": {
+        ".write": "auth.uid != null",
+        ".read": "auth.uid != null"
+    },
+      
+    "rejected-applications": {
+        ".write": "auth.uid != null",
+        ".read": "auth.uid != null"
+    },
+      
+    "accepted-applications": {
+        ".write": "auth.uid != null",
+        ".read": "auth.uid != null"
+    }
   }
 }

@@ -49,3 +49,7 @@ public
 src/assets
 src/environments
 .firebase
+firebase-admin-key*
+*.log
+
+.runtimeconfig*

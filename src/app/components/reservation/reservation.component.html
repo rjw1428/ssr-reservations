@@ -32,7 +32,7 @@
     <div style="display: flex; flex-direction: column; align-items: space-between;">
       <h2 style="margin: 0; text-align: center;">Space: {{ spaceName$ | async}}</h2>
       <h3  style="text-align: center;" *ngIf="reservation.status == 'rejected'"><span style="font-weight: bolder">Rejection Feedback:</span> {{reservation.feedback}}</h3>
-      <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="text-align: center; color: red;">Accepted Application has made this date range invalid</h3>
+      <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="text-align: center; color: red;">A previously accepted application has made this date range no longer available.</h3>
       <app-product-tile style="flex-basis: 75%;" [product]="product" [infoOnly]="true"></app-product-tile>
       <div style="display: flex; justify-content: center; align-items: center;">
         <h3 style="flex-basis: 25%;">Cost: {{ reservation.cost| currency }}</h3>
@@ -48,7 +48,7 @@
       </div>
       <div *ngIf="isAdmin && reservation.status == 'pending'">
         <button mat-flat-button color="warn" (click)="onReject()">Reject</button>
-        <button mat-flat-button color="primary" (click)="onAccept()">Accept</button>
+        <button mat-flat-button color="primary" (click)="onAccept()" [disabled]="reservation.isAlreadyBooked">Accept</button>
       </div>
     </div>
   </ng-container>

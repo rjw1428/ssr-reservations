@@ -296,44 +296,24 @@ export class AdminEffects {
             map(({ application }) => {
                 const { user, id, createdTime, ...reservation } = application
                 // Write application to Accepted
-                this.db.object(`rejected-applications/${application.userId}/${application.id}`)
-                    .set({ ...reservation, status: "rejected", feedback: application.feedback, decisionDate: new Date().getTime() })
+                this.db.database.ref(`rejected-applications/${application.userId}/`).child(application.id)
+                    .set({
+                        ...reservation,
+                        status: "rejected",
+                        feedback: application.feedback,
+                        decisionDate: new Date().getTime()
+                    })
 
                 // Delete pending application
                 this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
                 return application
-            }),
-            switchMap(application => this.afs.collection('mail').add({
-                to: application.user.email,
-                template: {
-                    name: 'applicationRejected',
-                    data: {
-                        applicationId: application.id,
-                        username: `${application.user.firstName} ${application.user.lastName}`,
-                        feedback: application.feedback
-                    }
-                }
-            })),
+            })
         ), { dispatch: false }
     )
 
     acceptApplicatoin$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.acceptApplication),
-            tap(({ application }) => {
-                this.afs.collection('mail').add({
-                    to: application.user.email,
-                    template: {
-                        name: 'applicationApproved',
-                        data: {
-                            applicationId: application.id,
-                            username: `${application.user.firstName} ${application.user.lastName}`,
-                            spaceName: "INSERT SPACE NAME",
-                            startDate: new Date(application.startDate).toLocaleDateString()
-                        }
-                    }
-                })
-            }),
             switchMap(({ application }) => {
                 const { user, id, createdTime, ...reservation } = application
                 const usedTimes = getUsedTimes(application.startDate, application.endDate)
@@ -349,7 +329,7 @@ export class AdminEffects {
                 this.db.object(`spaces/${application.productId}/${application.spaceId}/reserved`).update(payload)
 
                 // Write application to Accepted
-                this.db.object(`accepted-applications/${application.userId}/${application.id}`)
+                this.db.database.ref(`accepted-applications/${application.userId}/`).child(application.id)
                     .set({
                         ...reservation,
                         status: "accepted",
