@@ -36,7 +36,7 @@ export const userUnpaidReservationSelector = createSelector(
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
                 .filter(reservation => reservation.unpaidTimes && reservation.status != 'canceled')
                 .reduce((acc, reservation) => {
-                    const lowestTime = Object.keys(reservation.unpaidTimes).reduce((min, time) => +time < min ? time : min, 9999999999000)
+                    const lowestTime = Object.keys(reservation.unpaidTimes).reduce((min, time) => +time < min ? +time : min, 9999999999000)
                     const unpaidReservations = ({ ...reservation, unpaidTime: lowestTime })
                     return acc.concat(unpaidReservations)
                 }, []) as Reservation[]

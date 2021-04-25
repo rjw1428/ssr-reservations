@@ -5,6 +5,13 @@ export interface User {
     firstName: string;
     lastName: string;
     email: string;
+    phone: string;
+    businessName: string
+    address: string
+    position: string
+    size: number
+    operatingHours: string
+    sharedUserCount: number
     role: 'admin' | 'user' | 'master'
     dateCreated: number;        //epoch
     lastLogIn?: number;         //epoch

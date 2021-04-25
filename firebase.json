@@ -23,7 +23,22 @@
     }
   },
   "hosting": {
-    "public": "dist/space-reservation"
+    "public": "dist/space-reservation",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/public/**",
+        "destination": "/public.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   },
   "functions": {
     "predeploy": "npm --prefix \"$RESOURCE_DIR\" run build"

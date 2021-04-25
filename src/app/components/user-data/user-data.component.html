@@ -2,20 +2,60 @@
 <form [formGroup]="userAccount" style="display: flex; flex-direction: column;">
   <mat-form-field appearance="outline">
     <mat-label>First Name</mat-label>
-    <input name="spacetype" matInput formControlName="firstName">
+    <input name="firstName" matInput formControlName="firstName">
     <mat-error *ngIf="userAccount.invalid">First Name is required</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Last Name</mat-label>
-    <input name="spacetype" matInput formControlName="lastName">
+    <input name="lastName" matInput formControlName="lastName">
     <mat-error *ngIf="userAccount.invalid">Last name is required</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Email</mat-label>
-    <input name="spacetype" matInput formControlName="email">
+    <input name="email" matInput formControlName="email">
     <mat-error *ngIf="userAccount.invalid">Email address is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Phone Number</mat-label>
+    <input name="phone" matInput formControlName="phone" placeholder="999-999-9999">
+    <mat-error *ngIf="userAccount.invalid">Email address is required</mat-error>
+  </mat-form-field>
+</form>
+
+<h3 style="font-weight: bolder;">Business Information:</h3>
+<form [formGroup]="businessInfo" style="display: flex; flex-direction: column;">
+  <mat-form-field appearance="outline">
+    <mat-label>Name of Business</mat-label>
+    <input name="businessName" matInput formControlName="businessName">
+    <mat-error *ngIf="businessInfo.invalid">The name of the business is required</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Current Address of Business</mat-label>
+    <input name="address" matInput formControlName="address">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Your Position</mat-label>
+    <input name="position" matInput formControlName="position">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Number of people in your business</mat-label>
+    <input name="size" matInput formControlName="size" type="number">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Days and Hours of Operation</mat-label>
+    <textarea name="operatingHours" matInput formControlName="operatingHours"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>How many people are planning on using the office space</mat-label>
+    <input name="sharedUserCount" matInput formControlName="sharedUserCount" type="number">
   </mat-form-field>
 </form>
 

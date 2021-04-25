@@ -2,7 +2,7 @@
   <img src="assets/headerImg1.jpg" width=100%>
 </section>
 
-<section>
+<section style="padding: 2em">
   <h3>About</h3>
   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
     sed do eiusmod tempor incididunt ut labore et dolore magna
@@ -19,14 +19,17 @@
   </p>
 </section>
 
-<section style="display: flex;">
-  <div style="flex-basis: 100%;">
+<section style="display: flex; align-items: stretch; padding: 2em">
+  <div style="flex-basis: 100%; display: flex; flex-direction: column; align-items: center; padding: 2em 1em">
     <h3>Contact Us</h3>
-    <p>Address: &#60;insert street address&#62;</p>
+    <p>Address: 407 E. Burwell St Salem, Va 24153</p>
     <p>Call: &#60;insert phone number&#62;</p>
-    <p>Email: &#60;insert email address&#62;</p>
+    <p>Email: <a mailto="info@burwellproject.com">info@burwellproject.com</a></p>
   </div>
-  <div style="flex-basis: 100%; display: flex; justify-content: center; align-items: center;" class="test">
-    <p>&#60;insert google map&#62;</p>
+  <div style="flex-basis: 100%; display: flex; justify-content: center; align-items: center;">
+    <iframe width="100%" height="500" id="gmap_canvas"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3174.11675347972!2d-80.05509694861203!3d37.292366647439714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x884d0bcd372dc033%3A0x4bdfc2308753313f!2s407%20E%20Burwell%20St%2C%20Salem%2C%20VA%2024153!5e0!3m2!1sen!2sus!4v1619323063184!5m2!1sen!2sus"
+      frameborder="0" scrolling="no" marginheight="0" marginwidth="0" allowfullscreen="true" loading="lazy">
+    </iframe>
   </div>
 </section>
