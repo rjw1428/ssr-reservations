@@ -19,6 +19,7 @@ export const paymentReminderFunction = functions.pubsub.schedule('0 10 25 * *').
 
                 const minTime = Object.keys(lease.unpaidTimes).reduce((min, time) => +time < min ? +time : min, 9999999999000)
                 if (minTime > now && minTime < now + TEN_DAYS) {
+                    console.log(lease.id)
                     await sendScheduledEmail(lease, minTime, 'scheduledReminder')
                     count++
                 }
@@ -46,6 +47,7 @@ export const paymentLateFunction = functions.pubsub.schedule('0 10 2 * *').timeZ
 
                 const minTime = Object.keys(lease.unpaidTimes).reduce((min, time) => +time < min ? +time : min, 9999999999000)
                 if (minTime < now && minTime > now - TEN_DAYS) {
+                    console.log(lease.id)
                     await sendScheduledEmail(lease, minTime, 'scheduledLate')
                     count++
                 }
@@ -55,7 +57,7 @@ export const paymentLateFunction = functions.pubsub.schedule('0 10 2 * *').timeZ
     return count;
 });
 
-const sendScheduledEmail = async (lease: Reservation, time: number, template: string) => {
+const sendScheduledEmail = async (lease: Reservation, time: number, templateName: string) => {
     try {
         // Get User Info
         const userRef = await db.ref(`users/${lease.userId}`).get()
@@ -69,7 +71,7 @@ const sendScheduledEmail = async (lease: Reservation, time: number, template: st
         return afs.collection('mail').add({
             to: user.email,
             template: {
-                name: 'scheduledReminder',
+                name: templateName,
                 data: {
                     applicationId: lease.id,
                     username: `${user.firstName} ${user.lastName}`,
