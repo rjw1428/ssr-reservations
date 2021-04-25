@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { catchError, filter, first } from 'rxjs/operators';
 import { userSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
+import { Transaction } from 'src/app/models/transaction';
 import { UserAccountActions } from 'src/app/user/user.action-types';
 import { userTransactionSelector } from 'src/app/user/user.selectors';
 
@@ -34,8 +35,8 @@ export class TransactionHistoryComponent implements OnInit {
     ).subscribe(() => this.store.dispatch(UserAccountActions.fetchUserTransactions()))
   }
 
-  openReservation(reservationId: string) {
-    console.log(reservationId)
+  onOpenReservation(row: Transaction) {
+    this.store.dispatch(UserAccountActions.getFullReservationFromTransaction({ reservationId: row.reservationId, userId: row.userId, spaceName: row.spaceName }))
   }
 
   applyFilter(event) {

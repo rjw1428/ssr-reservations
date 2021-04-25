@@ -26,10 +26,10 @@
       </div>
       <div *ngIf="getPreviousReservation(user) | async as reservation">
         <div style="display: flex; justify-content: space-between;">
-          <p style="margin: 0">{{ reservation.startDate | date : 'MM/dd/yy'}} - {{ reservation.endDate | date : 'MM/dd/yy'}}
+          <p style="margin: 0">{{ reservation.startDate | date : 'MM/dd/yy'}} - {{ (reservation.status=='canceled' ? reservation.lastModifiedTime : reservation.endDate ) | date : 'MM/dd/yy'}}
           </p>
           <p>Reservation ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
-          <p style="font-style: italic;">Created: {{ reservation.dateApproved | date : 'MM/dd/yy'}}</p>
+          <p style="font-style: italic;">{{(reservation.status=='canceled' ? 'Cancelled' : 'Approved' )}}: {{ reservation.lastModifiedTime | date : 'MM/dd/yy'}}</p>
         </div>
       </div>
       <div style="display: flex; justify-content: space-between;">
@@ -40,7 +40,7 @@
           <p style="margin: 0">{{ reservation.startDate | date : 'MM/dd/yy'}} - {{ reservation.endDate | date : 'MM/dd/yy'}}
           </p>
           <p>Lease ID: <a [routerLink]="" (click)="openReservation(reservation)">{{reservation.id}}</a></p>
-          <p style="font-style: italic;">Approved: {{ reservation.dateApproved | date : 'MM/dd/yy'}}</p>
+          <p style="font-style: italic;">Approved: {{ reservation.lastModifiedTime | date : 'MM/dd/yy'}}</p>
         </div>
       </div>
     </div>

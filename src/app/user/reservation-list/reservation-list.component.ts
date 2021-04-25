@@ -27,7 +27,6 @@ export class ReservationListComponent implements OnInit {
     startWith({ lease: '_' }),
     filter(params=>!!params.lease),
     map(params => params.lease),
-    tap(console.log)
   )
   @ViewChild(MatAccordion) accordion: MatAccordion;
   constructor(

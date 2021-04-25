@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { noop } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { first, map, switchMap } from 'rxjs/operators';
 import { AddProductTypeComponent } from 'src/app/admin/add-product-type/add-product-type.component';
 import { AdminActions } from 'src/app/admin/admin.action-types';
 import { userSelector } from 'src/app/app.selectors';
@@ -65,6 +65,6 @@ export class ProductTileComponent implements OnInit {
         return popup.afterClosed()
       })
     ).subscribe(callback => callback)
-
+      // THIS IS SUPPOSED TO BE THIS WAY
   }
 }

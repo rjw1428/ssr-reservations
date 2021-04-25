@@ -8,13 +8,18 @@ export const triggerApplicationPendingEmail = functions.database
             const reservation = snapshot.val();
             const userRef = await db.ref(`users/${reservation.userId}`).get()
             const user = userRef.val()
+            const spaceRef = await db.ref(`/spaces/${reservation.productId}/${reservation.spaceId}`).get()
+            const space = spaceRef.val()
             afs.collection('mail').add({
                 to: user.email,
                 template: {
                     name: 'applicationSubmitted',
                     data: {
                         applicationId: context.params.applicationId,
-                        username: `${user.firstName} ${user.lastName}`
+                        username: `${user.firstName} ${user.lastName}`,
+                        spacename: space.name,
+                        startdate: new Date(reservation.startDate).toLocaleDateString(),
+                        enddate: new Date(reservation.endDate).toLocaleDateString()
                     }
                 }
             })
@@ -28,9 +33,11 @@ export const triggerApplicationRejectedEmail = functions.database
     .ref('/rejected-applications/{userId}/{applicationId}')
     .onCreate(async (snapshot, context) => {
         try {
-            const reservation =snapshot.val();
+            const reservation = snapshot.val();
             const userRef = await db.ref(`/users/${reservation.userId}`).get()
             const user = userRef.val()
+            const spaceRef = await db.ref(`/spaces/${reservation.productId}/${reservation.spaceId}`).get()
+            const space = spaceRef.val()
             return afs.collection('mail').add({
                 to: user.email,
                 template: {
@@ -38,7 +45,10 @@ export const triggerApplicationRejectedEmail = functions.database
                     data: {
                         applicationId: context.params.applicationId,
                         username: `${user.firstName} ${user.lastName}`,
-                        feedback: reservation.feedback
+                        feedback: reservation.feedback,
+                        spacename: space.name,
+                        startdate: new Date(reservation.startDate).toLocaleDateString(),
+                        enddate: new Date(reservation.endDate).toLocaleDateString()
                     }
                 }
             })
@@ -108,6 +118,37 @@ export const triggerApplicationReceivedEmail = functions.database
                         }
                     }
                 })
+            })
+        }
+        catch (err) {
+            return console.log(err)
+        }
+    })
+
+export const triggerCaneledLeaseEmail = functions.database
+    .ref('/accepted-applications/{userId}/{applicationId}')
+    .onDelete(async (snapshot, context) => {
+        try {
+            const lease = snapshot.val();
+            // GET APPLICATION USER
+            const userRef = await db.ref(`users/${context.params.userId}`).get()
+            const user = userRef.val()
+
+            // GET SPACE INFO
+            const spaceRef = await db.ref(`/spaces/${lease.productId}/${lease.spaceId}`).get()
+            const space = spaceRef.val()
+            
+            // SEND EMAIL
+            return afs.collection('mail').add({
+                to: user.email,
+                template: {
+                    name: 'leaseCanceled',
+                    data: {
+                        applicationId: context.params.applicationId,
+                        username: `${user.firstName} ${user.lastName}`,
+                        spacename: space.name,
+                    }
+                }
             })
         }
         catch (err) {

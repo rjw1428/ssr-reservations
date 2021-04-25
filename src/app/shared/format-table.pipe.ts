@@ -12,8 +12,8 @@ export class FormatTablePipe implements PipeTransform {
     const datePipe = new DatePipe('en-US')
     return value.map(transaction => ({
       ...transaction,
-      dateCreated: datePipe.transform(transaction.dateCreated, 'MM/dd'),
-      dateDue: datePipe.transform(transaction.dateDue, 'MM/dd'),
+      dateCreated: datePipe.transform(transaction.dateCreated, 'MM/dd/yy'),
+      dateDue: datePipe.transform(transaction.dateDue, 'MM/dd/yy'),
       amount: currencyPipe.transform(transaction.amount),
     })
     )

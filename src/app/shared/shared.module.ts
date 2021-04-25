@@ -24,6 +24,7 @@ import { ReservationComponent } from '../components/reservation/reservation.comp
 import { UserDataComponent } from '../components/user-data/user-data.component';
 import { KeyPipe } from './key.pipe';
 import { FormatTablePipe } from './format-table.pipe';
+import { ListItemPipe } from './list-item.pipe';
 
 @NgModule({
 
@@ -33,7 +34,8 @@ import { FormatTablePipe } from './format-table.pipe';
     UserDataComponent,
     SortByPipe,
     KeyPipe,
-    FormatTablePipe
+    FormatTablePipe,
+    ListItemPipe
   ],
   imports: [
     MatMenuModule,
@@ -83,6 +85,7 @@ import { FormatTablePipe } from './format-table.pipe';
     UserDataComponent,
     SortByPipe,
     KeyPipe,
+    ListItemPipe,
     FormatTablePipe
   ],
   providers: [

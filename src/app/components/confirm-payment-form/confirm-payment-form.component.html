@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="user$ | async as user">
   <mat-card-header>
     <mat-card-title>Confirm Payment</mat-card-title>
     <mat-card-subtitle>
@@ -24,7 +24,7 @@
     </div>
     <div style="display: flex; justify-content: center;">
       <button mat-raised-button color="warn" mat-dialog-close>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Submit</button>
+      <button mat-raised-button color="primary" (click)="onSave(user)">Submit</button>
     </div>
   </mat-card-actions>
 </mat-card>

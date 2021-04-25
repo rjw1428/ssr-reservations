@@ -1,13 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-
 import { Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
 import { catchError, filter, first, switchMap } from 'rxjs/operators';
 import { AdminActions } from 'src/app/admin/admin.action-types';
 import { adminAllTransactionsSelector, userListSelector } from 'src/app/admin/admin.selectors';
 import { userSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
+import { Transaction } from 'src/app/models/transaction';
 
 @Component({
   selector: 'app-admin-transaction-history',
@@ -22,7 +20,7 @@ export class AdminTransactionHistoryComponent implements OnInit {
     dateCreated: 'Date',
     reservationId: 'Reservation ID',
     spaceName: 'Space',
-    userId: 'User',
+    userName: 'User',
     dateDue: 'Date Due',
     amount: "Amount"
   };
@@ -34,7 +32,7 @@ export class AdminTransactionHistoryComponent implements OnInit {
   ngOnInit(): void {
     this.transactions$.pipe(
       first(),
-      filter(transactions => !transactions.length)
+      filter(transactions => !transactions.length),
     ).subscribe(() => this.store.dispatch(AdminActions.fetchTransactions()))
 
     this.store.select(userListSelector).pipe(
@@ -45,8 +43,8 @@ export class AdminTransactionHistoryComponent implements OnInit {
     })
   }
 
-  openReservation(reservationId: string) {
-    console.log(reservationId)
+  onOpenReservation(row: Transaction) {
+    this.store.dispatch(AdminActions.getFullReservationFromTransaction({ reservationId: row.reservationId, userId: row.userId, spaceName: row.spaceName }))
   }
 
   applyFilter(event) {

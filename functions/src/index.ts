@@ -9,3 +9,4 @@ exports.triggerApplicationReceivedEmail = emails.triggerApplicationReceivedEmail
 exports.triggerApplicationPendingEmail = emails.triggerApplicationPendingEmail
 exports.triggerApplicationAcceptedEmail = emails.triggerApplicationAcceptedEmail
 exports.triggerApplicationRejectedEmail = emails.triggerApplicationRejectedEmail
+exports.triggerCaneledLeaseEmail = emails.triggerCaneledLeaseEmail

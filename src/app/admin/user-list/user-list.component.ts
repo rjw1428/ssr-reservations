@@ -50,7 +50,8 @@ export class UserListComponent implements OnInit {
         data: {
           title: "Can't Demote User...",
           content: "Need at least 1 Admin Account"
-        }
+        },
+        disableClose: true
       })
   }
 

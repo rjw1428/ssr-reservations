@@ -16,6 +16,7 @@ import { AngularFireFunctions } from "@angular/fire/functions";
 import { User } from "../models/user";
 import { AppActions } from "../app.action-types";
 import { Transaction } from "../models/transaction";
+import { Product } from "../models/product";
 
 @Injectable()
 export class UserAccountEffects {
@@ -137,8 +138,7 @@ export class UserAccountEffects {
     addCharge$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.sendCharge),
-            withLatestFrom(this.store.select(userSelector)),
-            switchMap(([{ sourceId, amount, reservationId, selectedTime, space }, user]) => {
+            switchMap(({ sourceId, amount, reservationId, selectedTime, space, user }) => {
                 const createCharge = this.fns.httpsCallable('createStripeCharge')
                 return createCharge({
                     user,
@@ -192,23 +192,40 @@ export class UserAccountEffects {
     fetchUserTransactions$ = createEffect(() =>
         this.actions$.pipe(
             ofType(UserAccountActions.fetchUserTransactions),
-            withLatestFrom(this.currentUserId$),
-            takeWhile(([{ }, userId]) => !!userId),
-            switchMap(([{ }, userId]) => {
-                return this.afs.collection(
-                    `transactions`,
-                    ref => ref.where('userId', '==', userId)
-                ).snapshotChanges()
-            })
-            ,
-            map((docs: DocumentChangeAction<Transaction>[]) => {
-                return docs.map(data => {
-                    const id = data.payload.doc.id
-                    const doc = data.payload.doc.data()
-                    return { id, ...doc }
-                })
-            }),
+            switchMap(() => this.store.select(userSelector)),
+            filter(user => !!user),
+            switchMap((user) => this.afs.collection<Transaction>(`transactions`, ref => ref.where('userId', '==', user.id)).snapshotChanges()),
+            map(docs => docs.map(data => {
+                const id = data.payload.doc.id
+                const doc = data.payload.doc.data()
+                return { id, ...doc }
+            })),
             map(transactions => UserAccountActions.storeUserTransactions({ transactions }))
+        )
+    )
+
+    getFullReservationFromTransaction$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(UserAccountActions.getFullReservationFromTransaction),
+            switchMap(({ reservationId, userId, spaceName }) => {
+                return this.db.object<Reservation>(`accepted-applications/${userId}/${reservationId}`).valueChanges()
+                    .pipe(
+                        map(data => {
+                            const reservation = { id: reservationId, ...data }
+                            return { spaceName, reservation }
+                        })
+                    )
+            }),
+            switchMap(({ spaceName, reservation }) => {
+                return this.afs.doc<Product>(`products/${reservation.productId}`).valueChanges()
+                    .pipe(
+                        first(),
+                        map(product => ({ spaceName, reservation, product }))
+                    )
+            }),
+            map((resp) => {
+                return AppActions.openReservation(resp)
+            })
         )
     )
 

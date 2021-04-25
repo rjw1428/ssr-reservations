@@ -34,12 +34,12 @@ export const adminReducer = createReducer(
         })
     ),
     on(AdminActions.updatedSubmittedApplicationFilter, (state, action) => ({ ...state, submittedApplicationFilter: action.filter })),
-    on(AdminActions.storeTransactions, (state, { transactions }) => {
-        return {
+    on(AdminActions.storeTransactions, (state, { transactions }) => (
+        {
             ...state,
             transactions: transactions.reduce((acc, cur) => {
                 return { ...acc, [cur.id]: cur }
             }, {})
-        }
-    })
+        })
+    )
 )

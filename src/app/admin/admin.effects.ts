@@ -1,16 +1,19 @@
+import { JsonPipe } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AngularFireDatabase, SnapshotAction } from "@angular/fire/database";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { forkJoin, from, of } from "rxjs";
-import { filter, find, first, flatMap, map, mergeMap, reduce, switchMap, tap } from "rxjs/operators";
+import { filter, find, first, flatMap, map, mergeMap, reduce, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AppActions } from "../app.action-types";
-import { cachedProductListSelector } from "../app.selectors";
+import { cachedProductListSelector, userSelector } from "../app.selectors";
 import { GenericPopupComponent } from "../components/generic-popup/generic-popup.component";
 import { AppState } from "../models/app-state";
+import { Product } from "../models/product";
 import { ProductSummary } from "../models/product-summary";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
@@ -80,50 +83,41 @@ export class AdminEffects {
     fetchAdminSummary$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getAdminSummary),
-            switchMap(() => this.db.list('spaces').snapshotChanges()),
-            map((resp) => resp
-                .map(doc => {
-                    const id = doc.key
-                    const data = doc.payload.val() as ProductSummary
-                    return { [id]: data }
-                })
-                .reduce((acc, cur) => ({ ...acc, ...cur }))
-            ),
-            map(summary => AdminActions.storeAdminSummary({ summary }))
+            switchMap(() => this.db.object<{ [id: string]: ProductSummary }>('spaces').snapshotChanges()),
+            map((resp) => {
+                const summary = resp.payload.val()
+                return AdminActions.storeAdminSummary({ summary })
+            })
         )
     )
 
-    // EMITS TOO MANY TIMES ON SELECTING USER
     fetchUserList$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserList),
-            switchMap(() => this.db.list('users').snapshotChanges()),
-            map((resp) => resp
-                .map(doc => {
-                    const id = doc.key
-                    const data = doc.payload.val() as User
-                    return { [id]: data }
-                })
-                .reduce((acc, cur) => ({ ...acc, ...cur }))
-            ),
-            map(users => AdminActions.storeUserList({ users }))
+            switchMap(() => this.store.select(userSelector)),
+            switchMap(user => {
+                if (!user) return of(null)
+                return ['master', 'admin'].includes(user.role)
+                    ? this.db.object<{ [userId: string]: User }>('users').snapshotChanges()
+                    : of(null)
+            }),
+            map((resp) => {
+                const users = resp
+                    ? resp.payload.val()
+                    : null
+                return AdminActions.storeUserList({ users })
+            })
         )
     )
 
     fetchUserReservations$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.getUserReservation),
-            switchMap(({ userId }) => this.db.list(`accepted-applications/${userId}`).snapshotChanges().pipe(
-                map((resp) => ({
-                    [userId]: resp
-                        .map(doc => {
-                            const id = doc.key
-                            const data = doc.payload.val() as Reservation
-                            return { [id]: data }
-                        })
-                        .reduce((acc, cur) => ({ ...acc, ...cur }), {})
-                })
-                ),
+            switchMap(({ userId }) => this.db.object<{ [applicationId: string]: Reservation }>(`accepted-applications/${userId}`).snapshotChanges().pipe(
+                map((resp) => {
+                    const reservations = resp.payload.val()
+                    return { [userId]: reservations }
+                }),
             )),
             map(reservations => AdminActions.storeUserReservation({ reservations }))
         )
@@ -149,7 +143,7 @@ export class AdminEffects {
                     : this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}/name`).valueChanges()
                         .pipe(map(name => ({ spaceName: name, reservation, product })))
             }),
-            map((resp) => AdminActions.openReservation(resp))
+            map((resp) => AppActions.openReservation(resp))
         )
     )
 
@@ -174,23 +168,33 @@ export class AdminEffects {
                         return { spaceName, reservation, product }
                     }))
             }),
-            map((resp) => AdminActions.openReservation(resp))
+            map((resp) => AppActions.openReservation(resp))
         )
     )
 
-    openReservationPopup$ = createEffect(() =>
+    getFullReservationFromTransaction$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(AdminActions.openReservation),
-            map(({ spaceName, reservation, product }) => {
-                // Open Dialog
-                return this.dialog.open(GenericPopupComponent, {
-                    data: {
-                        title: `Reservation ${reservation.id}`,
-                        content: `<h1>${product.name}: ${spaceName}</h1>`
-                    }
-                })
+            ofType(AdminActions.getFullReservationFromTransaction),
+            switchMap(({ reservationId, userId, spaceName }) => {
+                return this.db.object<Reservation>(`accepted-applications/${userId}/${reservationId}`).valueChanges()
+                    .pipe(
+                        map(data => {
+                            const reservation = { id: reservationId, ...data }
+                            return { spaceName, reservation }
+                        })
+                    )
+            }),
+            switchMap(({ spaceName, reservation }) => {
+                return this.afs.doc<Product>(`products/${reservation.productId}`).valueChanges()
+                    .pipe(
+                        first(),
+                        map(product => ({ spaceName, reservation, product }))
+                    )
+            }),
+            map((resp) => {
+                return AppActions.openReservation(resp)
             })
-        ), { dispatch: false }
+        )
     )
 
     promoteUser$ = createEffect(() =>
@@ -220,6 +224,7 @@ export class AdminEffects {
                         .reduce((totalList, userApplications) => {
                             const userApplicationsList = Object.keys(userApplications)
                                 .map(key => ({ ...userApplications[key], id: key }))
+                                .filter(application => application['status'] != 'canceled')
                             return totalList.concat(userApplicationsList)
                         }, [])
                     : []
@@ -376,15 +381,37 @@ export class AdminEffects {
     fetchUserTransactions$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.fetchTransactions),
-            switchMap(() => this.afs.collection(`transactions`,).snapshotChanges()),
-            map((docs: DocumentChangeAction<Transaction>[]) => {
-                const transactions = docs.map(data => {
-                    const id = data.payload.doc.id
-                    const doc = data.payload.doc.data()
-                    return { id, ...doc }
-                })
-                return AdminActions.storeTransactions({ transactions })
-            })
+            switchMap(() => this.store.select(userSelector)),
+            switchMap(user => {
+                if (!user) return of([])
+                return ['master', 'admin'].includes(user.role)
+                    ? this.afs.collection<Transaction>(`transactions`).snapshotChanges()
+                    : of([])
+            }),
+            map(docs => docs.map(data => {
+                const id = data.payload.doc.id
+                const doc = data.payload.doc.data()
+                return { id, ...doc }
+            })),
+            map(transactions => AdminActions.storeTransactions({ transactions }))
+        )
+    )
+
+    cancelLeaseAgreement$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AdminActions.cancelReservation),
+            switchMap(({ lease }) => {
+                getUsedTimes(lease.startDate, lease.endDate)
+                    .filter(time => lease.unpaidTimes
+                        ? Object.keys(lease.unpaidTimes).map(unpaid => +unpaid).includes(time)
+                        : false)
+                    .map(time => {
+                        return this.db.object(`spaces/${lease.productId}/${lease.spaceId}/reserved/${time}`).remove()
+                    })
+                return this.db.object(`accepted-applications/${lease.userId}/${lease.id}`)
+                .update({ status: 'canceled', lastModifiedTime: new Date().getTime() })
+            }),
+            map(() => AppActions.stopLoading())
         )
     )
 
@@ -394,7 +421,8 @@ export class AdminEffects {
         private actions$: Actions,
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private router: Router
 
     ) { }
 

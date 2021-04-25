@@ -42,7 +42,7 @@ export const userNextReservationsSelector = createSelector(
         return admin.userReservations && admin.userReservations[userId]
             ? Object.keys(admin.userReservations[userId])
                 .map(key => ({ id: key, ...admin.userReservations[userId][key] }))
-                .filter(reservation => reservation.endDate > now)
+                .filter(reservation => reservation.endDate > now && reservation.status != 'canceled')
             : []
     }
 )
@@ -54,7 +54,7 @@ export const userPreviousReservationsSelector = createSelector(
         return admin.userReservations && admin.userReservations[userId]
             ? Object.keys(admin.userReservations[userId])
                 .map(key => ({ id: key, ...admin.userReservations[userId][key] }))
-                .filter(reservation => reservation.endDate <= now)
+                .filter(reservation => reservation.endDate <= now || reservation.status == 'canceled')
                 .sort((a, b) => b.endDate - a.endDate)[0]
             : null
     }
@@ -80,7 +80,7 @@ export const adminAllTransactionsSelector = createSelector(
                 const matchingUser = admin.users[transaction.userId]
                 return {
                     ...transaction,
-                    userId: `${matchingUser?.firstName} ${matchingUser?.lastName}`
+                    userName: `${matchingUser?.firstName} ${matchingUser?.lastName}`
             }
             })
         : []

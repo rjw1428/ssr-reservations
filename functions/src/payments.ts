@@ -61,18 +61,6 @@ const updateDataBasePaymentInfo = (user: any, amount: number, reservationId: str
         userRef.update({ revenue: increment(amount) }),
         timeRef.remove(),
         spaceRef.update({ hasPaid: true }),
-        // Add email confirmation record
-        afs.collection('mail').add({
-            to: user.email,
-            template: {
-                name: 'paymentReceived',
-                data: {
-                    applicationId: reservationId,
-                    username: `${user.firstName} ${user.lastName}`,
-                    amount: `$${amount}.00`
-                }
-            }
-        }),
         // Add Transaction to transaction-history
         afs.collection('transactions').add({
             userId: user.id,
@@ -98,6 +86,7 @@ const createCustomer = async (user: any) => {
 }
 
 const emailUserPaymentConfirmation = async (user: any, amount: number, reservationId: string, selectedTime: string, space: { name: string, id: string, productId: string }) => {
+    console.log("SAVING EMAIL")
     return await afs.collection('mail').add({
         to: user.email,
         template: {

@@ -30,13 +30,13 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'transactions',
-    component: TransactionHistoryComponent,
+    path: 'reservations/:type',
+    component: ReservationListComponent,
     canActivate: [AuthGuard]
   },
   {
-    path: 'reservations/:type',
-    component: ReservationListComponent,
+    path: 'transactions',
+    component: TransactionHistoryComponent,
     canActivate: [AuthGuard]
   },
   {

@@ -3,6 +3,7 @@ import { Product } from "../models/product";
 import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { Transaction } from "../models/transaction";
+import { User } from "../models/user";
 
 export const logout = createAction(
     "[App Effect] Logout - Clear user data"
@@ -52,7 +53,7 @@ export const addCreditCardToStripe = createAction(
 
 export const sendCharge = createAction(
     "[Payment Form Component] Send Stripe Charge",
-    props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, space: Space }>()
+    props<{ amount: number, sourceId: string, reservationId: string, selectedTime: number, space: Space, user: User }>()
 )
 
 export const creditCardSaved = createAction(
@@ -99,4 +100,9 @@ export const fetchUserTransactions = createAction(
 export const storeUserTransactions = createAction(
     '[User Effect] Store User Transactions',
     props<{ transactions: Transaction[] }>()
+)
+
+export const getFullReservationFromTransaction = createAction(
+    '[User Transaction Component] Fetch Reservation Data',
+    props<{ reservationId: string, userId: string, spaceName: string }>()
 )

@@ -20,7 +20,7 @@
           <th mat-header-cell *matHeaderCellDef> {{col.value}} </th>
           <td mat-cell *matCellDef="let element">
             <div *ngIf="col.key=='reservationId'; else normal">
-              <a [routerLink]="" (click)="openReservation(element[col.key])">{{element[col.key]}}</a>
+              <a [routerLink]="" (click)="onOpenReservation(element)">{{element[col.key]}}</a>
             </div>
             <ng-template #normal>
               {{element[col.key]}}

@@ -34,7 +34,7 @@ export class UserDataComponent implements OnInit, OnChanges, OnDestroy {
     this.userAccount = this.formBuilder.group({
       firstName: [this.user ? this.user.firstName : '', Validators.required],
       lastName: [this.user ? this.user.lastName : '', Validators.required],
-      email: [this.user ? this.user.email : '', [Validators.required, Validators.email]],
+      email: [{value: this.user ? this.user.email : '', disabled: !!this.user}, [Validators.required, Validators.email]],
     })
   }
 

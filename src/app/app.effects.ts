@@ -5,8 +5,8 @@ import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore"
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { from, of } from "rxjs";
-import { catchError, first, flatMap, map, mergeMap, switchMap, tap } from "rxjs/operators";
+import { BehaviorSubject, from, of, Subject } from "rxjs";
+import { catchError, first, flatMap, map, mergeMap, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AppActions } from "./app.action-types";
 import { MatDialog } from "@angular/material/dialog";
 import { GenericPopupComponent } from "./components/generic-popup/generic-popup.component";
@@ -19,6 +19,8 @@ import { AppState } from "./models/app-state";
 import { Store } from "@ngrx/store";
 import { Space } from "./models/space";
 import { User } from "./models/user";
+import { userSelector } from "./app.selectors";
+import { CurrencyPipe, DatePipe, JsonPipe } from "@angular/common";
 
 
 @Injectable()
@@ -45,13 +47,19 @@ export class AppEffects {
     checkUserPersistance$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.checkUserPersistance),
-            switchMap(() => new Promise((resolve, reject) => {
-                this.firebaseAuth.onAuthStateChanged(authData => resolve(authData))
-            })),
-            map(authData => {
+            switchMap(() => {
+                const auth = new Subject()
+                this.firebaseAuth.onAuthStateChanged(authData => auth.next(authData))
+                return auth
+            }),
+            switchMap(authData => {
                 return authData
-                    ? AppActions.getUserAccount({ uid: authData['uid'] }) // User Session has persisted
-                    : AppActions.noAction()
+                    ? [AppActions.getUserAccount({ uid: authData['uid'] })] // User Session has persisted
+                    : [
+                        AdminActions.logout(),
+                        UserAccountActions.logout(),
+                        AppActions.setLoginFeedback({ success: false, message: null })
+                    ]
             })
         )
     )
@@ -62,7 +70,6 @@ export class AppEffects {
             switchMap(({ uid }) => this.db.database.ref(`users/${uid}`).update({ lastLogIn: new Date().getTime() })
                 .then(() => uid)
             ),
-            tap(() => this.router.navigate(['/'])),
             switchMap(uid => {
                 console.log("Logged In As: ", uid)
                 // return this.db.database.ref(`users/${uid}`).get() // Get only once
@@ -164,21 +171,18 @@ export class AppEffects {
     logUserOut$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.logOut),
-            map(() => this.router.navigate(['/'])),
-            switchMap(() => this.firebaseAuth.signOut()),
-            flatMap(() => [
-                UserAccountActions.logout(),
-                AdminActions.logout(),
-                AppActions.setLoginFeedback({ success: false, message: null })
-            ])
-        )
+            tap(() => {
+                this.firebaseAuth.signOut()
+                this.router.navigate(['/'])
+            })
+        ), { dispatch: false }
     )
 
     getProductTyles$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.getProductTypes),
-            switchMap(() => this.afs.collection('products').snapshotChanges()),
-            map((docs: DocumentChangeAction<Product>[]) => {
+            switchMap(() => this.afs.collection<Product>('products').snapshotChanges()),
+            map((docs) => {
                 return docs
                     .reduce((obj, doc) => {
                         const id = doc.payload.doc.id
@@ -193,7 +197,7 @@ export class AppEffects {
     getProductDetails$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.fetchSpaceDetails),
-            switchMap(({ reservation }) => this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}`).snapshotChanges()),
+            mergeMap(({ reservation }) => this.db.object(`spaces/${reservation.productId}/${reservation.spaceId}`).snapshotChanges()),
             map((doc: SnapshotAction<Space>) => ({ [doc.key]: doc.payload.val() })),
             map(space => AppActions.storedSpaceDetails({ space }))
         )
@@ -214,6 +218,50 @@ export class AppEffects {
             }),
             map(spaces => AppActions.storeAllSpaceDetails({ spaces }))
         )
+    )
+
+    openReservationPopup$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AppActions.openReservation),
+            withLatestFrom(this.store.select(userSelector)),
+            map(([{ spaceName, reservation, product }, user]) => {
+                // Open Dialog
+                const now = new Date().getTime()
+                const currencyPipe = new CurrencyPipe('en-US')
+                const datePipe = new DatePipe('en-US')
+                const unpaid = reservation.status == 'canceled'
+                    ? '<p style="color: red">Lease Canceled</p>'
+                    : reservation.unpaidTimes
+                        ? Object.keys(reservation.unpaidTimes)
+                            .map(time => {
+                                const status = (+time < now)
+                                    ? "Past Due"
+                                    : ""
+                                return `<div style="display: flex; justify-content: space-around; width: 100%">
+                                        <div>${new Date(+time).toLocaleDateString()}</div>
+                                        <div>${currencyPipe.transform(reservation.cost)}</div>
+                                        <div style="color: red">${status}</div>
+                                    </div>`
+                            })
+                            .join('')
+                        : '<p style="color: green">All Paid</p>'
+                let data = {
+                    title: `Reservation ${reservation.id}`,
+                    content: `<div style="display:flex; flex-direction: column; align-items: center">
+                            <h3 style="margin:0">${product.name}: ${spaceName}</h3>
+                            <h3>${datePipe.transform(reservation.startDate, 'MM/dd/yy')} - ${datePipe.transform(reservation.endDate, 'MM/dd/yy')}</h3>
+                            </div>
+                            <h3 style="margin: 0">Remaining Payments:</h3>
+                            <div style="display: flex; flex-direction: column; align-items:center;">${unpaid}</div>
+                         `
+                }
+                if (['admin', 'master'].includes(user.role)) {
+                    data['actionLabel'] = "Open Lease"
+                    data['action'] = () => this.router.navigate(['admin', 'applications'], { queryParams: { application: reservation.id } })
+                }
+                return this.dialog.open(GenericPopupComponent, { data })
+            })
+        ), { dispatch: false }
     )
 
     constructor(

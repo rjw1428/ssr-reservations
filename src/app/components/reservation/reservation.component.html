@@ -6,7 +6,7 @@
     </mat-panel-title>
     <mat-panel-description style="display: flex; justify-content: space-between; width: 60%">
       <div style="display: flex; flex-direction: column;">
-        <div style="display: flex; align-items: center; white-space: nowrap;">
+        <div style="display: flex; align-items: center; white-space: nowrap; height: 100%;">
           {{reservation.status == 'accepted' ? 'Lease' : 'Application'}} ID: 
           <span style="font-style: italic; white-space: nowrap;">{{reservation.id}}</span>
         </div>
@@ -34,8 +34,15 @@
       <h3  style="text-align: center;" *ngIf="reservation.status == 'rejected'"><span style="font-weight: bolder">Rejection Feedback:</span> {{reservation.feedback}}</h3>
       <h3 *ngIf="isAdmin && reservation.isAlreadyBooked" style="text-align: center; color: red;">A previously accepted application has made this date range no longer available.</h3>
       <app-product-tile style="flex-basis: 75%;" [product]="product" [infoOnly]="true"></app-product-tile>
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <h3 style="flex-basis: 25%;">Cost: {{ reservation.cost| currency }}</h3>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h3 style="flex-basis: 25%; margin:0">Monthly Cost: {{ reservation.cost| currency }}</h3>
+        <h3 *ngIf="isAdmin" style="flex-basis: 25%;">Total Lease Cost: {{ reservation.totalCost| currency }}</h3>
+        <div *ngIf="reservation.status == 'accepted'">
+          <h3 *ngIf="reservation.unpaidTimes; else paid">Next Payment: {{ reservation.unpaidTimes | listItem : 0 | date : 'MM/dd/yy' }}</h3>
+          <ng-template #paid>
+            <h3 style="color: green;">All payments for this lease submitted</h3>
+          </ng-template>
+        </div>
       </div>
     </div>
     <div style="display: flex; justify-content: space-between;">
@@ -44,7 +51,10 @@
       <p *ngIf="reservation.status == 'rejected' ">Date Rejected: {{ reservation.decisionDate | date : 'short' }}</p>
       <div *ngIf="!isHistoric && !isAdmin && reservation.status == 'pending'">
         <!-- <button mat-flat-button color="warn" (click)="onEdit()">Edit</button> -->
-        <button mat-flat-button color="accent" (click)="onRemove()">Cancel</button>
+        <button mat-flat-button color="accent" (click)="onRemovePending()">Cancel</button>
+      </div>
+      <div *ngIf="!isHistoric && isAdmin && reservation.status == 'accepted'">
+        <button mat-flat-button color="accent" (click)="onAdminRemoveAccepted()">Cancel Lease</button>
       </div>
       <div *ngIf="isAdmin && reservation.status == 'pending'">
         <button mat-flat-button color="warn" (click)="onReject()">Reject</button>

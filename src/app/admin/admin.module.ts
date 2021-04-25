@@ -17,12 +17,6 @@ import { AdminTransactionHistoryComponent } from './admin-transaction-history/ad
 
 const routes: Routes = [
   {
-    path: '',
-    component: SummaryComponent,
-    pathMatch: 'full',
-    canActivate: [AdminGuard]
-  },
-  {
     path: 'product-list',
     component: ProductTypeListComponent,
     canActivate: [AdminGuard]
@@ -42,17 +36,23 @@ const routes: Routes = [
     component: ApplicationHistoryComponent,
     canActivate: [AdminGuard]
   },
+  {
+    path: '',
+    component: SummaryComponent,
+    // pathMatch: 'full',
+    canActivate: [AdminGuard]
+  }
 ]
 
 @NgModule({
-  declarations: 
-  [SummaryComponent, 
-    ProductTypeListComponent, 
-    UserListComponent, 
-    UserComponent, 
-    ApplicationHistoryComponent,
-    AdminTransactionHistoryComponent
-  ],
+  declarations:
+    [SummaryComponent,
+      ProductTypeListComponent,
+      UserListComponent,
+      UserComponent,
+      ApplicationHistoryComponent,
+      AdminTransactionHistoryComponent
+    ],
   imports: [
     CommonModule,
     SharedModule,

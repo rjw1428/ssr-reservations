@@ -50,7 +50,7 @@ export const deactiveProductIdsSelector = createSelector(
             ? Object.values(app.storedProducts)
                 .filter(product => !product.isActive)
                 .map(product => product.id)
-            : []
+            : null
     }
 )
 

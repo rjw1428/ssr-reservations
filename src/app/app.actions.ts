@@ -59,6 +59,10 @@ export const stripeAccountCreated = createAction(
     props<{ user: User }>()
 )
 
+export const openReservation = createAction(
+    '[Admin Effect] Open Reservation Popup',
+    props<{ spaceName: string, reservation: Reservation, product: Product }>()
+)
 
 export const newUserCreated = createAction(
     '[App Effect] User Created & Stored'

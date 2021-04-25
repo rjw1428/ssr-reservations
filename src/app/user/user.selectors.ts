@@ -11,7 +11,7 @@ export const userCurrentReservationsSelector = createSelector(
         return userAccount.reservations
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
-                .filter(reservation => reservation.endDate >= now)
+                .filter(reservation => reservation.endDate >= now && reservation.status != 'canceled')
             : []
     }
 )
@@ -23,7 +23,7 @@ export const userHistoricReservationsSelector = createSelector(
         return userAccount.reservations
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
-                .filter(reservation => reservation.endDate < now)
+                .filter(reservation => reservation.endDate < now || reservation.status == 'canceled')
             : []
     }
 )
@@ -34,10 +34,10 @@ export const userUnpaidReservationSelector = createSelector(
         return userAccount.reservations
             ? Object.keys(userAccount.reservations)
                 .map(key => ({ ...userAccount.reservations[key], id: key }))
-                .filter(reservation => reservation.unpaidTimes)
+                .filter(reservation => reservation.unpaidTimes && reservation.status != 'canceled')
                 .reduce((acc, reservation) => {
                     const lowestTime = Object.keys(reservation.unpaidTimes).reduce((min, time) => +time < min ? time : min, 9999999999000)
-                    const unpaidReservations =  ({ ...reservation, unpaidTime: lowestTime } )
+                    const unpaidReservations = ({ ...reservation, unpaidTime: lowestTime })
                     return acc.concat(unpaidReservations)
                 }, []) as Reservation[]
             : []

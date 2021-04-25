@@ -15,7 +15,8 @@
         [reservation]="application"
         [isAdmin]="showAdminButtons(user$ | async)"
         (accept)="onAccept(application)"
-        (reject)="onReject(application)">
+        (reject)="onReject(application)"
+        (cancel)="onCancelLease(application)">
       </app-reservation>
     </mat-accordion>
 

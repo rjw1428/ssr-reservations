@@ -56,11 +56,6 @@ export const storeUserReservation = createAction(
     props<{ reservations: { [id: string]: { [reservationId: string]: Reservation } } }>()
 )
 
-export const openReservation = createAction(
-    '[Admin Effect] Open Reservation Popup',
-    props<{ spaceName: string, reservation: Reservation, product: Product }>()
-)
-
 export const getFullReservationDataFromList = createAction(
     '[User List Component] Fetch Reservation Data',
     props<{ reservation: Reservation }>()
@@ -69,6 +64,11 @@ export const getFullReservationDataFromList = createAction(
 export const getFullReservationDataFromSummary = createAction(
     '[Summary Component] Fetch Reservation Data',
     props<{ reservationId: string, productId: string, userId: string, spaceName: string }>()
+)
+
+export const getFullReservationFromTransaction = createAction(
+    '[Admin Transaction Component] Fetch Reservation Data',
+    props<{ reservationId: string, userId: string, spaceName: string }>()
 )
 
 export const udateSpaceName = createAction(
@@ -121,6 +121,11 @@ export const fetchTransactions = createAction(
 )
 
 export const storeTransactions = createAction(
-    '[Admin Effect] Store User Transactions',
+    '[Admin Effect] Store All Transactions',
     props<{ transactions: Transaction[] }>()
+)
+
+export const cancelReservation = createAction(
+    '[Application History Component] Admin Canceled Lease',
+    props<{ lease: Reservation }>()
 )

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
+import { AdminActions } from 'src/app/admin/admin.action-types';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedProductSelector, reservationDetailsSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
@@ -23,7 +24,8 @@ export class ReservationComponent implements OnInit {
   @Output() accept = new EventEmitter()
   @Output() reject = new EventEmitter()
   @Output() remove = new EventEmitter()
-  
+  @Output() cancel = new EventEmitter()
+
   product$: Observable<Product>
   spaceName$: Observable<string>
   constructor(
@@ -39,6 +41,13 @@ export class ReservationComponent implements OnInit {
   }
 
   onExpand() {
+    this.product$.pipe(
+      first(),
+      filter(product => !product)
+    ).subscribe(() =>
+      this.store.dispatch(AppActions.getProductTypes())
+    )
+
     this.spaceName$.pipe(
       first(),
       filter(spaceName => !spaceName)
@@ -55,7 +64,11 @@ export class ReservationComponent implements OnInit {
     this.accept.emit()
   }
 
-  onRemove() {
+  onRemovePending() {
     this.remove.emit()
+  }
+
+  onAdminRemoveAccepted() {
+    this.cancel.emit()
   }
 }

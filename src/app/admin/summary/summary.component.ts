@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { combineLatest, interval, Observable, of, timer, zip } from 'rxjs';
-import { filter, first, map, shareReplay, withLatestFrom } from 'rxjs/operators';
+import { filter, first, map, shareReplay, skip, tap, withLatestFrom } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector, cachedProductSelector, deactiveProductIdsSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
@@ -34,6 +34,7 @@ export class SummaryComponent implements OnInit {
   */
   adminSummary$ = combineLatest([this.store.select(adminSummarySelector), this.store.select(deactiveProductIdsSelector)])
     .pipe(
+      filter(([summary, deactiveProductTypeIds]) => !!deactiveProductTypeIds),
       map(([summary, deactiveProductTypeIds]) =>
         summary
           ? Object.keys(summary)

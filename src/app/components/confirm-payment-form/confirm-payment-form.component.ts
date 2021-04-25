@@ -7,6 +7,7 @@ import { AppActions } from 'src/app/app.action-types';
 import { userSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { Reservation } from 'src/app/models/reservation';
+import { User } from 'src/app/models/user';
 import { UserAccountActions } from 'src/app/user/user.action-types';
 import { paymentFeedbackSelector } from 'src/app/user/user.selectors';
 
@@ -18,6 +19,7 @@ import { paymentFeedbackSelector } from 'src/app/user/user.selectors';
 })
 export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
   feedback$ = this.store.select(paymentFeedbackSelector)
+  user$ = this.store.select(userSelector)
   lease: Reservation
   total: number
   constructor(
@@ -35,7 +37,9 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key == 'Enter')
-      this.onSave()
+      this.user$.pipe(first()).subscribe(user => {
+        this.onSave(user)
+      })
   }
 
 
@@ -48,7 +52,7 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
     this.lease = this.paymentInfo.reservation
   }
 
-  async onSave() {
+  async onSave(user: User) {
     const trace = await this.performance.trace('paymentCompletion')
     trace.start()
     this.store.dispatch(AppActions.startLoading())
@@ -58,6 +62,7 @@ export class ConfirmPaymentFormComponent implements OnInit, OnDestroy {
       reservationId: this.lease.id,
       selectedTime: +this.lease['unpaidTime'],
       space: this.lease['space'],
+      user
     }))
 
     this.feedback$.pipe(
