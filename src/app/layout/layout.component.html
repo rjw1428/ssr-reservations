@@ -41,22 +41,22 @@
               routerLinkActive="router-link-active">Find A Space</a>
             <div *ngIf="user$ | async as user">
               <a *ngIf="user" mat-list-item routerLink="user/application-status"
-                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                routerLinkActive="router-link-active">
                 Pending Applications
               </a>
               <a *ngIf="user" mat-list-item routerLink="user/reservations/current"
-                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                routerLinkActive="router-link-active">
                 Current Leases
               </a>
               <a *ngIf="user" mat-list-item routerLink="user/reservations/history"
-                [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="router-link-active">
+                routerLinkActive="router-link-active">
                 Leases History
               </a>
-              <a *ngIf="user" mat-list-item routerLink="user/payments" [routerLinkActiveOptions]="{ exact: true }"
+              <a *ngIf="user" mat-list-item routerLink="user/payments" 
                 routerLinkActive="router-link-active">
                 Make a Payment
               </a>
-              <a *ngIf="user" mat-list-item routerLink="user/transactions" [routerLinkActiveOptions]="{ exact: true }"
+              <a *ngIf="user" mat-list-item routerLink="user/transactions" 
                 routerLinkActive="router-link-active">
                 Payment History
               </a>

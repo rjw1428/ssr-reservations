@@ -24,9 +24,9 @@ export class ReservationListComponent implements OnInit {
   reservations$: Observable<Reservation[]>
   isHistoric = false
   selectedReservation$ = this.route.queryParams.pipe(
-    startWith({ lease: '_' }),
-    filter(params=>!!params.lease),
-    map(params => params.lease),
+    startWith({ application: '_' }),
+    filter(params=>!!params.application),
+    map(params => params.application),
   )
   @ViewChild(MatAccordion) accordion: MatAccordion;
   constructor(

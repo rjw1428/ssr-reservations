@@ -1,4 +1,4 @@
-<mat-expansion-panel (afterExpand)="onExpand()" [expanded]="isExpanded">
+<mat-expansion-panel (opened)="onExpand()" [expanded]="isExpanded" (closed)="onClose()">
   <mat-expansion-panel-header
     style=" display: flex; justify-content: space-between; align-items: center; padding: .5em 2em;">
     <mat-panel-title style="display: flex; align-items: center;">

@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { first, filter, switchMap, withLatestFrom, tap } from 'rxjs/operators';
+import { first, filter, switchMap, withLatestFrom, tap, map, startWith, mergeMap } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { cachedProductListSelector, userSelector } from 'src/app/app.selectors';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
@@ -24,12 +25,25 @@ export class ApplicationHistoryComponent implements OnInit {
   user$ = this.store.select(userSelector)
   filterSelection$ = this.store.select(applicationFilterSelector)
   filterOptions = { pending: "Pending", accepted: "Accepted", rejected: "Rejected" }
+  selectedReservation$ = this.route.queryParams.pipe(
+    startWith({ application: '' }),
+    map(params => params.application)
+  )
   constructor(
     private store: Store<AppState>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+
+    this.route.queryParams.pipe(
+      first(),
+      filter(params => !!params.filter),
+      map(params => ({ value: params.filter, source: null }))
+    ).subscribe(filterEvent => this.onFilterChanged(filterEvent, true))
+
     this.produts$.pipe(
       first(),
       filter(products => !products)
@@ -49,7 +63,13 @@ export class ApplicationHistoryComponent implements OnInit {
     return rolesWithAccess.includes(user.role)
   }
 
-  onFilterChanged(event: MatSelectChange) {
+  onFilterChanged(event: MatSelectChange, skipRouterParam?) {
+    if (!skipRouterParam) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { filter: event.value },
+      })
+    }
     this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(AdminActions.updatedSubmittedApplicationFilter({ filter: event.value }))
   }

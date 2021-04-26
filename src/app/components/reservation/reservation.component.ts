@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { noop, Observable } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
@@ -21,6 +22,7 @@ export class ReservationComponent implements OnInit {
   @Input() isHistoric: boolean = false
   @Input() isAdmin: boolean = false
   @Input() isExpanded: boolean = false
+  @Input() urlValue = 'application'
   @Output() accept = new EventEmitter()
   @Output() reject = new EventEmitter()
   @Output() remove = new EventEmitter()
@@ -30,7 +32,9 @@ export class ReservationComponent implements OnInit {
   spaceName$: Observable<string>
   constructor(
     private store: Store<AppState>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -41,6 +45,11 @@ export class ReservationComponent implements OnInit {
   }
 
   onExpand() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [this.urlValue]: this.reservation.id },
+      queryParamsHandling: "merge"
+    })
     this.product$.pipe(
       first(),
       filter(product => !product)
@@ -54,6 +63,14 @@ export class ReservationComponent implements OnInit {
     ).subscribe(() =>
       this.store.dispatch(AppActions.fetchSpaceDetails({ reservation: this.reservation }))
     )
+  }
+
+  onClose() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [this.urlValue]: null },
+      queryParamsHandling: "merge"
+    })
   }
 
   onReject() {

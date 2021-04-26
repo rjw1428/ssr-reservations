@@ -14,6 +14,7 @@
       <app-reservation *ngFor="let application of applications | sortBy : 'createdTime' : 'desc'; trackBy : identify" 
         [reservation]="application"
         [isAdmin]="showAdminButtons(user$ | async)"
+        [isExpanded]="(selectedReservation$ | async) == application.id"
         (accept)="onAccept(application)"
         (reject)="onReject(application)"
         (cancel)="onCancelLease(application)">
