@@ -35,20 +35,23 @@ export class NewUserComponent implements OnInit {
   }
 
   onSave() {
-    // GET USER DATA FORM
-    this.triggerEmit = true
+    // Emit evemt so that other sub-forms prodcast there values
+    this.store.dispatch(AppActions.broadcastNewUserCreation({ shouldBroadcast: true }))
   }
 
   onResponse({ error, resp }) {
     const passwordsDontMatch = this.createAccount.get('password').value != this.createAccount.get('passwordConfirm').value
-    if (this.createAccount.invalid || error || passwordsDontMatch)
-      this.triggerEmit = false
-    if (this.createAccount.invalid)
-      return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: "Please fill out both 'Password' and 'Confirm Password' fields" }))
-    if (error)
-      return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: error }))
-    if (passwordsDontMatch)
-      return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: "Passwords did not match, try again." }))
+    if (this.createAccount.invalid || error || passwordsDontMatch) {
+      this.store.dispatch(AppActions.broadcastNewUserCreation({ shouldBroadcast: false }))
+
+      if (this.createAccount.invalid)
+        return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: "Please fill out both 'Password' and 'Confirm Password' fields" }))
+      if (error)
+        return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: error }))
+      if (passwordsDontMatch)
+        return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: "Passwords did not match, try again." }))
+    }
+
 
     this.store.dispatch(AppActions.startLoading())
     const { passwordConfirm, password } = this.createAccount.value

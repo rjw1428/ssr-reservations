@@ -7,10 +7,7 @@ export interface AppState {
     loginFeedback: { error: string, success: boolean }
     user: User
     storedProducts: { [spaceId: string]: Product }
-    // storedSpaceDetails: {
-    //     [reservationId: string]: {
-    //         spaceName: string
-    //     }
-    // }
     storedSpaces: { [spaceId: string]: Space }
+    newUserCreationBroadcast: boolean
+    allSpacesStored: boolean
 }

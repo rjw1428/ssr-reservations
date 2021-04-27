@@ -45,7 +45,6 @@ export class AccountInfoComponent implements OnInit, OnDestroy {
   onSetDefault() {
     if (this.paymentForm.invalid) return
     const defaultPaymentSource = this.paymentForm.get('selectedSource').value
-    this.store.dispatch(AppActions.startLoading())
     this.store.dispatch(UserAccountActions.setDefaultPaymentSource({ defaultPaymentSource }))
   }
 

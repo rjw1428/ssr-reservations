@@ -4,6 +4,7 @@ import { Injectable } from "@angular/core";
 import { AngularFireDatabase, SnapshotAction } from "@angular/fire/database";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
 import { MatDialog } from "@angular/material/dialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
@@ -19,7 +20,7 @@ import { Reservation } from "../models/reservation";
 import { Space } from "../models/space";
 import { Transaction } from "../models/transaction";
 import { User } from "../models/user";
-import { getUsedTimes, isOverlapingTime, padLeadingZeros } from "../utility/utility";
+import { getUsedTimes, isOverlapingTime, padLeadingZeros, showSnackbar } from "../utility/utility";
 import { AdminActions } from "./admin.action-types";
 
 @Injectable()
@@ -84,9 +85,12 @@ export class AdminEffects {
         this.actions$.pipe(
             ofType(AdminActions.getAdminSummary),
             switchMap(() => this.db.object<{ [id: string]: ProductSummary }>('spaces').snapshotChanges()),
-            map((resp) => {
+            switchMap((resp) => {
                 const summary = resp.payload.val()
-                return AdminActions.storeAdminSummary({ summary })
+                return [
+                    AdminActions.storeAdminSummary({ summary }),
+                    AppActions.stopLoading()
+                ]
             })
         )
     )
@@ -200,14 +204,16 @@ export class AdminEffects {
     promoteUser$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.promote),
-            switchMap(({ userId }) => this.db.database.ref(`users/${userId}`).update({ role: 'admin' }))
+            switchMap(({ userId }) => this.db.database.ref(`users/${userId}`).update({ role: 'admin' })),
+            tap(() => showSnackbar(this.snackBar, "Account promoted to Admin."))
         ), { dispatch: false }
     )
 
     demoteUser$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AdminActions.demoteUser),
-            switchMap(({ userId }) => this.db.database.ref(`users/${userId}`).update({ role: 'user' }))
+            switchMap(({ userId }) => this.db.database.ref(`users/${userId}`).update({ role: 'user' })),
+            tap(() => showSnackbar(this.snackBar, "Account set to User."))
         ), { dispatch: false }
     )
 
@@ -409,7 +415,7 @@ export class AdminEffects {
                         return this.db.object(`spaces/${lease.productId}/${lease.spaceId}/reserved/${time}`).remove()
                     })
                 return this.db.object(`accepted-applications/${lease.userId}/${lease.id}`)
-                .update({ status: 'canceled', lastModifiedTime: new Date().getTime() })
+                    .update({ status: 'canceled', lastModifiedTime: new Date().getTime() })
             }),
             map(() => AppActions.stopLoading())
         )
@@ -422,7 +428,8 @@ export class AdminEffects {
         private afs: AngularFirestore,
         private db: AngularFireDatabase,
         private dialog: MatDialog,
-        private router: Router
+        private router: Router,
+        private snackBar: MatSnackBar
 
     ) { }
 

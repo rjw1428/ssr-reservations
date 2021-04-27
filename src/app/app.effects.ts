@@ -21,6 +21,8 @@ import { Space } from "./models/space";
 import { User } from "./models/user";
 import { userSelector } from "./app.selectors";
 import { CurrencyPipe, DatePipe, JsonPipe } from "@angular/common";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { showSnackbar } from "./utility/utility";
 
 
 @Injectable()
@@ -142,6 +144,10 @@ export class AppEffects {
     autoLoginAfterAccountCreation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.stripeAccountCreated),
+            tap(({user}) => {
+                showSnackbar(this.snackBar, `Hi ${user.firstName}, Welcome to The Burwell Project`)
+                this.router.navigate(["/"])
+            }),
             map(({ user }) => AppActions.login({ username: user.email, password: user.password }))
         )
     )
@@ -158,9 +164,9 @@ export class AppEffects {
                     title: 'Password Reset Email Sent',
                     content:
                         `<p>
-                    An email has been sent to the ${email}. 
-                    Please check your inbox and follow the instructions in the email to reset your password.
-                    </p>`
+                        An email has been sent to the ${email}. 
+                        Please check your inbox and follow the instructions in the email to reset your password.
+                        </p>`
                 }
             }).afterClosed().pipe(
                 map(() => this.router.navigate(['/']))
@@ -172,8 +178,15 @@ export class AppEffects {
         this.actions$.pipe(
             ofType(AppActions.logOut),
             tap(() => {
-                this.firebaseAuth.signOut()
-                this.router.navigate(['/'])
+                try {
+                    this.firebaseAuth.signOut()
+                    this.router.navigate(['/'])
+                    showSnackbar(this.snackBar, "Successfully logged out.")
+                }
+                catch (err) {
+                    console.log(err)
+                    showSnackbar(this.snackBar, "An unknown error occured while logged out.")
+                }
             })
         ), { dispatch: false }
     )
@@ -257,7 +270,7 @@ export class AppEffects {
                 }
                 if (['admin', 'master'].includes(user.role)) {
                     data['actionLabel'] = "Open Lease"
-                    data['action'] = () => this.router.navigate(['admin', 'applications'], { queryParams: { application: reservation.id } })
+                    data['action'] = () => this.router.navigate(['admin', 'applications'], { queryParams: { application: reservation.id, filter: 'accepted' } })
                 }
                 return this.dialog.open(GenericPopupComponent, { data })
             })
@@ -270,8 +283,9 @@ export class AppEffects {
         private db: AngularFireDatabase,
         private fns: AngularFireFunctions,
         private firebaseAuth: AngularFireAuth,
-        public dialog: MatDialog,
+        private dialog: MatDialog,
         private router: Router,
-        private store: Store<AppState>
+        private store: Store<AppState>,
+        private snackBar: MatSnackBar
     ) { }
 }

@@ -30,7 +30,8 @@ import { ForgotPasswordComponent } from './login/forgot-password/forgot-password
 import { AddPaymentMethodComponent } from './components/add-payment-method/add-payment-method.component';
 import { ConfirmPaymentFormComponent } from './components/confirm-payment-form/confirm-payment-form.component';
 import { MatBadgeModule } from '@angular/material/badge';
-import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/performance'
+import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/performance';
+import { LoadingComponent } from './components/loading/loading.component'
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,6 +45,7 @@ import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@ang
     ForgotPasswordComponent,
     AddPaymentMethodComponent,
     ConfirmPaymentFormComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,

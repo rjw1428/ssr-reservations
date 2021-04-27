@@ -82,3 +82,13 @@ export const paymentSourceSelector = createSelector(
         ? Object.values(app.user.paymentSources)
         : []
 )
+
+export const newUserCreationBroadcastSelector = createSelector(
+    selectAppState,
+    app => app.newUserCreationBroadcast
+)
+
+export const allSpacesStoredSelector = createSelector(
+    selectAppState,
+    app => app.allSpacesStored
+)

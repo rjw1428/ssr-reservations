@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
@@ -25,6 +26,7 @@ import { UserDataComponent } from '../components/user-data/user-data.component';
 import { KeyPipe } from './key.pipe';
 import { FormatTablePipe } from './format-table.pipe';
 import { ListItemPipe } from './list-item.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
 
@@ -50,6 +52,7 @@ import { ListItemPipe } from './list-item.pipe';
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
     // MatRadioModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -57,6 +60,7 @@ import { ListItemPipe } from './list-item.pipe';
     MatStepperModule,
     MatExpansionModule,
     MatTableModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
   ],
   exports: [
@@ -71,6 +75,7 @@ import { ListItemPipe } from './list-item.pipe';
     MatInputModule,
     MatSelectModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
     // MatRadioModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -78,6 +83,7 @@ import { ListItemPipe } from './list-item.pipe';
     MatStepperModule,
     MatExpansionModule,
     MatTableModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
 
     ProductTileComponent,

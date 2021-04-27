@@ -1,4 +1,18 @@
+import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import * as confetti from 'canvas-confetti';
+
+
+const snackBarHorizontalPosition: MatSnackBarHorizontalPosition = 'right'
+const snackBarVerticalPosition: MatSnackBarVerticalPosition = 'top'
+const snackBarDuration: number = 3000
+
+export function showSnackbar(snackBar, message: string) {
+    snackBar.open(message, "", {
+        duration: snackBarDuration,
+        horizontalPosition: snackBarHorizontalPosition,
+        verticalPosition: snackBarVerticalPosition,
+    })
+}
 
 export function getUsedTimes(startDate: number, endDate: number): number[] {
     let usedTimes = []

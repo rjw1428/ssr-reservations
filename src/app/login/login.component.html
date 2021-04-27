@@ -2,7 +2,7 @@
   <mat-card-content>
     <form [formGroup]="login" style="display: flex; flex-direction: column;">
       <h2>Log In</h2>
-      <mat-error *ngIf="login.invalid && login.dirty">
+      <mat-error *ngIf="login.invalid && login.get('username').dirty && login.get('password').dirty">
         The username and password were not recognised
       </mat-error>
       <mat-form-field class="full-width-input">

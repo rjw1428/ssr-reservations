@@ -9,7 +9,7 @@ import { AppState } from "../models/app-state";
 import { Store } from "@ngrx/store";
 import { userSelector } from "../app.selectors";
 import { Reservation } from "../models/reservation";
-import { getUsedTimes, isOverlapingTime } from "../utility/utility";
+import { getUsedTimes, isOverlapingTime, showSnackbar } from "../utility/utility";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { AngularFireFunctions } from "@angular/fire/functions";
@@ -17,6 +17,7 @@ import { User } from "../models/user";
 import { AppActions } from "../app.action-types";
 import { Transaction } from "../models/transaction";
 import { Product } from "../models/product";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable()
 export class UserAccountEffects {
@@ -185,6 +186,7 @@ export class UserAccountEffects {
             ofType(UserAccountActions.setDefaultPaymentSource),
             withLatestFrom(this.store.select(userSelector)),
             switchMap(([{ defaultPaymentSource }, user]) => this.db.object(`users/${user.id}`).update({ defaultPaymentSource })),
+            tap(()=> showSnackbar(this.snackBar, "Default payment source updated")),
             map(() => AppActions.stopLoading())
         )
     )
@@ -235,7 +237,8 @@ export class UserAccountEffects {
         private db: AngularFireDatabase,
         private fns: AngularFireFunctions,
         private store: Store<AppState>,
-        public dialog: MatDialog,
-        private router: Router
+        private dialog: MatDialog,
+        private router: Router,
+        private snackBar: MatSnackBar,
     ) { }
 }

@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Subscription } from 'rxjs';
 import { filter, first, map, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
-import { cachedSpaceSelector, paymentSourceSelector, userSelector, } from 'src/app/app.selectors';
+import { allSpacesStoredSelector, cachedSpaceSelector, paymentSourceSelector, userSelector, } from 'src/app/app.selectors';
 import { AddPaymentMethodComponent } from 'src/app/components/add-payment-method/add-payment-method.component';
 import { ConfirmPaymentFormComponent } from 'src/app/components/confirm-payment-form/confirm-payment-form.component';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
@@ -59,18 +59,23 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     this.reservations$.pipe(
       first(),
       filter(reservation => !reservation.length)
-    ).subscribe(() => {
-      this.store.dispatch(UserAccountActions.getReservations())
-      this.store.dispatch(AppActions.fetchAllSpaceDetails())
+    ).subscribe(() => this.store.dispatch(UserAccountActions.getReservations()))
+
+    this.store.select(allSpacesStoredSelector).pipe(
+      first(),
+      filter(areStored => !areStored)
+    ).subscribe(() => this.store.dispatch(AppActions.fetchAllSpaceDetails()))
+
+    this.paymentForm = this.formBuilder.group({
+      reservation: ['', Validators.required],
+      paymentAmount: ['', Validators.required],
+      additionalAmount: [''],
+      paymentMethod: ['', Validators.required]
     })
 
-    this.autoSetDefaultPaymentSub = this.user$.pipe(shareReplay()).subscribe(user => {
-      this.paymentForm = this.formBuilder.group({
-        reservation: ['', Validators.required],
-        paymentAmount: ['', Validators.required],
-        additionalAmount: [''],
-        paymentMethod: [user ? user.defaultPaymentSource : '', Validators.required]
-      })
+    this.autoSetDefaultPaymentSub = this.user$.subscribe(user => {
+      if (user && user.defaultPaymentSource)
+        this.paymentForm.patchValue({ paymentMethod: user.defaultPaymentSource })
     })
 
     this.autoSetPaymentAmountSub = this.paymentForm.get('reservation').valueChanges.subscribe(reservation => {

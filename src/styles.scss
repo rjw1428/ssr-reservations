@@ -1,24 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { 
-    margin: 0; 
-    font-family: Roboto, "Helvetica Neue", sans-serif; 
-    background-color: whitesmoke;
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: whitesmoke;
 }
 
 .test {
-    border: 2px solid red;
+  border: 2px solid red;
 }
+
 // .mat-toolbar.mat-primary {
 //     background: black !important;
 // }
 
 .mat-expansion-panel-header {
-    height: auto !important;
+  height: auto !important;
 }
 
 // USED IN RESERVATION AVAILABILITY MAT-SELECT ELEMET
 .extra-wide .mat-form-field-wrapper {
-    width: 100%;
+  width: 100%;
+}
+
+
+.mat-progress-spinner circle,
+.mat-spinner circle {
+  stroke: #1f693f !important;
 }

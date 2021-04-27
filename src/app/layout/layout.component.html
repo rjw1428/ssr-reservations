@@ -88,7 +88,7 @@
 
       <mat-sidenav-content>
         <router-outlet></router-outlet>
-        <h1 style="position: absolute; top: 0; right: 100px; color: red;" *ngIf="isLoading$ | async">LOADING...</h1>
+        <!-- <h1 style="position: absolute; top: 0; right: 100px; color: red;" >LOADING...</h1> -->
       </mat-sidenav-content>
 
     </mat-sidenav-container>
@@ -99,3 +99,6 @@
       <img src="../../assets/logo_md.png" width=200 height=200>
     </div>
   </mat-toolbar>
+
+  <app-loading *ngIf="isLoading$ | async"></app-loading>
+

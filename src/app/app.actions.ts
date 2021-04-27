@@ -104,3 +104,8 @@ export const storeAllSpaceDetails = createAction(
     "[App Effect] Store all space details",
     props<{ spaces: { [spaceId: string]: Space } }>()
 )
+
+export const broadcastNewUserCreation = createAction(
+    "[New User Component] Get All Subform Data",
+    props<{ shouldBroadcast: boolean }>()
+)

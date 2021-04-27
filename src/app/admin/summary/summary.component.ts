@@ -68,17 +68,26 @@ export class SummaryComponent implements OnInit {
     this.users$.pipe(
       first(),
       filter(users => !users.length)
-    ).subscribe(() => this.store.dispatch(AdminActions.getUserList()))
+    ).subscribe(() => {
+      this.store.dispatch(AppActions.startLoading())
+      this.store.dispatch(AdminActions.getUserList())
+    })
 
     this.productList$.pipe(
       first(),
       filter(productList => !productList.length)
-    ).subscribe(() => this.store.dispatch(AppActions.getProductTypes()))
+    ).subscribe(() => {
+      this.store.dispatch(AppActions.startLoading())
+      this.store.dispatch(AppActions.getProductTypes())
+    })
 
     this.adminSummary$.pipe(
       first(),
       filter(summary => !summary)
-    ).subscribe(() => this.store.dispatch(AdminActions.getAdminSummary()))
+    ).subscribe(() => {
+      this.store.dispatch(AppActions.startLoading())
+      this.store.dispatch(AdminActions.getAdminSummary())
+    })
   }
 
   getUserFromId(userId: string): Observable<User> {

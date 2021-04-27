@@ -21,23 +21,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.store.dispatch(AppActions.checkUserPersistance())
-
-
-    // this.firebaseAuth.setPersistence(auth.Auth.Persistence.LOCAL)
-    //   .then(() => {
-    //     return this.firebaseAuth.signInWithEmailAndPassword(environment.email, environment.password)
-    //   }).then(resp => {
-    //     this.router.navigate(['/', 'dashboard'])
-    //   })
-    //   .catch(err => {
-    //     console.log(err.message)
-    //   })
-    // const signIn = this.firebaseAuth.signInWithEmailAndPassword(environment.email, environment.password)
-    // signIn
-    //   .then(resp => {
-    //     console.log(resp)
-    //     // this.router.navigate(['/'])
-    //   })
-    //   .catch(err => console.log(err.message))
+    this.store.dispatch(AppActions.startLoading())
   }
 }
