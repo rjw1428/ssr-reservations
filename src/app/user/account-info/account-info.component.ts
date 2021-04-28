@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { first, map, shareReplay } from 'rxjs/operators';
+import { filter, first, map, shareReplay } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
-import { paymentSourceSelector, userSelector } from 'src/app/app.selectors';
+import { loginFeedbackSelector, paymentSourceSelector, userSelector } from 'src/app/app.selectors';
 import { AddPaymentMethodComponent } from 'src/app/components/add-payment-method/add-payment-method.component';
 import { GenericPopupComponent } from 'src/app/components/generic-popup/generic-popup.component';
 import { AppState } from 'src/app/models/app-state';
 import { User } from 'src/app/models/user';
+import { showSnackbar } from 'src/app/utility/utility';
 import { UserAccountActions } from '../user.action-types';
 
 @Component({
@@ -25,7 +27,8 @@ export class AccountInfoComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnDestroy() {
@@ -75,6 +78,8 @@ export class AccountInfoComponent implements OnInit, OnDestroy {
     this.dialog.open(AddPaymentMethodComponent, {
       data: null,
       disableClose: true
+    }).afterClosed().pipe(first(), filter(resp => !!resp)).subscribe(resp => {
+      showSnackbar(this.snackBar, "Card Added")
     })
   }
 }

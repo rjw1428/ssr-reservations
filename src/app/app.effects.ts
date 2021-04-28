@@ -42,7 +42,11 @@ export class AppEffects {
                 // return resp.user.emailVerified
                 //     ? AppActions.getUserAccount({ uid: resp.user.uid })//User Session has persisted
                 //     : AppActions.noAction()
-            )
+            ),
+            switchMap(action => ([
+                action,
+                AppActions.stopLoading()
+            ]))
         )
     )
 
@@ -54,13 +58,14 @@ export class AppEffects {
                 this.firebaseAuth.onAuthStateChanged(authData => auth.next(authData))
                 return auth
             }),
-            switchMap(authData => {
+            flatMap(authData => {
                 return authData
                     ? [AppActions.getUserAccount({ uid: authData['uid'] })] // User Session has persisted
                     : [
                         AdminActions.logout(),
                         UserAccountActions.logout(),
-                        AppActions.setLoginFeedback({ success: false, message: null })
+                        AppActions.setLoginFeedback({ success: false, message: null }),
+                        AppActions.stopLoading()
                     ]
             })
         )
@@ -144,7 +149,7 @@ export class AppEffects {
     autoLoginAfterAccountCreation$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AppActions.stripeAccountCreated),
-            tap(({user}) => {
+            tap(({ user }) => {
                 showSnackbar(this.snackBar, `Hi ${user.firstName}, Welcome to The Burwell Project`)
                 this.router.navigate(["/"])
             }),
@@ -268,7 +273,7 @@ export class AppEffects {
                             <div style="display: flex; flex-direction: column; align-items:center;">${unpaid}</div>
                          `
                 }
-                if (['admin', 'master'].includes(user.role)) {
+                if (['admin', 'master'].includes(user.role) && reservation.status != 'canceled') {
                     data['actionLabel'] = "Open Lease"
                     data['action'] = () => this.router.navigate(['admin', 'applications'], { queryParams: { application: reservation.id, filter: 'accepted' } })
                 }

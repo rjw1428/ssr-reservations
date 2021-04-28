@@ -35,7 +35,7 @@ export class GenericPopupComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (this.input.form) {
       const fg = this.input.form
-        .map(id => ({ [id]: [''] }))
+        .map(id => ({ [id]: [this.input.content] }))
         .reduce((acc, cur) => ({ ...acc, ...cur }))
       this.dataForm = this.formBuilder.group(fg)
     }

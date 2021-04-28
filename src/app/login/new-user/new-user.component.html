@@ -11,13 +11,13 @@
     <h3 style="font-weight: bolder;">Password:</h3>
     <form [formGroup]="createAccount" style="display: flex; flex-direction: column;">
       <mat-form-field appearance="outline">
-        <mat-label>Password</mat-label>
+        <mat-label>Password *</mat-label>
         <input name="spacetype" matInput type="password" formControlName="password">
         <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Confirm Password</mat-label>
+        <mat-label>Confirm Password *</mat-label>
         <input name="spacetype" matInput type="password" formControlName="passwordConfirm">
         <mat-error *ngIf="createAccount.invalid">Password is required</mat-error>
       </mat-form-field>

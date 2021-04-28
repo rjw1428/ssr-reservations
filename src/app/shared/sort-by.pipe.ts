@@ -6,6 +6,19 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SortByPipe implements PipeTransform {
 
   transform(value: any[], column: string = '', order = 'asc'): any[] {
+    if (column == 'summarySpecial')
+      return value.sort((a, b) => {
+        try {
+          const nameA = Object.values(a.value)[0]['name']
+          const nameB = Object.values(b.value)[0]['name']
+          return nameA.localeCompare(nameB)
+        }
+        catch (err) {
+          console.log(err)
+          return 0
+        }
+      })
+
     if (!value || order === '' || !order) { return value; } // no array
     if (value.length <= 1) { return value; } // array with only one item
     if (!column || column === '') {

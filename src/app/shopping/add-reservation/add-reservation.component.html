@@ -1,14 +1,14 @@
-<mat-card>
+<mat-card style="padding: 0">
   <mat-card-header>
     <mat-card-title>
       <h1>Reserve a Space</h1>
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content style="max-width: 50vw; display: flex; flex-direction: column; align-items: center;">
-    <div style="display: flex;">
-      <div style="flex-basis: 50%; display: flex; justify-content: center; align-items: center;" class="test">
-        IMG
+  <mat-card-content style="display: flex; flex-direction: column; align-items: center;">
+    <div style="display: flex; width: 100%; align-items: center;" [ngStyle]="{'flex-direction': (isHandset$ | async) ? 'column' : 'row'}">
+      <div style="flex-basis: 50%; display: flex; justify-content: center; align-items: center; max-width: 300px;">
+        <img [src]="'assets/'+inputProduct.img" width="100%" height="100%">
       </div>
       <div style="flex-basis: 50%; display: flex; flex-direction: column; align-items: center; padding: 2em">
         <h1>{{inputProduct.name}}</h1>
@@ -17,15 +17,6 @@
     </div>
 
     <mat-horizontal-stepper style="width: 100%" linear>
-      <!-- Icon overrides. -->
-      <!-- <ng-template matStepperIcon="single">
-        <mat-icon>bookmark</mat-icon>
-      </ng-template>
-      <ng-template matStepperIcon="multi">
-        <mat-icon>bookmarks</mat-icon>
-      </ng-template> -->
-
-
       <mat-step label="Select Timeframe" state="single" [optional]="false" [stepControl]="timeFrameForm">
         <form [formGroup]="timeFrameForm" style="display: flex; flex-direction: column;">
           <mat-form-field appearance="outline">
@@ -55,18 +46,19 @@
         </form>
 
         <div style="display: flex; justify-content: center;">
-          <button mat-raised-button matStepperNext [disabled]="timeFrameForm.invalid"
-            (click)="queryAvailability()" color="primary">Next</button>
+          <button mat-raised-button matStepperNext [disabled]="timeFrameForm.invalid" (click)="queryAvailability()"
+            color="primary">Next</button>
         </div>
       </mat-step>
 
-      <mat-step label="Availability" state="availability" [optional]="false" [stepControl]="selectSpaceForm" >
+      <mat-step label="Availability" state="availability" [optional]="false" [stepControl]="selectSpaceForm">
         <div style="display: flex; flex-direction: column; align-items: center;">
           <h2>Start: {{startDate$ | async | date : 'MM/dd/yyyy'}}</h2>
           <h2>End: {{endDate$ | async | date : 'MM/dd/yyyy'}}</h2>
         </div>
         <form [formGroup]="selectSpaceForm" *ngIf="availableSpaces$ | async as availableSpaces;">
-          <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide" *ngIf="availableSpaces.length; else noSpaces">
+          <mat-form-field appearance="outline" style="display: flex; justify-content: center;" class="extra-wide"
+            *ngIf="availableSpaces.length; else noSpaces">
             <mat-label>Select an available {{inputProduct.name | lowercase}}</mat-label>
             <mat-select formControlName="space" style="min-width: 100%">
               <mat-option *ngFor="let space of availableSpaces" [value]="space.id">{{space.name}}</mat-option>
@@ -81,7 +73,7 @@
 
           <div style="display: flex; justify-content: center;">
             <button mat-raised-button matStepperPrevious>Previous</button>
-            <button mat-raised-button matStepperNext [disabled]="selectSpaceForm.invalid"
+            <button mat-raised-button matStepperNext [disabled]="selectSpaceForm.invalid || !availableSpaces.length"
               (click)="createTempReservation()" color="primary">Next</button>
           </div>
         </form>
@@ -119,8 +111,8 @@
           <p>{{selectedLeaseType.label}} at
             {{inputProduct.month | currency}}/month...
             {{subtotal$ | async | currency}}</p>
-          <p>{{ feePercent * 100}}% Service Fee... {{ fees$ | async | currency}}</p>
-          <p>Taxes... {{ taxes$ | async | currency}}</p>
+          <!-- <p>{{ feePercent * 100}}% Service Fee... {{ fees$ | async | currency}}</p>
+          <p>Taxes... {{ taxes$ | async | currency}}</p> -->
         </div>
       </mat-expansion-panel>
     </mat-accordion>

@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, Output, E
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { of, Subscription } from 'rxjs';
-import { filter, skip } from 'rxjs/operators';
+import { filter, skip, tap } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { loginFeedbackSelector, newUserCreationBroadcastSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
@@ -52,7 +52,7 @@ export class UserDataComponent implements OnInit, OnDestroy {
         }
         : {
           error: null,
-          resp: this.userAccount.value
+          resp: { ...this.userAccount.value, ...this.businessInfo.value }
         }
       this.value.emit(event)
     })

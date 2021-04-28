@@ -1,6 +1,6 @@
 <mat-card *ngIf="reservations$ | async as reservations;">
   <mat-card-header style="display: flex; justify-content: space-between;">
-    <mat-card-title>{{isHistoric ? "Historic" : "Current"}} Leases</mat-card-title>
+    <mat-card-title>{{isHistoric ? "Lease History" : "Current Leases"}} </mat-card-title>
     <div>
       <button mat-button (click)="openAll()">Expand All</button>
       <button mat-button (click)="closeAll()">Collapse All</button>

@@ -77,7 +77,7 @@ export class AddPaymentMethodComponent implements OnInit, OnDestroy {
       filter(({ resp, error }) => !!resp),
       first()
     ).subscribe(({ resp, error }) =>
-      setTimeout(() => this.dialogRef.close(), 500)
+      setTimeout(() => this.dialogRef.close(true), 500)
     )
   }
 }

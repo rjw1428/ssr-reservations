@@ -5,21 +5,28 @@ export const TIMEFRAMES = [{
     label: 'Per Month'
 }]
 
-export const LEASETYPES = [{
-    id: '3_month',
-    label: "3 Month Lease",
-    number: 3
-},
-{
-    id: '6_month',
-    label: "6 Month Lease",
-    number: 6
-},
-{
-    id: '12_month',
-    label: "12 Month Lease",
-    number: 12
-}]
+export const LEASETYPES = [
+    {
+        id: '1_month',
+        label: "1 Month Lease",
+        number: 1
+    },
+    {
+        id: '3_month',
+        label: "3 Month Lease",
+        number: 3
+    },
+    {
+        id: '6_month',
+        label: "6 Month Lease",
+        number: 6
+    },
+    {
+        id: '12_month',
+        label: "12 Month Lease",
+        number: 12
+    }
+]
 
 export const MONTHS = {
     0: "January",

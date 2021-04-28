@@ -296,7 +296,9 @@ export class AdminEffects {
                 return this.dialog.open(GenericPopupComponent, {
                     data: {
                         title: `Provide Rejection Feedback`,
-                        content: "",
+                        content: application.isAlreadyBooked
+                            ? "A previously accepted application has made this date range no longer available."
+                            : "",
                         actionLabel: 'Reject',
                         action: () => application,
                         form: ['feedback']
@@ -321,6 +323,9 @@ export class AdminEffects {
                         feedback: application.feedback,
                         decisionDate: new Date().getTime()
                     })
+
+                showSnackbar(this.snackBar, `Application for ${user.firstName} - Rejected`)
+
 
                 // Delete pending application
                 this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
@@ -361,6 +366,9 @@ export class AdminEffects {
 
                 // Delete pending application
                 this.db.object(`pending-applications/${application.userId}/${application.id}`).remove()
+
+                //Snackbar
+                showSnackbar(this.snackBar, `Application for ${user.firstName} - Accepted`)
 
                 // Search Pending Applications for duplicates
                 return this.db.list(`pending-applications`).snapshotChanges().pipe(

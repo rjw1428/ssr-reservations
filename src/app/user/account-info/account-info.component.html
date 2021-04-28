@@ -8,9 +8,6 @@
 
   <mat-card-content *ngIf="user$ | async as user">
     <app-user-data [user]="user" [editable]="true"></app-user-data>
-
-
-
     <h3 style="font-weight: bolder;">Payment Sources</h3>
     <form style="display: flex; justify-content: space-between;" [formGroup]="paymentForm">
       <mat-form-field appearance="outline" style="flex-basis: 100%;">
@@ -32,9 +29,5 @@
   </mat-card-content>
 
   <mat-card-actions>
-    <!-- <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
-      <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
-      <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
-    </div> -->
   </mat-card-actions>
 </mat-card>

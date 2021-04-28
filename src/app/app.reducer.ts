@@ -15,8 +15,14 @@ export const initialAppState: AppState = {
 
 const _appReducer = createReducer(
     initialAppState,
-    on(AppActions.startLoading, (state) => ({ ...state, isLoading: true })),
-    on(AppActions.stopLoading, (state) => ({ ...state, isLoading: false })),
+    on(AppActions.startLoading, (state) => {
+        console.log("START")
+        return { ...state, isLoading: true }
+    }),
+    on(AppActions.stopLoading, (state) => {
+        console.log("STOP")
+        return { ...state, isLoading: false }
+    }),
     on(AppActions.setLoginFeedback, (state, { success, message }) => ({ ...state, loginFeedback: { success, error: message }, isLoading: false, newUserCreationBroadcast: false })),
     on(AppActions.loginSuccess, (state, action) => ({ ...state, user: action.user })),
     on(AppActions.logOut, (state) => ({ ...state, user: initialAppState.user })),

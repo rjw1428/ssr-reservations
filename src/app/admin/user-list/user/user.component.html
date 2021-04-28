@@ -17,7 +17,12 @@
         <h3>Last Log In: {{ user.lastLogIn | date : 'MM/dd/yy - hh:mm a'}}</h3>
       </div>
       <div style="display: flex; justify-content: center; align-items: center;">
-        <h3>Total Revenue: {{ (user.revenue ? user.revenue : 0) | currency }}</h3>
+        <div style="display: flex; flex-direction: column;">
+          <h3 style="font-weight: 700; margin: 0;">{{user.businessName}}</h3>
+          <h4 style="margin: 0;" *ngIf="user.address">{{user.address}}</h4>
+          <h4 *ngIf="user.phone">{{user.phone}}</h4>
+          <h3>Total Revenue: {{ (user.revenue ? user.revenue : 0) | currency }}</h3>
+        </div>
       </div>
     </div>
     <div>

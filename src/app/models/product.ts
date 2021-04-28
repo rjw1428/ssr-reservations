@@ -6,4 +6,6 @@ export interface Product {
     count: number;
     month: number;
     isActive: boolean;
+    leaseOptions: string[];     // constants.LEASETYPES
+    img: string
 }

@@ -15,8 +15,9 @@ import { Reservation } from 'src/app/models/reservation';
 import { UserAccountActions } from '../user.action-types';
 import { paymentFeedbackSelector, userUnpaidReservationSelector } from '../user.selectors';
 import * as confetti from 'canvas-confetti';
-import { confet } from 'src/app/utility/utility';
+import { confet, showSnackbar } from 'src/app/utility/utility';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payment-form',
@@ -45,7 +46,8 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     private store: Store<AppState>,
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnDestroy() {
@@ -103,7 +105,9 @@ export class PaymentFormComponent implements OnInit, OnDestroy {
     this.dialog.open(AddPaymentMethodComponent, {
       data: null,
       disableClose: true
-    });
+    }).afterClosed().pipe(first(), filter(resp => !!resp)).subscribe(resp => {
+      showSnackbar(this.snackBar, "Card Added")
+    })
   }
 
 

@@ -1,3 +1,4 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -30,7 +31,7 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   timeFrameForm: FormGroup
   currentYearsMonths: {}
   nextYearsMonths: {}
-  leaseTypes = LEASETYPES
+  leaseTypes = LEASETYPES.filter(option => this.inputProduct.leaseOptions.includes(option.id))
   years: number[]
   startDate$: Observable<number>
   endDate$: Observable<number>
@@ -50,10 +51,16 @@ export class AddReservationComponent implements OnInit, OnDestroy {
   reservation$: Observable<Reservation>
 
   singleRoomOptionSubscription: Subscription
-  readonly feePercent = 0.02
-  readonly taxRate = 0.05
+  readonly feePercent = 0//0.02
+  readonly taxRate = 0//0.05
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    .pipe(
+      map(result => result.matches),
+      shareReplay()
+    );
 
   constructor(
+    private breakpointObserver: BreakpointObserver,
     public dialogRef: MatDialogRef<AddReservationComponent>,
     @Inject(MAT_DIALOG_DATA) public inputProduct: Product,
     private formBuilder: FormBuilder,
@@ -90,7 +97,6 @@ export class AddReservationComponent implements OnInit, OnDestroy {
 
     this.singleRoomOptionSubscription = this.availableSpaces$.pipe(
       tap(spaces => {
-        console.log(spaces)
         if (spaces.length == 1)
           this.selectSpaceForm.setValue({ space: spaces[0].id })
       }),

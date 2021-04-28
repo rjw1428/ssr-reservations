@@ -8,7 +8,7 @@ import { AppActions } from 'src/app/app.action-types';
 import { loadingSelector } from 'src/app/app.selectors';
 import { AdminState } from 'src/app/models/admin-state';
 import { Product } from 'src/app/models/product';
-import { TIMEFRAMES } from 'src/app/utility/constants';
+import { LEASETYPES, TIMEFRAMES } from 'src/app/utility/constants';
 import { AdminActions } from '../admin.action-types';
 
 @Component({
@@ -19,8 +19,8 @@ import { AdminActions } from '../admin.action-types';
 })
 export class AddProductTypeComponent implements OnInit {
   productForm: FormGroup
-  defaultCostForm: FormGroup
   availableTimeframes = TIMEFRAMES
+  leaseTypes = LEASETYPES
   constructor(
     public dialogRef: MatDialogRef<AddProductTypeComponent>,
     @Inject(MAT_DIALOG_DATA) public inputProduct: Product,
@@ -35,19 +35,27 @@ export class AddProductTypeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const timeFrameFormInit = this.availableTimeframes.reduce((obj, timeframe) => {
+      const initialValue = this.inputProduct
+        ? this.inputProduct[timeframe.value]
+        : 0
+      return {
+        ...obj,
+        [timeframe.value]: [initialValue, Validators.required]
+      }
+    }, {})
+
     this.productForm = this.formBuilder.group({
       name: [this.inputProduct ? this.inputProduct.name : '', Validators.required],
       description: [this.inputProduct ? this.inputProduct.description : '', Validators.required],
       count: [this.inputProduct ? this.inputProduct.count : '', Validators.required],
-      ...this.availableTimeframes.reduce((obj, timeframe) => {
+      ...timeFrameFormInit,
+      leaseOptions: this.formBuilder.group(this.leaseTypes.reduce((group, option) => {
         const initialValue = this.inputProduct
-          ? this.inputProduct[timeframe.value]
-          : 0
-        return {
-          ...obj,
-          [timeframe.value]: [initialValue, Validators.required]
-        }
-      }, {})
+          ? this.inputProduct.leaseOptions.includes(option.id)
+          : false
+        return { ...group, [option.id]: [initialValue] }
+      }, {}))
     })
   }
 
@@ -56,12 +64,14 @@ export class AddProductTypeComponent implements OnInit {
 
     this.store.dispatch(AppActions.startLoading())
 
+    const { leaseOptions, ...productFormVals } = this.productForm.value
     // ADDING NEW PRODUCT
     if (!this.inputProduct) {
       const product: Product = {
-        ...this.productForm.value,
+        ...productFormVals,
         dateCreated: new Date().getTime(),
-        isActive: true
+        isActive: true,
+        leaseOptions: Object.keys(leaseOptions).filter(key => leaseOptions[key])
       }
       this.store.dispatch(AdminActions.saveProduct({ product }))
     }
@@ -70,7 +80,8 @@ export class AddProductTypeComponent implements OnInit {
       const updatedProduct: Product = {
         ...this.inputProduct,
         ...this.productForm.value,
-        dateCreated: new Date().getTime()
+        dateCreated: new Date().getTime(),
+        leaseOptions: Object.keys(leaseOptions).filter(key => leaseOptions[key])
       }
       this.store.dispatch(AdminActions.editProduct({ updatedProduct }))
     }

@@ -1,34 +1,34 @@
 <h3 style="font-weight: bolder;">User Information:</h3>
 <form [formGroup]="userAccount" style="display: flex; flex-direction: column;">
-  <mat-form-field appearance="outline">
-    <mat-label>First Name</mat-label>
-    <input name="firstName" matInput formControlName="firstName">
+  <mat-form-field appearance="outline" hideRequiredMarker="false">
+    <mat-label>First Name *</mat-label>
+    <input name="firstName" matInput formControlName="firstName" isRe>
     <mat-error *ngIf="userAccount.invalid">First Name is required</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Last Name</mat-label>
+    <mat-label>Last Name *</mat-label>
     <input name="lastName" matInput formControlName="lastName">
     <mat-error *ngIf="userAccount.invalid">Last name is required</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Email</mat-label>
+    <mat-label>Email *</mat-label>
     <input name="email" matInput formControlName="email">
     <mat-error *ngIf="userAccount.invalid">Email address is required</mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-    <mat-label>Phone Number</mat-label>
+    <mat-label>Phone Number *</mat-label>
     <input name="phone" matInput formControlName="phone" placeholder="999-999-9999">
-    <mat-error *ngIf="userAccount.invalid">Email address is required</mat-error>
+    <mat-error *ngIf="userAccount.invalid">Phone Number is required</mat-error>
   </mat-form-field>
 </form>
 
 <h3 style="font-weight: bolder;">Business Information:</h3>
 <form [formGroup]="businessInfo" style="display: flex; flex-direction: column;">
   <mat-form-field appearance="outline">
-    <mat-label>Name of Business</mat-label>
+    <mat-label>Name of Business *</mat-label>
     <input name="businessName" matInput formControlName="businessName">
     <mat-error *ngIf="businessInfo.invalid">The name of the business is required</mat-error>
   </mat-form-field>
@@ -60,7 +60,7 @@
 </form>
 
 <div style="display: flex; justify-content: center" *ngIf="feedback$ | async as feedback">
-  <p style="color: red" *ngIf="feedback.message">{{ feedback.message || "There was an error" }}</p>
+  <p style="color: red" *ngIf="feedback.error">{{ feedback.error || "There was an error" }}</p>
   <p style="color: green" *ngIf="feedback.resp">{{ "Success!" }}</p>
 </div>
 <div style="display: flex; flex-direction: column; align-items: center;" *ngIf="editable">

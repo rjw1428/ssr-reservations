@@ -3,40 +3,42 @@
     <mat-card-title>Workspace Summary</mat-card-title>
   </mat-card-header>
   <mat-card-content *ngIf="adminSummary$ | async as summary">
-    <div *ngFor="let product of summary | keyvalue">
-      <div class="product-title">
-        <h1 class="product-name" style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct" (click)="onEditProductType(product)">
-          {{product.name}}
-        </h1>
-        <mat-icon class="edit-hidden">create</mat-icon>
-    </div>
-      <div *ngFor="let space of product.value | keyvalue">
-        <div class="space-title">
-          <h2 class="space-name" style="margin: 0;" (click)="onEditSpaceName(space.value.productId, space.key, space.value.name)">
-            {{space.value.name}}
-          </h2>
-          <mat-icon class="edit-hidden">create</mat-icon>
-        </div>
-        <div *ngIf="space.value.reserved as reservations; else noReservation">
-          <div *ngFor="let reservation of reservations | keyvalue" style="display: flex;  align-items: center;">
-            <h3 style="margin: 0; flex-basis: 10%;">{{ reservation.key | date : 'MM/dd/yy'}}</h3>
-            <div style="flex-basis: 20%;">
-              <h3 style="margin: 0; color: green" *ngIf="reservation.value.hasPaid; else other">PAID</h3>
-            </div>
-            <div style="flex-basis: 30%;" *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
-              <p style="margin: 0;">{{user.firstName}} {{ user.lastName}} <span style="font-style: italic; font-size: smaller
-              ;">{{user.email}}</span></p>
-            </div>
-            <p style="margin: 0; flex-basis: 40%;">Lease Id: <a [routerLink]=""
-                (click)="onOpenReservation(reservation.value.reservation, product.key, reservation.value.user, space.value.name)">{{reservation.value.reservation}}</a>
-            </p>
-            <ng-template #other>
-              <h3 style="margin: 0; color: red" *ngIf="reservation.key < (now$ | async);">UNPAID</h3>
-            </ng-template>
+      <div *ngFor="let product of summary | keyvalue | sortBy : 'summarySpecial'">
+        <mat-card style="margin-bottom: 1em;">
+          <div class="product-title">
+            <h1 class="product-name" style="margin: 0;" *ngIf="getProductFromId(product.key) | async as product; else noProduct" (click)="onEditProductType(product)">
+              {{product.name}}
+            </h1>
+            <mat-icon class="edit-hidden">create</mat-icon>
           </div>
-        </div>
+          <div *ngFor="let space of product.value | keyvalue">
+            <div class="space-title">
+              <h2 class="space-name" style="margin: 0;" (click)="onEditSpaceName(space.value.productId, space.key, space.value.name)">
+                {{space.value.name}}
+              </h2>
+              <mat-icon class="edit-hidden">create</mat-icon>
+            </div>
+            <div *ngIf="space.value.reserved as reservations; else noReservation">
+              <div *ngFor="let reservation of reservations | keyvalue" style="display: flex;  align-items: center;">
+                <h3 style="margin: 0; flex-basis: 10%;">{{ reservation.key | date : 'MM/dd/yy'}}</h3>
+                <div style="flex-basis: 20%;">
+                  <h3 style="margin: 0; color: green" *ngIf="reservation.value.hasPaid; else other">PAID</h3>
+                </div>
+                <div style="flex-basis: 30%;" *ngIf="getUserFromId(reservation.value.user) | async as user; else noUser">
+                  <p style="margin: 0;">{{user.firstName}} {{ user.lastName}} <span style="font-style: italic; font-size: smaller
+                  ;">{{user.email}}</span></p>
+                </div>
+                <p style="margin: 0; flex-basis: 40%;">Lease Id: <a [routerLink]=""
+                    (click)="onOpenReservation(reservation.value.reservation, product.key, reservation.value.user, space.value.name)">{{reservation.value.reservation}}</a>
+                </p>
+                <ng-template #other>
+                  <h3 style="margin: 0; color: red" *ngIf="reservation.key < (now$ | async);">UNPAID</h3>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </mat-card>
       </div>
-    </div>
   </mat-card-content>
 </mat-card>
 

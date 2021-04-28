@@ -52,7 +52,6 @@ export class NewUserComponent implements OnInit {
         return this.store.dispatch(AppActions.setLoginFeedback({ success: false, message: "Passwords did not match, try again." }))
     }
 
-
     this.store.dispatch(AppActions.startLoading())
     const { passwordConfirm, password } = this.createAccount.value
     const user = {

@@ -167,6 +167,7 @@ export class UserAccountEffects {
                 .then(() => ({ error: null, resp: { ...user, ...userData } }))
                 .catch(error => ({ error, resp: false }))
             ),
+            tap(()=>showSnackbar(this.snackBar, "Account information updated")),
             flatMap(({ resp, error }) => error
                 ? [
                     AppActions.setLoginFeedback({ success: false, message: JSON.stringify(error) }),

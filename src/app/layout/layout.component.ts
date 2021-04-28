@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { AppState } from '../models/app-state';
 import { loadingSelector, userSelector } from '../app.selectors';
@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../models/user';
 import { AppActions } from '../app.action-types';
 import { Router } from '@angular/router';
+import { MatSidenav } from '@angular/material/sidenav';
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
@@ -27,7 +28,7 @@ export class LayoutComponent implements OnInit {
   isLoading$: Observable<boolean> = this.store.select(loadingSelector)
 
   user$: Observable<User> = this.store.select(userSelector)
-
+  @ViewChild('drawer') drawer: MatSidenav
   constructor(
     private breakpointObserver: BreakpointObserver,
     private store: Store<AppState>,
@@ -36,6 +37,14 @@ export class LayoutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    //Close navbar if mobile mode and route changes
+    this.router.events.pipe(
+      switchMap(()=>this.isHandset$),
+    ).subscribe(isHandSet => {
+      isHandSet 
+        ? this.drawer.close()
+        : this.drawer.open()
+    });
   }
 
   onLogIn() {
