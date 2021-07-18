@@ -125,13 +125,11 @@ export const triggerApplicationReceivedEmail = functions.database
         }
     })
 
-export const triggerCaneledLeaseEmail = functions.database
-    .ref('/accepted-applications/{userId}/{applicationId}')
-    .onDelete(async (snapshot, context) => {
+export const triggerCaneledLeaseEmail = functions.https.onCall(async (data) => {
         try {
-            const lease = snapshot.val();
+            const lease = data;
             // GET APPLICATION USER
-            const userRef = await db.ref(`users/${context.params.userId}`).get()
+            const userRef = await db.ref(`users/${lease.userId}`).get()
             const user = userRef.val()
 
             // GET SPACE INFO
@@ -144,7 +142,7 @@ export const triggerCaneledLeaseEmail = functions.database
                 template: {
                     name: 'leaseCanceled',
                     data: {
-                        applicationId: context.params.applicationId,
+                        applicationId: lease.id,
                         username: `${user.firstName} ${user.lastName}`,
                         spacename: space.name,
                     }

@@ -256,9 +256,9 @@ export class AppEffects {
                                     ? "Past Due"
                                     : ""
                                 return `<div style="display: flex; justify-content: space-around; width: 100%">
-                                        <div>${new Date(+time).toLocaleDateString()}</div>
-                                        <div>${currencyPipe.transform(reservation.cost)}</div>
-                                        <div style="color: red">${status}</div>
+                                        <div style="flex-basis: 100%">${new Date(+time).toLocaleDateString()}</div>
+                                        <div style="flex-basis: 100%">${currencyPipe.transform(reservation.cost)}</div>
+                                        <div style="flex-basis: 100%; color: red">${status}</div>
                                     </div>`
                             })
                             .join('')

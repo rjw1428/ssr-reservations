@@ -5,7 +5,6 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { skip, first, filter, takeWhile } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
-import { loadingSelector } from 'src/app/app.selectors';
 import { AppState } from 'src/app/models/app-state';
 import { UserAccountActions } from 'src/app/user/user.action-types';
 import { creditCardFeedbackSelector } from 'src/app/user/user.selectors';

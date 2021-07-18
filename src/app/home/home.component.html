@@ -3,28 +3,68 @@
 </section>
 
 <section style="padding: 2em">
-  <h3>About</h3>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-    sed do eiusmod tempor incididunt ut labore et dolore magna
-    aliqua. Curabitur gravida arcu ac tortor dignissim convallis
-    aenean et. Purus in massa tempor nec feugiat nisl pretium.
-    Vitae elementum curabitur vitae nunc sed velit dignissim
-    sodales ut. Pellentesque elit eget gravida cum sociis. Eu
-    sem integer vitae justo eget magna fermentum iaculis.
-    Porttitor leo a diam sollicitudin tempor id eu. Quam
-    elementum pulvinar etiam non quam. Vestibulum mattis
-    ullamcorper velit sed. Dui nunc mattis enim ut tellus
-    elementum sagittis. Morbi enim nunc faucibus a pellentesque
-    sit amet porttitor.
+  <p>The Burwell Project is a historic Salem homesite that has been renovated
+    and restored over the years and turned into an ideal small business office
+    collaborative. The charm of this building, originally constructed in 1870,
+    has been preserved through the thoughtful stewardship of revered Salem
+    architect T.A. Carter Jr, who occupied the building for several decades
+    and even through his retirement. A cosmetic facelift by the current owner
+    brings a comfortable modern feeling to the space, while honoring the
+    dignified grace of it's heritage.
+  </p>
+  <p>
+    The downtown location is ideal for many aspects - walking distance to the
+    Roanoke County and City of Salem municipal buildings and courthouses, and
+    countless restaurants and shops for our renters and their clientele. It's
+    conveniently accessed from exit 140 off Interstate 81. The collaborative
+    spirit of the office space and layout lends itself to networking and
+    cross-servicing. Your quaint "one-man show" is no longer lonely, but rather
+    enhanced with other professionals offering high level services to their
+    clients as well.
   </p>
 </section>
 
-<section style="display: flex; align-items: stretch; padding: 2em" [ngStyle]="{'flex-direction': (isHandset$ | async) ? 'column' : 'row'}">
+<section style="background-color: #1f693f; color: white; padding: 1em 3em; display: flex; flex-direction: column; align-items: center; text-align: center; ">
+  <h1 style="font-family: 'Rubik', sans-serif;">
+    We believe in small business, the self-employed, and entrepreneurs because,
+    like you, that’s who we are.
+  </h1>
+  <h3 style="font-family: 'Rubik', sans-serif;">
+    We offer a modern & professional office space
+    to run your business at an affordable rate.
+  </h3>
+</section>
+
+<section style="padding: 2em; display: flex;">
+  <div style="flex-basis: 50%;">
+    <img src="assets/homeImg2.jpg" width=100%>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center; flex-basis: 50%;">
+    <h2 style="font-weight: bold;">Features & Ammenities</h2>
+    <p>24/7 Access</p>
+    <p>Air Conditioning</p>
+    <p>Cleaning Services</p>
+    <p>Furnished</p>
+    <p>High-Speed Internet</p>
+    <p>IT Support</p>
+    <p>Meeting Rooms</p>
+    <p>Printing/Scanning Equipment</p>
+    <p>Lock/Keypad Entry</p>
+    <p>Onsite Parking</p>
+  </div>
+</section>
+
+<section style="display: flex; align-items: stretch; padding: 2em"
+  [ngStyle]="{'flex-direction': (isHandset$ | async) ? 'column' : 'row'}">
   <div style="flex-basis: 100%; display: flex; flex-direction: column; align-items: center; padding: 2em 1em">
-    <h3>Contact Us</h3>
+    <h2 style="font-weight: bold;">Contact Us</h2>
     <p>Address: 407 E. Burwell St Salem, Va 24153</p>
-    <p>Call: &#60;insert phone number&#62;</p>
-    <p>Email: <a mailto="info@burwellproject.com">info@burwellproject.com</a></p>
+    <p>Call: (315) 796-8887</p>
+    <p>Email: <a mailto="services@burwellproject.com">services@burwellproject.com</a></p>
+    <p>
+      Inquire about renting a budget-friendly office, coworking space, or meeting
+      space using the new online tools
+    </p>
   </div>
   <div style="flex-basis: 100%; display: flex; justify-content: center; align-items: center;">
     <iframe width="100%" height="500" id="gmap_canvas"

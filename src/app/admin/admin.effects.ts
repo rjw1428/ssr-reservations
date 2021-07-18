@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { AngularFireDatabase, SnapshotAction } from "@angular/fire/database";
 import { AngularFirestore, DocumentChangeAction } from "@angular/fire/firestore";
+import { AngularFireFunctions } from "@angular/fire/functions";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
@@ -424,6 +425,12 @@ export class AdminEffects {
                     })
                 return this.db.object(`accepted-applications/${lease.userId}/${lease.id}`)
                     .update({ status: 'canceled', lastModifiedTime: new Date().getTime() })
+                    .then(() => lease)
+            }),
+            switchMap(lease => {
+                showSnackbar(this.snackBar, "User has been notified of their cancelation")
+                const triggerCaneledLeaseEmail = this.fns.httpsCallable('triggerCaneledLeaseEmail')
+                return triggerCaneledLeaseEmail(lease)
             }),
             map(() => AppActions.stopLoading())
         )
@@ -437,8 +444,8 @@ export class AdminEffects {
         private db: AngularFireDatabase,
         private dialog: MatDialog,
         private router: Router,
-        private snackBar: MatSnackBar
-
+        private snackBar: MatSnackBar,
+        private fns: AngularFireFunctions,
     ) { }
 
 }

@@ -1,4 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@700&display=swap');
+$main-color: #1f693f;
 
 html,
 body {
@@ -31,7 +32,7 @@ body {
 
 .mat-progress-spinner circle,
 .mat-spinner circle {
-  stroke: #1f693f !important;
+  stroke: $main-color !important;
 }
 
 @media screen and (max-width: 600px) {
