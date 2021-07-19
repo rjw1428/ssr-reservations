@@ -11,7 +11,7 @@
       <p><span style="font-weight: bold">Lease Space: </span>{{lease['space'].name}}</p>
       <p><span style="font-weight: bold">Month: </span>{{lease['unpaidTime'] | date : 'MM/dd/yy'}}</p>
       <p><span style="font-weight: bold">Payment Amount: </span>{{paymentInfo.paymentAmount | currency}}</p>
-      <p><span style="font-weight: bold">Additional Amount: </span>{{paymentInfo.additionalAmount | currency}}</p>
+      <p><span style="font-weight: bold">Additional Amount: </span>{{(paymentInfo.additionalAmount || 0) | currency}}</p>
       <h3><span style="font-weight: bolder">Total:</span>{{total | currency}}</h3>
       <p>By clicking "Submit" you will be charged the selected amount, which will be paid towards your outstanding balance.</p>
     </div>
