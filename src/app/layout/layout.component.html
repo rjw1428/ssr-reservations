@@ -3,7 +3,8 @@
       *ngIf="isHandset$ | async">
       <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
     </button>
-    <span style="cursor: default;">Burwell Project</span>
+    <!-- <span style="cursor: default;">Burwell Project</span> -->
+    <img src="assets/name.png" alt="Burwell Project" height=50px>
     <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
     <span style="display: flex; cursor: pointer;" *ngIf="(user$ | async) as user" [matMenuTriggerFor]="menu">
       <!-- <span style="display: flex; align-items: center; margin-right: 1em; cursor: pointer;">

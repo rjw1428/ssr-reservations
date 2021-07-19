@@ -1,5 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -16,10 +17,13 @@ export class HomeComponent implements OnInit {
     );
   constructor(
     private breakpointObserver: BreakpointObserver,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
 
   }
-
+  onFindSpace() {
+    this.router.navigate(['/shop']);
+  }
 }
