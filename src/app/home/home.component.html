@@ -24,7 +24,7 @@
   </p>
 </section>
 
-<section style="background-color: #1f693f; color: white; padding: 1em 3em; display: flex; flex-direction: column; align-items: center; text-align: center; ">
+<section style="background-color: #1f693f; color: white; padding: 2em 3em; display: flex; flex-direction: column; align-items: center; text-align: center; ">
   <h1 style="font-family: 'Rubik', sans-serif;">
     We believe in small business, the self-employed, and entrepreneurs because,
     like you, that’s who we are.
@@ -35,33 +35,34 @@
   </h3>
 </section>
 
-<section style="padding: 2em; display: flex;">
+<section style="padding: 2em; padding-bottom: unset; display: flex;">
   <div style="flex-basis: 50%;">
     <img src="assets/homeImg2.jpg" width=100%>
   </div>
   <div style="display: flex; flex-direction: column; align-items: center; flex-basis: 50%;">
-    <h2 style="font-weight: bold;">Features & Ammenities</h2>
-    <p>24/7 Access</p>
-    <p>Air Conditioning</p>
-    <p>Cleaning Services</p>
-    <p>Furnished</p>
-    <p>High-Speed Internet</p>
-    <p>IT Support</p>
-    <p>Meeting Rooms</p>
-    <p>Printing/Scanning Equipment</p>
-    <p>Lock/Keypad Entry</p>
-    <p>Onsite Parking</p>
+    <h2 style="font-weight: bold; text-align: center;">Features & Ammenities</h2>
+    <p class="list-item">24/7 Access</p>
+    <p class="list-item">Air Conditioning</p>
+    <p class="list-item">Cleaning Services</p>
+    <p class="list-item">Furnished</p>
+    <p class="list-item">High-Speed Internet</p>
+    <p class="list-item">IT Support</p>
+    <p class="list-item">Meeting Rooms</p>
+    <p class="list-item">Printing/Scanning Equipment</p>
+    <p class="list-item">Lock/Keypad Entry</p>
+    <p class="list-item">Onsite Parking</p>
   </div>
 </section>
 
-<section style="display: flex; align-items: stretch; padding: 2em"
+<section style="display: flex; align-items: stretch; padding: 2em; padding-top: unset;"
   [ngStyle]="{'flex-direction': (isHandset$ | async) ? 'column' : 'row'}">
   <div style="flex-basis: 100%; display: flex; flex-direction: column; align-items: center; padding: 2em 1em">
     <h2 style="font-weight: bold;">Contact Us</h2>
-    <p>Address: 407 E. Burwell St Salem, Va 24153</p>
-    <p>Call: (315) 796-8887</p>
-    <p>Email: <a mailto="services@burwellproject.com">services@burwellproject.com</a></p>
-    <p>
+    <p class="list-item">Address: 407 E. Burwell St Salem, Va 24153</p>
+    <p class="list-item">Call: (315) 796-8887</p>
+    <p class="list-item">Email: <a href="mailto:services@burwellproject.com">services@burwellproject.com</a></p>
+    
+    <p class="list-item">
       Inquire about renting a budget-friendly office, coworking space, or meeting
       space using the new online tools
     </p>

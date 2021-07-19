@@ -24,3 +24,15 @@
   opacity: .3;
   visibility: hidden;
 }
+
+@media screen and (max-width: 600px) {
+  p {
+    font-size: 11px;
+  }
+  h2 {
+    font-size: 16px;
+  }
+  h3 {
+    font-size: 12px;
+  }
+}

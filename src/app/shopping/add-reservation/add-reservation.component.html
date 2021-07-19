@@ -1,8 +1,11 @@
-<mat-card style="padding: 0">
-  <mat-card-header>
+<mat-card style="padding: 0; max-height: 100vh;">
+  <mat-card-header style="justify-content: space-between;">
     <mat-card-title>
       <h1>Reserve a Space</h1>
     </mat-card-title>
+    <div style="padding-top: 1px">
+      <mat-icon mat-dialog-close style="color: #999">cancel</mat-icon>
+    </div>
   </mat-card-header>
 
   <mat-card-content style="display: flex; flex-direction: column; align-items: center;">
@@ -98,12 +101,12 @@
 
 
     <mat-accordion style="width: 100%;">
-      <mat-expansion-panel hideToggle>
-        <mat-expansion-panel-header style="display: flex; justify-content: space-between; align-items: center;">
-          <mat-panel-title>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header style="display: flex; justify-content: space-between;">
+          <mat-panel-title style="align-items: center;">
             Cost Summary
           </mat-panel-title>
-          <h1>
+          <h1 style="margin: .25em">
             Total: {{ total$ | async | currency }}
           </h1>
         </mat-expansion-panel-header>

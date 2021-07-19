@@ -20,9 +20,13 @@
         <mat-error *ngIf="paymentForm.invalid">Please select a payment source.</mat-error>
       </mat-form-field>
 
-      <div style="flex-shrink: 0; padding: 1em">
-        <button style="margin-right: 1em;" mat-flat-button color="warn" (click)="onRemove(user)">Remove</button>
-        <button mat-flat-button color="accent" (click)="onSetDefault()">Set as default</button>
+      <div style="display: flex; flex-shrink: 0; padding: 0 1em;" class="card-control-buttons">
+        <div style="margin: .5em;">
+          <button  mat-flat-button color="warn" (click)="onRemove(user)">Remove</button>
+        </div>
+        <div style="margin: .5em;">
+          <button mat-flat-button color="accent" (click)="onSetDefault()">Set as default</button>
+        </div>
       </div>
     </form>
     <button mat-flat-button color="primary" (click)="onAddCard()">Add Card</button>

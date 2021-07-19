@@ -51,9 +51,17 @@
   left: 50%;
 }
 
+.footer-icon-size {
+  height: 200px;
+  width: 200px;
+}
 
 @media screen and (max-width: 599px) {
   .content-container {
     height: calc(100% - 112px);
+  }
+  .footer-icon-size {
+    height: 100px;
+    width: 100px;
   }
 }

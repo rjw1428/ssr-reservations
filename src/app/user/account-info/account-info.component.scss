@@ -1,0 +1,9 @@
+.card-control-buttons {
+    flex-direction: row;
+}
+
+@media screen and (max-width: 599px) {
+    .card-control-buttons {
+        flex-direction: column;
+    }
+  }
