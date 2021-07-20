@@ -18,15 +18,12 @@ import { MatSidenav } from '@angular/material/sidenav';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LayoutComponent implements OnInit {
-
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
       shareReplay()
     );
-
   isLoading$: Observable<boolean> = this.store.select(loadingSelector)
-
   user$: Observable<User> = this.store.select(userSelector)
   @ViewChild('drawer') drawer: MatSidenav
   constructor(

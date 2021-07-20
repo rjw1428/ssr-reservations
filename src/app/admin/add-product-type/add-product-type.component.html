@@ -28,11 +28,16 @@
         <mat-error *ngIf="productForm.invalid">Must input a number greater than 0</mat-error>
       </mat-form-field>
 
-      <div style="display: flex; justify-content: space-between;">
+      <div style="display: flex; justify-content: space-around;"
+        [ngStyle]="{'flex-direction': (isHandset$ | async) ? 'column' : 'row'}">
         <section>
           <mat-card-title>Cost Breakdown</mat-card-title>
           <div *ngFor="let timeframe of availableTimeframes; let i=index">
-            <div style="display: flex; align-items: center;">
+            <div style="display: flex;" [ngStyle]="{
+              'flex-direction': (isHandset$ | async) ? 'column' : 'row', 
+              'align-items': (isHandset$ | async) ? 'flex-start' : 'center',
+              'justify-content': (isHandset$ | async) ? 'center' : 'flex-start'
+            }">
               <p style="width: 100px;">{{timeframe.label}}:</p>
               <mat-form-field appearance="outline">
                 <mat-label>Amount</mat-label>

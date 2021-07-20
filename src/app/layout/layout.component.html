@@ -3,7 +3,6 @@
       *ngIf="isHandset$ | async">
       <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
     </button>
-    <!-- <span style="cursor: default;">Burwell Project</span> -->
     <img src="assets/name.png" alt="Burwell Project" height=50px>
     <span *ngIf="!(user$ | async)" (click)="onLogIn()" style="cursor: pointer;">Login</span>
     <span style="display: flex; cursor: pointer;" *ngIf="(user$ | async) as user" [matMenuTriggerFor]="menu">
@@ -13,14 +12,13 @@
           notifications
         </mat-icon>
       </span> -->
-      <span style="display: flex; align-items: center; margin-right: 1em;">
+      <span style="display: flex; align-items: center; margin-right: .5em; overflow: hidden;">
         <mat-icon style="color: white; font-size: 1.5em; display: flex; justify-content: center; align-items: center;">
           account_circle
         </mat-icon>
       </span>
-      <span mat-button style="font-size: .8em;">
-        {{user.firstName}}
-        {{user.lastName}}
+      <span mat-button style="font-size: .8em; overflow: hidden; text-overflow: ellipsis;">
+        {{ (isHandset$ | async) ? user.firstName : user.firstName + ' ' + user.lastName }}
       </span>
     </span>
     <mat-menu #menu="matMenu">

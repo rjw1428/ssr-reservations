@@ -1,9 +1,10 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { filter, first, skip } from 'rxjs/operators';
+import { filter, first, map, shareReplay, skip } from 'rxjs/operators';
 import { AppActions } from 'src/app/app.action-types';
 import { loadingSelector } from 'src/app/app.selectors';
 import { AdminState } from 'src/app/models/admin-state';
@@ -18,10 +19,16 @@ import { AdminActions } from '../admin.action-types';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddProductTypeComponent implements OnInit {
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  .pipe(
+    map(result => result.matches),
+    shareReplay()
+  );
   productForm: FormGroup
   availableTimeframes = TIMEFRAMES
   leaseTypes = LEASETYPES
   constructor(
+    private breakpointObserver: BreakpointObserver,
     public dialogRef: MatDialogRef<AddProductTypeComponent>,
     @Inject(MAT_DIALOG_DATA) public inputProduct: Product,
     private formBuilder: FormBuilder,
