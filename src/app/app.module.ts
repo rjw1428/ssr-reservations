@@ -32,6 +32,7 @@ import { ConfirmPaymentFormComponent } from './components/confirm-payment-form/c
 import { MatBadgeModule } from '@angular/material/badge';
 import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/performance';
 import { LoadingComponent } from './components/loading/loading.component'
+import { CarouselModule } from 'ngx-owl-carousel-o';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +54,7 @@ import { LoadingComponent } from './components/loading/loading.component'
     BrowserAnimationsModule,
     SharedModule,
     MatBadgeModule,
+    CarouselModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,

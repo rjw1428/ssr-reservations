@@ -94,7 +94,12 @@
   </div>
 
   <mat-toolbar color="primary" class="footer">
-    <div style="padding: 1em; display: flex; flex-direction: column; align-items: center;">
+    <div style="display: flex; justify-content: space-around; flex-basis: 25%;" *ngIf="!(isHandset$ | async)">
+      <div><img src="/assets/fb-icon.png" width=48 height=48></div>
+      <div><img src="/assets/insta-icon.png" width=48 height=48></div>
+      <mat-icon class="material-icons-outlined" style="font-size: 56px; width: 56px; height: 56px; margin-top: -4px;" (click)="onEmail('services@burwellproject.com')">email</mat-icon>
+    </div>
+    <div style="padding: 1em; display: flex; flex-direction: column; align-items: center; flex-basis: 50%;">
       <img src="../../assets/logo_md.png" class="footer-icon-size">
     </div>
   </mat-toolbar>

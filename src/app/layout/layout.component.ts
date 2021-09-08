@@ -68,4 +68,8 @@ export class LayoutComponent implements OnInit {
   onLogOut() {
     this.store.dispatch(AppActions.logOut())
   }
+
+  onEmail(address: string) {
+    window.location.href = `mailto:${address}`
+  }
 }

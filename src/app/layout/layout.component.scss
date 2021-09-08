@@ -42,7 +42,7 @@
 
 .footer {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   height: fit-content;
   background-color: #1f693f;
   max-width: var(--content-max-width);
@@ -54,6 +54,12 @@
 .footer-icon-size {
   height: 200px;
   width: 200px;
+}
+
+@media screen and (max-width: 959px) {
+  .footer {
+    justify-content: center;
+  }
 }
 
 @media screen and (max-width: 599px) {
