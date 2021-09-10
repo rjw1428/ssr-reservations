@@ -2,10 +2,13 @@
   <!-- <img src="assets/headerImg1.jpg" width=100%> -->
   <owl-carousel-o [options]="carouselOptions">
     <ng-template carouselSlide><img src="assets/headerImg1.jpg" width=100%></ng-template>  
-    <ng-template carouselSlide><img src="assets/stonefly.jpg" width=100%></ng-template> 
     <ng-template carouselSlide><img src="assets/topofstairs.jpg" width=100%></ng-template>   
     <ng-template carouselSlide><img src="assets/meetingroom2.jpg" width=100%></ng-template>  
     <ng-template carouselSlide><img src="assets/topofstairs2.jpg" width=100%></ng-template>  
+    <ng-template carouselSlide><img src="assets/stonefly.jpg" width=100%></ng-template>
+    <ng-template carouselSlide><img src="assets/firstfloor.jpg" width=100%></ng-template>  
+    <ng-template carouselSlide><img src="assets/pnymph.jpg" width=100%></ng-template> 
+    <ng-template carouselSlide><img src="assets/royalwulff.jpg" width=100%></ng-template> 
   </owl-carousel-o>
 </section>
 
@@ -74,8 +77,8 @@
     <p class="list-item">Call: (315) 796-8887</p>
     <p class="list-item" *ngIf="!(isHandset$ | async)">Email: <a href="mailto:services@burwellproject.com">services@burwellproject.com</a></p>
     <div *ngIf="isHandset$ | async" style="display: flex; padding-bottom: 1em; width: 250px; justify-content: space-around;">
-      <div><img src="/assets/fb-icon.png" width=48 height=48></div>
-      <div><img src="/assets/insta-icon.png" width=48 height=48></div>
+      <div><a href="https://m.facebook.com/TheBurwellProject"><img src="/assets/fb-icon.png" width=48 height=48></a></div>
+      <div><a href="https://www.instagram.com/the_burwell_project/"><img src="/assets/insta-icon.png" width=48 height=48></a></div>
       <mat-icon class="material-icons-outlined" style="font-size: 56px; width: 56px; height: 56px; margin-top: -4px;" (click)="onEmail('services@burwellproject.com')">email</mat-icon>
     </div>
     <p class="list-item">
